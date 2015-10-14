@@ -1,0 +1,210 @@
+#include "Sensirion.h"
+/*
+ * Example code for SHT1x or SHT7x sensors demonstrating blocking calls
+ * for temperature and humidity measurement in the setup routine and
+ * non-blocking calls in the main loop.  The pin 13 LED is flashed as a
+ * background task while temperatureand humidity measurements are made.
+ */
+
+#include <VirtualWire.h> 
+
+
+const uint8_t dataPin =  8; // SHT serial data
+const uint8_t sclkPin =  7; // SHT serial clock
+const uint8_t tranceiverPin = 6;
+const uint8_t receiverPin = 4;
+const uint32_t TRHSTEP   = 10000UL; // période de mesure
+
+
+Sensirion sht = Sensirion(dataPin, sclkPin);
+
+uint16_t rawData;
+
+float temperature = 1.0;
+//char *announce_temperature = "T : ";
+
+float humidity = 1.0;
+//char * announce_humidity = "H : ";
+
+float dewpoint;
+//char *announce_dewpoint = "D : ";
+char *string_dewpoint;
+
+//byte ledState = 0;
+byte measActive = false;
+byte measType = TEMP;
+
+unsigned long trhMillis = 0;// intervalle de temps entre les mesures
+
+
+
+const char ordre_allumer_pompe[] = "allumer_pompe";
+const char ordre_eteindre_pompe[] = "eteindre_pompe";
+
+char string_allumage_pompe[] = "pompe_allumee";
+char string_extinction_pompe[] = "pompe_eteinte";
+
+const char ordre_donner_temperature[] = "donner_temperature";
+const char ordre_donner_humidite[] = "donner_humidite";
+
+
+//pour la réception
+//char msg_received[19];
+int i = 0;
+void setup() {
+  Serial.begin(9600);
+  delay(15);                             // Wait >= 11 ms before first cmd
+  //Pour la température et l'humidité
+  sht.measTemp(&rawData);                // sht.meas(TEMP, &rawData, BLOCK)
+  temperature = sht.calcTemp(rawData);
+  sht.measHumi(&rawData);                // sht.meas(HUMI, &rawData, BLOCK)
+  humidity = sht.calcHumi(rawData, temperature);
+  dewpoint = sht.calcDewpoint(humidity, temperature);
+  logData();
+  //Pour l'émission et la réception
+  vw_setup(1000);        // Initialisation de la librairie VirtualWire à 2400 bauds (maximum de mon module)
+  vw_set_tx_pin(tranceiverPin);
+  vw_set_rx_pin(receiverPin);
+  vw_rx_start();
+  
+}
+
+void loop() {
+
+  
+  unsigned long curMillis = millis();          // Get current time
+  //initialisation pour la réception
+  
+  uint8_t buf[VW_MAX_MESSAGE_LEN]; // Tableau qui va contenir le message recu (de taille maximum VW_MAX_MESSAGE_LEN)
+  uint8_t buflen = VW_MAX_MESSAGE_LEN; // Taille maximum du buffer
+
+  //message par defaut
+  //char msg_received[];
+  //Partie réception
+  if (vw_have_message()) // Si on a un message dans le buffer
+    {
+        if (vw_get_message(buf, &buflen)) // Alors on récupère ce message qu'il soit entier ou pas
+        {
+          char msg_received[buflen];          
+          Serial.print("RX : ");
+          
+          for (i = 0; i < buflen; i++) // On affiche tout ce que l'on a
+              {
+                Serial.print(char(buf[i]));
+                msg_received[i] = char(buf[i]);
+              }
+          Serial.println("");
+          msg_received[buflen] = '\0';
+         
+         Serial.println(msg_received);
+   
+   
+   
+    //Partie émission
+   if (strcmp(msg_received, ordre_donner_temperature) == 0)
+   {
+      
+      char string_temperature[10];
+      Serial.print(temperature);
+      getFloatToCharArray(temperature, string_temperature);
+      Serial.print(" Temperature here : ");
+      Serial.println(string_temperature);
+      //vw_send((uint8_t *)announce_temperature, strlen(announce_temperature)); // On envoie le message 
+      //vw_wait_tx();
+      vw_send((uint8_t *)string_temperature,strlen(string_temperature)); // On envoie le message 
+      vw_wait_tx();
+
+     }
+
+    else if(strcmp(msg_received,ordre_donner_humidite) == 0)
+    {
+      char string_humidity[10];
+      Serial.print(humidity);
+      getFloatToCharArray(humidity, string_humidity);
+      Serial.print(" Humidity here : ");
+      Serial.println(string_humidity);
+      vw_send((uint8_t *)string_humidity, strlen(string_humidity));
+      vw_wait_tx();
+    }
+    else if(strcmp(msg_received,ordre_allumer_pompe) == 0)
+    {
+      vw_send((uint8_t *)ordre_allumer_pompe, strlen(ordre_allumer_pompe));
+      vw_wait_tx();
+    }
+
+    else if(strcmp(msg_received,ordre_eteindre_pompe) == 0)
+    {
+      vw_send((uint8_t *)ordre_eteindre_pompe, strlen(ordre_eteindre_pompe));
+      vw_wait_tx();
+    }
+    else if(strcmp(msg_received,string_allumage_pompe) == 0)
+    {
+      vw_send((uint8_t *)string_allumage_pompe, strlen(string_allumage_pompe));
+      vw_wait_tx();
+    }
+    else if(strcmp(msg_received,string_extinction_pompe) == 0)
+    {
+      vw_send((uint8_t *)string_extinction_pompe, strlen(string_extinction_pompe));
+      vw_wait_tx();
+    }
+    
+
+        }
+    }
+
+
+
+  // Partie mesure
+  if (curMillis - trhMillis >= TRHSTEP) {      // Time for new measurements?
+    measActive = true;
+    measType = TEMP;
+    sht.meas(TEMP, &rawData, NONBLOCK);        // Start temp measurement
+    trhMillis = curMillis;
+  }
+  if (measActive && sht.measRdy()) {           // Note: no error checking
+    if (measType == TEMP) {                    // Process temp or humi?
+      measType = HUMI;
+      temperature = sht.calcTemp(rawData);     // Convert raw sensor data
+      sht.meas(HUMI, &rawData, NONBLOCK);      // Start humidity measurement
+    } else {
+      measActive = false;
+      humidity = sht.calcHumi(rawData, temperature); // Convert raw sensor data
+      dewpoint = sht.calcDewpoint(humidity, temperature);
+      logData();
+    }
+  }
+  
+}
+//Fonctions pour convertir les données dans un format acceptée pour l'envoi
+void getFloatToCharArray(float value, char* result)
+{
+  getStringToCharArray(getFloatToString(value), result);
+}
+void getStringToCharArray(String value, char * result)
+{
+  //char result[value.length()+1];
+  value.toCharArray(result, value.length()+1);
+}
+
+String getFloatToString(float value)
+ {
+  String result = "";
+  result += String(int(value))+"."+String(getDecimal(value));
+  return result;
+ }
+int getDecimal(float val)
+{
+  int intPart = int(val);
+  int decPart = 1000*(val - intPart);
+   if(decPart > 0) return decPart;
+   else if (decPart < 0) return (-1)*decPart;
+   else if (decPart = 0) return 00;
+}
+void logData() {
+  Serial.print("Temperature = ");   Serial.print(temperature);
+  Serial.print(" C, Humidity = ");  Serial.print(humidity);
+  Serial.print(" %, Dewpoint = ");  Serial.print(dewpoint);
+  Serial.println(" C");
+}
+
+
