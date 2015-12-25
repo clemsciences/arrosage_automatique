@@ -1,14 +1,22 @@
 # -*-coding:utf-8-*-
 __author__ = 'Clément'
 
-from serial import Serial, SerialTimeoutException, SerialException
+import argparse
 import os
+import platform
+import re
+import sqlite3
+import threading
+from gestion_courriel.Gmail import *
+from gestion_courriel.extraire_xml import extraire_question, extraire_ordre
+from oauth2client.tools import argparser
+from serial import Serial, SerialException
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
 from gestion_temps import *
-import threading
-import sqlite3
-from gestion_arrosage_automatique.models import *
-import re
+from gestion_arrosage_automatique.models import ConditionsMeteorologiques, ConditionArrosage
+
+
 # port_serie = Serial(port = PORT, baudrate = 9600)
 
 def trouver_ports_libres():
@@ -27,6 +35,29 @@ class RecuperateurDonnees:
     def __init__(self, chemin_base_donnee):
         assert isinstance(chemin_base_donnee, str)
         self.chemin_base_donnee = chemin_base_donnee
+    def enregistrer_courriel(self, emetteur, recepteur, objet, texte):
+        connex = sqlite3.connect(self.chemin_base_donnee)
+        cursor = connex.cursor()
+        cursor.execute("""
+            INSERT INTO Courriel(emetteur, recepteur, objet, texte)
+            VALUES (?,?,?,?);
+            """, (emetteur, recepteur, objet, texte))
+        connex.close()
+    def obtenir_conditions_meteorologiques_depuis(self, jours):
+        connex = sqlite3.connect(self.chemin_base_donnee)
+        cursor = connex.cursor()
+        cursor.execute("""
+        SELECT *
+        FROM ConditionsMeteorologiques
+        """)
+        connex.commit()
+        #[compteur, date, temperature, humidite] = cursor.fetchone()
+        res = cursor.fetchall()
+        print res[0]
+        res = [(i.temperature,i.humidite_relative, i.date) for i in res if datetime.timedelta.total_seconds(i.date - datetime.datetime.now()) < jours*86400]
+        #res = []
+        connex.close()
+        return res
 
     def obtenir_conditions_meteorologiques(self):
         """
@@ -46,6 +77,7 @@ class RecuperateurDonnees:
         [compteur, date, temperature, humidite] = cursor.fetchone()
         res = cursor.fetchone()
         connex.close()
+        return res
 
     def enregistrer_arrosage(self, duree):
         """
@@ -139,6 +171,78 @@ class RecuperateurDonnees:
             """, (str(compteur + 1), time.asctime(date_exacte), str(temperature), str(humidite) ))
         connex.close()
 
+class GestionnaireGmail(threading.Thread):
+    def __init__(self, json_file, PROVENANCE_SURE, DESTINATAIRES):
+        print "on gère les courriels"
+        threading.Thread.__init__(self)
+        parser = argparse.ArgumentParser(parents=[argparser])
+        self.flags = parser.parse_args()
+        self.PROVENANCE_SURE = PROVENANCE_SURE
+        self.json_file = json_file
+        self.parser = argparse.ArgumentParser(parents=[argparser])
+        self.gmail_lire = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
+        self.gmail_enovoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
+        messages = self.gmail_lire.getMessagesList()
+        if messages['messages']:
+            self.l_id_courriels = [ msg['id'] for msg in messages['messages']]
+            #= gmail.getMessageDetails(msg['id'])
+        self.destinataires = DESTINATAIRES
+        systeme = platform.system()
+        self.rec = RecuperateurDonnees(os.getcwd())
+        print "initialisation"
+    def run(self):
+        derniere_mise_a_jour = time.time()
+        periode_mise_a_jour_gmail = 120
+        six_jours = 518400
+        trois_jours = 3*24*3600
+        reinitialisation_gmail = time.time()
+        maintenant = 0
+        while True:
+            #maintenant = time.time()
+            if distance_seconde(maintenant,derniere_mise_a_jour) > periode_mise_a_jour_gmail:
+                print "on vérifie les courriels reçus"
+                messages = self.gmail_lire.getMessagesList()
+                if messages['messages']:
+                    l_id = [msg['id'] for msg in messages['messages'] if not msg['id'] in self.l_id_courriels ]
+                    for id in l_id:
+                        m = self.gmail_lire.getMessageDetails(id)
+                        if m.getFrom() in self.PROVENANCE_SURE:
+                            self.rec.enregistrer_courriel(self, m.getFrom(), m.getTo(), m.getSubject(),
+                                                          m.getText(self.gmail_lire, 'me', id))
+                            if m.getSubject() == "ordre":
+                                l_instructions = extraire_ordre(m.getText(self.gmail_lire, "arrosage.b@gmail.com", id))
+                                # for instruction in l_instructions:
+                                #     if instruction['categorie']
+                                #     RecuperateurDonnees.obtenir_conditions_meteorologiques()
+                            elif m.getSubject() == "questions":
+                                l_instructions = extraire_question(m.getText(self.gmail_lire, "arrosage.b@gmail.com", id))
+                            else:
+                                pass
+
+
+                            #TODO ici on vérifie qui envoie, et on interprète le resultat et on renvoie ce qu'il faut
+
+                derniere_mise_a_jour = maintenant
+            elif distance_jour(maintenant, reinitialisation_gmail) > 6:
+                print "on réinitialise la connexion"
+                self.gmail_lire = Gmail(self.flags, client_secret_file = self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
+                self.gmail_enovoyer = Gmail(self.flags, client_secret_file = self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
+                reinitialisation_gmail = maintenant
+            elif distance_jour(maintenant, reinitialisation_gmail) > 3:
+                print "on envoie un courriel à tout le monde"
+                for destinataire in self.destinataires:
+
+                    print self.rec.obtenir_conditions_meteorologiques()
+                    #res = [(i.temperature,i.humidite_relative, i.date) for i in ConditionsMeteorologiques.objects.all() if datetime.timedelta.total_seconds(i.date - datetime.datetime.now())]
+                    self.rec.obtenir_conditions_meteorologiques_depuis(3)
+                    message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
+                                                 message_text= "test", service=gmail.gmail_service)
+                    #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
+                    #                             message_text= "test", file_dir=os.getcwd(), filename= "",
+                    #                             service=gmail.gmail_service)
+                    message.sendMessage(self.gmail_enovoyer, "arrosage.b@gmail.com")
+
+
 
 class Decideur(threading.Thread):
     def __init__(self, lePort):
@@ -212,15 +316,19 @@ class Decideur(threading.Thread):
                         duree_reelle_arrosage = distance_seconde(debut_reelle_arrosage, fin_reelle_arrosage)
                         Arrosage(duree=duree_reelle_arrosage).save()
                 """
-                #print distance_seconde(maintenant, derniere_prise_mesure)
-                if distance_seconde(maintenant, derniere_prise_mesure) > 60:
+
+                print distance_seconde(maintenant, derniere_prise_mesure)
+                if distance_seconde(maintenant, derniere_prise_mesure) > 5:
                     #demande la température et l'enregistre dans une base de donnée
                     self.commu.combien_temperature()
                     print "on mesure la température"
                     time.sleep(1)
                     lu = self.commu.ecouter()
                     print lu
-                    if re.match(r"[0-9].\.[0-9].", lu) is not None:
+                    if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None:
+                        temperature = lu[5:] #TODO à remettre sans RX :
+                        print temperature
+                    elif re.match(r"[0-9].\.[0-9].", lu):
                         temperature = lu
                         print temperature
                     else:
@@ -232,16 +340,24 @@ class Decideur(threading.Thread):
                     time.sleep(1)
                     lu = self.commu.ecouter()
                     print lu
-                    if re.match(r"[0-9].\.[0-9].", lu) is not None:
+                    if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None:
+                        humidite = lu[5:] #TODO à remettre sans RX :
+                        print humidite
+                    elif re.match(r"[0-9].\.[0-9].", lu):
                         humidite = lu
                         print humidite
                     else:
                         print "mauvaise donnée humidité"
                         humidite = 0
                         continue
+                    #on met à jour la date de dernière mesure et la dernière mesure que si on a bien eu la température
+                    ## et l'humidité
                     ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
-                    #self.enregistrer_mesure(maintenant, temperature, humidite)
+
                     derniere_prise_mesure = maintenant
+                if distance_seconde(maintenant, derniere_prise_mesure) > 3600:
+                    pass
+                    #TODO problème de réception, il faut envoyer un courriel d'erreur !
                 time.sleep(0.5)
             except SerialException:
                 print "impossible d'accéder au port"
@@ -261,7 +377,7 @@ class Communication_Arduino:
             self.port_serie = Serial(port=self.port, baudrate=9600, timeout=0)
             print self.port_serie.isOpen()
         except SerialException:
-            print "impossible d'ouvrir le port : " + str(lePort)
+            print "port série introuvable"
 
     def combien_temperature(self):
         # combien_temperature
@@ -294,6 +410,21 @@ class Communication_Arduino:
         self.port_serie.close()
 
 if __name__ == "__main__":
-    PORT = "COM4"
-    import os
-    Decideur(PORT).run()
+
+    if platform.system() == "Windows":
+        PORT = "COM3"
+    else:
+        PORT = "/dev/ttyACM0"
+    #try:
+    dec = Decideur(PORT)
+    json_file = os.path.join("gestion_courriel", "client_secret.json")
+    print json_file
+    PROVENANCE_SURE = ["clemsciences@gmail.com","arrosage.b@gmail.com", "cendrine.besnier37@gmail.com", "patrick.besnier37@gmail.com"]
+    DESTINATAIRES = ["clemsciences@gmail.com", "patrick.besnier37@gmail.com", "cendrine.besnier37@gmail.com"]
+    gest = GestionnaireGmail(json_file, PROVENANCE_SURE, DESTINATAIRES)
+    dec.start()
+    gest.start()
+    #except SerialException:
+    #    print "port manquant"
+        #TODO envoyer un mail?
+

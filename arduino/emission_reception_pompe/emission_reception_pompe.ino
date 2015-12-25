@@ -9,7 +9,7 @@ const uint8_t pompePin = 8;
 
 const char ordre_allumer_pompe[] = "allumer_pompe";
 const char ordre_eteindre_pompe[] = "eteindre_pompe";
-const uint32_t ENTRE_ARROSAGE = 3600000UL;
+const uint32_t ENTRE_ARROSAGE = 0UL;//3600000UL;
 const uint32_t DUREE_MAXIMALE_ARROSAGE = 1200000UL;
 int debut_arrosage = 0;
 int pompe_allumee = 0;
@@ -27,6 +27,7 @@ void setup() {
     //Initialisation du relai sans accrochage
 
     pinMode(pompePin, OUTPUT);
+    digitalWrite(pompePin, LOW);
     
 }
 
@@ -39,7 +40,7 @@ void loop() {
     uint8_t buflen = VW_MAX_MESSAGE_LEN; // Taille maximum du buffer
     
     //message par defaut
-    char msg_received[] = "rien";
+    //char msg_received[] = "rien";
     
     if (vw_have_message()) // Si on a un message dans le buffer
     {
@@ -57,13 +58,15 @@ void loop() {
           }         
           Serial.println("");
           msg_received[buflen] = '\0';
-        }
-    }
+        
+        Serial.println(msg_received);
+    
     
     
     //partie emission
-    if (strcmp(msg_received, ordre_allumer_pompe)== 0 && curMillis - debut_arrosage > ENTRE_ARROSAGE )
+    if (strcmp(msg_received, ordre_allumer_pompe)== 0 )//&& curMillis - debut_arrosage > ENTRE_ARROSAGE )
           {
+              Serial.println(msg_received);
               //On allume effectivement la pompe
               digitalWrite(pompePin, HIGH);
               //On informe que l'on a allume la pompe
@@ -75,7 +78,7 @@ void loop() {
               //msg_received = '\0';
               pompe_allumee = 1;
           }
-     else if(strcmp(msg_received, ordre_eteindre_pompe) == 0 || curMillis - debut_arrosage > DUREE_MAXIMALE_ARROSAGE)
+     else if(strcmp(msg_received, ordre_eteindre_pompe) == 0  )//|| curMillis - debut_arrosage > DUREE_MAXIMALE_ARROSAGE)
           {
               //On eteint effectivement la pompe
               digitalWrite(pompePin, LOW);
@@ -87,5 +90,7 @@ void loop() {
               //msg_received = '\0';
               pompe_allumee = 0;
           }
+        }
+    }
  }
  

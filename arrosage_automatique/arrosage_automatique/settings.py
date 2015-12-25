@@ -31,7 +31,7 @@ ALLOWED_HOSTS = []
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
 # In a Windows environment this must be set to your system time zone.
-TIME_ZONE = 'France/Paris'
+TIME_ZONE = 'Europe/Paris'
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
@@ -110,7 +110,7 @@ ROOT_URLCONF = 'arrosage_automatique.urls'
 WSGI_APPLICATION = 'arrosage_automatique.wsgi.application'
 
 import os
-TEMPLATE_DIRS = (os.path.join("C:\Users\Clément\PycharmProjects\arrosage_auotomatique", '..', 'templates').replace('\\','/'),)
+TEMPLATE_DIRS = (os.path.join("", 'templates').replace('\\','/'),) #faudra faire attention ici
 
 INSTALLED_APPS = (
     'django.contrib.auth',

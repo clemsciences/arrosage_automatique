@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def accueil(request):
-    return render(request, "templates.accueil.html")
+    return render(request, "accueil.html")
     #return HttpResponse("bienvenue")
 
 

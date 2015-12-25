@@ -33,4 +33,3 @@ class ConditionsMeteorologiques(models.Model):
     date_exacte = models.DateTimeField(auto_now_add=True)
     #pression_atmospherique = models.IntegerField()
     #pluie = models.IntegerField()
-

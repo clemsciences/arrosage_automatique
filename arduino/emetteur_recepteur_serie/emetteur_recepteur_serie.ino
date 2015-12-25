@@ -40,7 +40,7 @@ void loop()
         {
           char msg_received[buflen];
           int i;
-          //Serial.print("RX : ");
+          Serial.print("RX : ");
           
           for (i = 0; i < buflen; i++) // On affiche tout ce que l'on a
           {
