@@ -198,7 +198,7 @@ class GestionnaireGmail(threading.Thread):
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
-        message.sendMessage(self.gmail_enovoyer, "clemsciences@aol.com")
+        message.sendMessage(self.gmail_envoyer, "clemsciences@aol.com")
     def run(self):
         derniere_mise_a_jour = time.time()
         periode_mise_a_jour_gmail = 120
