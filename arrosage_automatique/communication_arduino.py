@@ -193,12 +193,12 @@ class GestionnaireGmail(threading.Thread):
         texte = """
                 Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
                 """
-        message = Message(sender="arrosage.b@gmail.com",to="clemsciences@aol.com",subject="rapport météo",
+        message = Message(sender="arrosage.b@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
                                                  message_text= texte, service=self.gmail_envoyer.gmail_service)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
-        message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@aol.com")
+        message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
     def run(self):
         derniere_mise_a_jour = time.time()
         periode_mise_a_jour_gmail = 120
@@ -263,6 +263,7 @@ class Decideur(threading.Thread):
         Méthode principale, là où tout se passe.
         :return:
         """
+        print "on mesure aussi !"
         derniere_mise_a_jour = time.time()
         derniere_prise_mesure = time.time()
         temps_dernier_arrosage = 0
