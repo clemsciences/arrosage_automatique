@@ -13,6 +13,8 @@ from oauth2client.tools import argparser
 from serial import Serial, SerialException
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
+import django
+django.setup()
 from gestion_temps import *
 from gestion_arrosage_automatique.models import ConditionsMeteorologiques, ConditionArrosage
 
