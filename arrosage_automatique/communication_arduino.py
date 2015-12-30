@@ -194,11 +194,11 @@ class GestionnaireGmail(threading.Thread):
                 Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
                 """
         message = Message(sender="arrosage.b@gmail.com",to="clemsciences@aol.com",subject="rapport météo",
-                                                 message_text= texte, service=self.gmail_envoyer)
+                                                 message_text= texte, service=self.gmail_envoyer.gmail_service)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
-        message.sendMessage(self.gmail_envoyer, "clemsciences@aol.com")
+        message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@aol.com")
     def run(self):
         derniere_mise_a_jour = time.time()
         periode_mise_a_jour_gmail = 120
@@ -246,11 +246,11 @@ class GestionnaireGmail(threading.Thread):
                     #res = [(i.temperature,i.humidite_relative, i.date) for i in ConditionsMeteorologiques.objects.all() if datetime.timedelta.total_seconds(i.date - datetime.datetime.now())]
                     self.rec.obtenir_conditions_meteorologiques_depuis(3)
                     message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
-                                                 message_text= "test", service=self.gmail_envoyer)
+                                                 message_text= "test", service=self.gmail_envoyer.gmail_service)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
-                    message.sendMessage(self.gmail_envoyer, "arrosage.b@gmail.com")
+                    message.sendMessage(self.gmail_envoyer.gmail_service, "arrosage.b@gmail.com")
 
 
 
