@@ -430,7 +430,7 @@ if __name__ == "__main__":
         PORT = "/dev/ttyACM0"
     #try:
     dec = Decideur(PORT)
-    json_file = os.path.join("gestion_courriel", "client_secret.json")
+    json_file = os.path.join("gestion_courriel", "client_arrosage.json")
     print json_file
     PROVENANCE_SURE = ["clemsciences@gmail.com","arrosage.b@gmail.com", "cendrine.besnier37@gmail.com", "patrick.besnier37@gmail.com"]
     DESTINATAIRES = ["clemsciences@gmail.com", "patrick.besnier37@gmail.com", "cendrine.besnier37@gmail.com"]
