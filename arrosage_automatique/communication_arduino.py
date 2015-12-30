@@ -181,7 +181,7 @@ class GestionnaireGmail(threading.Thread):
         self.json_file = json_file
         self.parser = argparse.ArgumentParser(parents=[argparser])
         self.gmail_lire = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
-        self.gmail_enovoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
+        self.gmail_envoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
         messages = self.gmail_lire.getMessagesList()
         if messages['messages']:
             self.l_id_courriels = [ msg['id'] for msg in messages['messages']]
@@ -194,7 +194,7 @@ class GestionnaireGmail(threading.Thread):
                 Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
                 """
         message = Message(sender="arrosage.b@gmail.com",to="clemsciences@aol.com",subject="rapport météo",
-                                                 message_text= texte, service=self.gmail_enovoyer)
+                                                 message_text= texte, service=self.gmail_envoyer)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
@@ -236,7 +236,7 @@ class GestionnaireGmail(threading.Thread):
             elif distance_jour(maintenant, reinitialisation_gmail) > 6:
                 print "on réinitialise la connexion"
                 self.gmail_lire = Gmail(self.flags, client_secret_file = self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
-                self.gmail_enovoyer = Gmail(self.flags, client_secret_file = self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
+                self.gmail_envoyer = Gmail(self.flags, client_secret_file = self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
                 reinitialisation_gmail = maintenant
             elif distance_jour(maintenant, reinitialisation_gmail) > 3:
                 print "on envoie un courriel à tout le monde"
@@ -246,11 +246,11 @@ class GestionnaireGmail(threading.Thread):
                     #res = [(i.temperature,i.humidite_relative, i.date) for i in ConditionsMeteorologiques.objects.all() if datetime.timedelta.total_seconds(i.date - datetime.datetime.now())]
                     self.rec.obtenir_conditions_meteorologiques_depuis(3)
                     message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
-                                                 message_text= "test", service=self.gmail_enovoyer)
+                                                 message_text= "test", service=self.gmail_envoyer)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
-                    message.sendMessage(self.gmail_enovoyer, "arrosage.b@gmail.com")
+                    message.sendMessage(self.gmail_envoyer, "arrosage.b@gmail.com")
 
 
 
