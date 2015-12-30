@@ -190,32 +190,42 @@ class GestionnaireGmail(threading.Thread):
         systeme = platform.system()
         self.rec = RecuperateurDonnees(os.getcwd())
         print "initialisation"
+        texte = """
+                Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
+                """
+        message = Message(sender="arrosage.b@gmail.com",to="clemsciences@aol.com",subject="rapport météo",
+                                                 message_text= texte, service=self.gmail_enovoyer)
+                    #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
+                    #                             message_text= "test", file_dir=os.getcwd(), filename= "",
+                    #                             service=gmail.gmail_service)
+        message.sendMessage(self.gmail_enovoyer, "clemsciences@aol.com")
     def run(self):
         derniere_mise_a_jour = time.time()
         periode_mise_a_jour_gmail = 120
         six_jours = 518400
         trois_jours = 3*24*3600
         reinitialisation_gmail = time.time()
-        maintenant = 0
+        #maintenant = 0 #permet d'envoyer un message de démarrage
         while True:
-            #maintenant = time.time()
+
+            maintenant = time.time()
             if distance_seconde(maintenant,derniere_mise_a_jour) > periode_mise_a_jour_gmail:
                 print "on vérifie les courriels reçus"
                 messages = self.gmail_lire.getMessagesList()
                 if messages['messages']:
                     l_id = [msg['id'] for msg in messages['messages'] if not msg['id'] in self.l_id_courriels ]
-                    for id in l_id:
-                        m = self.gmail_lire.getMessageDetails(id)
+                    for msg_id in l_id:
+                        m = self.gmail_lire.getMessageDetails(msg_id)
                         if m.getFrom() in self.PROVENANCE_SURE:
                             self.rec.enregistrer_courriel(self, m.getFrom(), m.getTo(), m.getSubject(),
-                                                          m.getText(self.gmail_lire, 'me', id))
+                                                          m.getText(self.gmail_lire, 'me', msg_id))
                             if m.getSubject() == "ordre":
-                                l_instructions = extraire_ordre(m.getText(self.gmail_lire, "arrosage.b@gmail.com", id))
+                                l_instructions = extraire_ordre(m.getText(self.gmail_lire, "arrosage.b@gmail.com", msg_id))
                                 # for instruction in l_instructions:
                                 #     if instruction['categorie']
                                 #     RecuperateurDonnees.obtenir_conditions_meteorologiques()
                             elif m.getSubject() == "questions":
-                                l_instructions = extraire_question(m.getText(self.gmail_lire, "arrosage.b@gmail.com", id))
+                                l_instructions = extraire_question(m.getText(self.gmail_lire, "arrosage.b@gmail.com", msg_id))
                             else:
                                 pass
 
@@ -236,7 +246,7 @@ class GestionnaireGmail(threading.Thread):
                     #res = [(i.temperature,i.humidite_relative, i.date) for i in ConditionsMeteorologiques.objects.all() if datetime.timedelta.total_seconds(i.date - datetime.datetime.now())]
                     self.rec.obtenir_conditions_meteorologiques_depuis(3)
                     message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
-                                                 message_text= "test", service=gmail.gmail_service)
+                                                 message_text= "test", service=self.gmail_enovoyer)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
