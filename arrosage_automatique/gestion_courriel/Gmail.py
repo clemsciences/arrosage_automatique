@@ -172,8 +172,7 @@ class Message:
         """
         message = {'raw': base64.urlsafe_b64encode(self.message.as_string())}
         try:
-            message = (service.users().messages().send(userId=user_id, body=message)
-                     .execute())
+            message = (service.users().messages().send(userId=user_id, body=message).execute())
             print 'Message Id: %s' % message['id']
             #return message
         except errors.HttpError, error:
@@ -210,14 +209,12 @@ if __name__ == "__main__":
     #script d'envoi d'un message
     parser = argparse.ArgumentParser(parents=[argparser])
     flags = parser.parse_args()
-    json_file = "client_arrosage.json"
+    json_file = "client_secret.json"
     sender = "arrosage.b@gmail.com"
     to = "clemsciences@gmail.com"
     message = "c'est un test"
     subject = "essai"
     filename = "message_test.txt"
-
-
 
     questions = generer_question(str(datetime.today()), "temperature")
     questions = generer_question(str(datetime.today()), "humidite", questions)
@@ -229,7 +226,7 @@ if __name__ == "__main__":
     gmail = Gmail(flags, client_secret_file=json_file, oauth_scope='https://www.googleapis.com/auth/gmail.send')
     #message = Message_Attachment(sender=sender,to=to,subject=subject,message_text= a, file_dir=os.getcwd(), filename= str(datetime.today()), service=gmail.gmail_service)
     message = Message(sender=sender, to=to, subject=subject, message_text=a, service=gmail.gmail_service)
-
+    #"cendrine.besnier37@gmail.com"
     #obtenir tous les messages reçus
     messages = gmail.getMessagesList()
-    message.sendMessage(gmail.gmail_service, sender)
+    message.sendMessage(gmail.gmail_service, to)

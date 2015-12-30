@@ -14,7 +14,7 @@ from serial import Serial, SerialException
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
 import django
-django.setup()
+#django.setup()
 from gestion_temps import *
 from gestion_arrosage_automatique.models import ConditionsMeteorologiques, ConditionArrosage
 
@@ -183,7 +183,6 @@ class GestionnaireGmail(threading.Thread):
         self.json_file = json_file
         self.parser = argparse.ArgumentParser(parents=[argparser])
         self.gmail_lire = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
-        self.gmail_envoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
         messages = self.gmail_lire.getMessagesList()
         if messages['messages']:
             self.l_id_courriels = [ msg['id'] for msg in messages['messages']]
@@ -192,6 +191,7 @@ class GestionnaireGmail(threading.Thread):
         systeme = platform.system()
         self.rec = RecuperateurDonnees(os.getcwd())
         print "initialisation"
+        self.gmail_envoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
         texte = """
                 Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
                 """
