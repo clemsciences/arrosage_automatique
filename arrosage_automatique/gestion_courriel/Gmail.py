@@ -210,11 +210,11 @@ if __name__ == "__main__":
     #script d'envoi d'un message
     parser = argparse.ArgumentParser(parents=[argparser])
     flags = parser.parse_args()
-    json_file =  "client_secret.json"
-    sender =  "arrosage.b@gmail.com"
+    json_file = "client_arrosage.json"
+    sender = "arrosage.b@gmail.com"
     to = "clemsciences@gmail.com"
     message = "c'est un test"
-    subject =  "essai"
+    subject = "essai"
     filename = "message_test.txt"
 
 
@@ -223,10 +223,13 @@ if __name__ == "__main__":
     questions = generer_question(str(datetime.today()), "humidite", questions)
     questions = generer_question(str(datetime.today()), "parametres", questions)
     questions = generer_question(str(datetime.today()), "pression", questions)
-    #a = ElementTree.tostring(questions)
+    a = ElementTree.tostring(questions)
 
 
-    gmail = Gmail(flags, client_secret_file =json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
-    message = Message(sender=sender,to=to,subject=subject,message_text= a, file_dir=os.getcwd(), filename= str(datetime.today()), service=gmail.gmail_service)
+    gmail = Gmail(flags, client_secret_file=json_file, oauth_scope='https://www.googleapis.com/auth/gmail.send')
+    #message = Message_Attachment(sender=sender,to=to,subject=subject,message_text= a, file_dir=os.getcwd(), filename= str(datetime.today()), service=gmail.gmail_service)
+    message = Message(sender=sender, to=to, subject=subject, message_text=a, service=gmail.gmail_service)
+
     #obtenir tous les messages reçus
     messages = gmail.getMessagesList()
+    message.sendMessage(gmail.gmail_service, sender)
