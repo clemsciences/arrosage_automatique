@@ -195,7 +195,7 @@ class GestionnaireGmail(threading.Thread):
         texte = """
                 Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
                 """
-        message = Message(sender="arrosage.b@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
+        message = Message(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
                                                  message_text= texte, service=self.gmail_envoyer.gmail_service)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
@@ -251,12 +251,12 @@ class GestionnaireGmail(threading.Thread):
                     print self.rec.obtenir_conditions_meteorologiques()
                     #res = [(i.temperature,i.humidite_relative, i.date) for i in ConditionsMeteorologiques.objects.all() if datetime.timedelta.total_seconds(i.date - datetime.datetime.now())]
                     self.rec.obtenir_conditions_meteorologiques_depuis(3)
-                    message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
+                    message = Message_Attachment(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
                                                  message_text= "test", service=self.gmail_envoyer.gmail_service)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
-                    message.sendMessage(self.gmail_envoyer.gmail_service, "arrosage.b@gmail.com")
+                    message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
 
 
 
@@ -434,12 +434,12 @@ if __name__ == "__main__":
         PORT = "/dev/ttyACM0"
     #try:
     dec = Decideur(PORT)
-    json_file = os.path.join("gestion_courriel", "client_arrosage.json")
+    json_file = os.path.join("gestion_courriel", "client_secret.json")
     print json_file
     PROVENANCE_SURE = ["clemsciences@gmail.com","arrosage.b@gmail.com", "cendrine.besnier37@gmail.com", "patrick.besnier37@gmail.com"]
     DESTINATAIRES = ["clemsciences@gmail.com", "patrick.besnier37@gmail.com", "cendrine.besnier37@gmail.com"]
     gest = GestionnaireGmail(json_file, PROVENANCE_SURE, DESTINATAIRES)
-    dec.start()
+    #dec.start()
     gest.start()
     #except SerialException:
     #    print "port manquant"
