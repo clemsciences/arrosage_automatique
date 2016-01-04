@@ -219,20 +219,24 @@ class GestionnaireGmail(threading.Thread):
                     for msg_id in l_id:
                         m = self.gmail_lire.getMessageDetails(msg_id)
                         if m.getFrom() in self.PROVENANCE_SURE:
-                            self.rec.enregistrer_courriel(self, m.getFrom(), m.getTo(), m.getSubject(),
-                                                          m.getText(self.gmail_lire, 'me', msg_id))
+                            self.rec.enregistrer_courriel(self, m.getFrom(), m.getTo(), m.getSubject(), m.getText(self.gmail_lire.gmail_service, 'me', msg_id))
                             if m.getSubject() == "ordre":
-                                l_instructions = extraire_ordre(m.getText(self.gmail_lire, "arrosage.b@gmail.com", msg_id))
+                                l_instructions = extraire_ordre(m.getText(self.gmail_lire.gmail_service,"clemsciences@gmail.com", msg_id))
                                 # for instruction in l_instructions:
                                 #     if instruction['categorie']
                                 #     RecuperateurDonnees.obtenir_conditions_meteorologiques()
                             elif m.getSubject() == "questions":
-                                l_instructions = extraire_question(m.getText(self.gmail_lire, "arrosage.b@gmail.com", msg_id))
+                                l_instructions = extraire_question(m.getText(self.gmail_lire.gmail_service, "clemsciences@gmail.com", msg_id))
                             else:
                                 pass
+                            if m.getSubject() == "IP":
+                                self.gmail_envoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
+                                #ip = os.system("ifconfig")
+                                message = Message(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="IP",
+                                                 message_text= "faut m'extraire", service=self.gmail_envoyer.gmail_service)
+                                message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
+                                self.gmail_lire = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
 
-
-                            #TODO ici on vérifie qui envoie, et on interprète le resultat et on renvoie ce qu'il faut
 
                 derniere_mise_a_jour = maintenant
             elif distance_jour(maintenant, reinitialisation_gmail) > 6:
