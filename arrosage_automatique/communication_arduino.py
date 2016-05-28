@@ -188,7 +188,7 @@ class GestionnaireGmail(threading.Thread):
         texte = """
                 Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
                 """
-        message = Message(sender="arrosage.b@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
+        message = Message(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
                                                  message_text= texte, service=self.gmail_envoyer.gmail_service)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
@@ -212,20 +212,24 @@ class GestionnaireGmail(threading.Thread):
                     for msg_id in l_id:
                         m = self.gmail_lire.getMessageDetails(msg_id)
                         if m.getFrom() in self.PROVENANCE_SURE:
-                            self.rec.enregistrer_courriel(self, m.getFrom(), m.getTo(), m.getSubject(),
-                                                          m.getText(self.gmail_lire, 'me', msg_id))
+                            self.rec.enregistrer_courriel(self, m.getFrom(), m.getTo(), m.getSubject(), m.getText(self.gmail_lire.gmail_service, 'me', msg_id))
                             if m.getSubject() == "ordre":
-                                l_instructions = extraire_ordre(m.getText(self.gmail_lire, "arrosage.b@gmail.com", msg_id))
+                                l_instructions = extraire_ordre(m.getText(self.gmail_lire.gmail_service,"clemsciences@gmail.com", msg_id))
                                 # for instruction in l_instructions:
                                 #     if instruction['categorie']
                                 #     RecuperateurDonnees.obtenir_conditions_meteorologiques()
                             elif m.getSubject() == "questions":
-                                l_instructions = extraire_question(m.getText(self.gmail_lire, "arrosage.b@gmail.com", msg_id))
+                                l_instructions = extraire_question(m.getText(self.gmail_lire.gmail_service, "clemsciences@gmail.com", msg_id))
                             else:
                                 pass
+                            if m.getSubject() == "IP":
+                                self.gmail_envoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
+                                #ip = os.system("ifconfig")
+                                message = Message(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="IP",
+                                                 message_text= "faut m'extraire", service=self.gmail_envoyer.gmail_service)
+                                message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
+                                self.gmail_lire = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
 
-
-                            #TODO ici on vérifie qui envoie, et on interprète le resultat et on renvoie ce qu'il faut
 
                 derniere_mise_a_jour = maintenant
             elif distance_jour(maintenant, reinitialisation_gmail) > 6:
@@ -240,12 +244,12 @@ class GestionnaireGmail(threading.Thread):
                     print self.rec.obtenir_conditions_meteorologiques()
                     #res = [(i.temperature,i.humidite_relative, i.date) for i in ConditionsMeteorologiques.objects.all() if datetime.timedelta.total_seconds(i.date - datetime.datetime.now())]
                     self.rec.obtenir_conditions_meteorologiques_depuis(3)
-                    message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
+                    message = Message_Attachment(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
                                                  message_text= "test", service=self.gmail_envoyer.gmail_service)
                     #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
                     #                             message_text= "test", file_dir=os.getcwd(), filename= "",
                     #                             service=gmail.gmail_service)
-                    message.sendMessage(self.gmail_envoyer.gmail_service, "arrosage.b@gmail.com")
+                    message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
 
 
 
@@ -422,12 +426,12 @@ if __name__ == "__main__":
         PORT = "/dev/ttyACM0"
     #try:
     dec = Decideur(PORT)
-    json_file = os.path.join("gestion_courriel", "client_arrosage.json")
+    json_file = os.path.join("gestion_courriel", "client_secret.json")
     print json_file
     PROVENANCE_SURE = ["clemsciences@gmail.com","arrosage.b@gmail.com", "cendrine.besnier37@gmail.com", "patrick.besnier37@gmail.com"]
     DESTINATAIRES = ["clemsciences@gmail.com", "patrick.besnier37@gmail.com", "cendrine.besnier37@gmail.com"]
     gest = GestionnaireGmail(json_file, PROVENANCE_SURE, DESTINATAIRES)
-    dec.start()
+    #dec.start()
     gest.start()
     #except SerialException:
     #    print "port manquant"
