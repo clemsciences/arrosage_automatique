@@ -1,5 +1,5 @@
 # -*-coding:utf-8-*-
-__author__ = 'Clément'
+__author__ = 'spraakforskaren'
 
 import argparse
 import os
@@ -12,11 +12,11 @@ from gestion_courriel.extraire_xml import extraire_question, extraire_ordre
 from oauth2client.tools import argparser
 from serial import Serial, SerialException
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
-import django
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
+#import django
 #django.setup()
 from gestion_temps import *
-from gestion_arrosage_automatique.models import ConditionsMeteorologiques, ConditionArrosage
+#from gestion_arrosage_automatique.models import ConditionsMeteorologiques, ConditionArrosage
 
 
 # port_serie = Serial(port = PORT, baudrate = 9600)
@@ -41,7 +41,7 @@ class RecuperateurDonnees:
         connex = sqlite3.connect(self.chemin_base_donnee)
         cursor = connex.cursor()
         cursor.execute("""
-            INSERT INTO Courriel(emetteur, recepteur, objet, texte)
+            INSERT INTO COURRIEL(emetteur, recepteur, objet, texte)
             VALUES (?,?,?,?);
             """, (emetteur, recepteur, objet, texte))
         connex.close()
@@ -50,13 +50,13 @@ class RecuperateurDonnees:
         cursor = connex.cursor()
         cursor.execute("""
         SELECT *
-        FROM ConditionsMeteorologiques
+        FROM CONDITIONS_METEOROLOGIQUES
         """)
         connex.commit()
         #[compteur, date, temperature, humidite] = cursor.fetchone()
         res = cursor.fetchall()
         print res[0]
-        res = [(i.temperature,i.humidite_relative, i.date) for i in res if datetime.timedelta.total_seconds(i.date - datetime.datetime.now()) < jours*86400]
+        res = [(i[0],i[1], i[2]) for i in res if datetime.timedelta.total_seconds(i.date - datetime.datetime.now()) < jours*86400]
         #res = []
         connex.close()
         return res
@@ -71,8 +71,8 @@ class RecuperateurDonnees:
         cursor = connex.cursor()
         cursor.execute("""
         SELECT *
-        FROM ConditionsMeteorologiques
-        WHERE compteur IN  (SELECT max(compteur) FROM ConditionsMeteorologiques)
+        FROM CONDITIONS_METEOROLOGIQUES
+        WHERE compteur IN  (SELECT max(compteur) FROM CONDITIONS_METEOROLOGIQUES)
         """)
 
         connex.commit()
@@ -90,16 +90,9 @@ class RecuperateurDonnees:
         connex = sqlite3.connect(self.chemin_base_donnee)
         cursor = connex.cursor()
         cursor.execute("""
-        SELECT compteur
-        FROM Arrosage
-        WHERE compteur IN (SELECT max(compteur) FROM Arrosage)
-        """)
-        connex.commit()
-        compteur = cursor.fetchone()
-        cursor.execute("""
-            INSERT INTO Arrosage(compteur, date_exacte, duree)
-            VALUES (?,?,?);
-            """, (str(compteur + 1), time.asctime(time.time()), str(duree)))
+            INSERT INTO ARROSAGE(date_heure, duree)
+            VALUES (?,?);
+            """, (datetime.datetime.now(), str(duree)))
         connex.close()
 
     def obtenir_conditions_arrosage(self):
@@ -112,8 +105,8 @@ class RecuperateurDonnees:
         cursor = connex.cursor()
         cursor.execute("""
         SELECT *
-        FROM ConditionArrosage
-        WHERE compteur IN (SELECT max(compteur) FROM ConditionArrosage)
+        FROM CONDITIONS_ARROSAGE
+        WHERE compteur IN (SELECT max(compteur) FROM CONDITIONS_ARROSAGE)
         """)
 
         connex.commit()
@@ -122,55 +115,55 @@ class RecuperateurDonnees:
         connex.close()
         return res
 
-    def enregistrer_temperature(self, date_exacte, temperature, humidite):
+    def obtenir_derniere_mesure_meteo():
+	connex = sqlite3.connect(self.chemin_base_donnee)
+        cursor = connex.cursor()
+        cursor.execute("""
+        SELECT *
+        FROM CONDITIONS_METEOROLOGIQUES
+        WHERE compteur IN (SELECT max(compteur) FROM CONDITIONS_METEOROLOGIQUES)
+        """)
+
+        connex.commit()
+        # [compteur, temperature, humidite, date_heure = cursor.fetchone()
+        res = cursor.fetchone()
+        connex.close()
+        return res
+
+    def enregistrer_temperature(self, temperature, humidite):
         # fonction quasiment identique à enregistrer_humidite
-        connex = sqlite3.connect("base_arrosage.db")
+        connex = sqlite3.connect(self.chemin_base_donnee)
         cursor = connex.cursor()
-        cursor.execute("""
-        SELECT compteur
-        FROM ConditionsMeteorologiques
-        WHERE compteur IN (SELECT max(compteur) FROM ConditionsMeteorologiques)
-        """)
+        #cursor.execute("""
+        #SELECT compteur
+        #FROM ConditionsMeteorologiques
+        #WHERE compteur IN (SELECT max(compteur) FROM ConditionsMeteorologiques)
+        #""")
 
-        connex.commit()
-        compteur = cursor.fetchone()
+        #connex.commit()
+        #compteur = cursor.fetchone()
         connex.execute("""
-         INSERT INTO ConditionsMeteorologiques(compteur, date_exacte, temperature, humidite_relative)
+         INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
           VALUES (?,?,?);
-           """, (str(compteur + 1), time.asctime(date_exacte), str(temperature), str(humidite)))
+           """, (str(temperature), str(humidite), datetime.datetime.now())) #  time.asctime(date_exacte)
         connex.close()
 
-    def enregistrer_humidite(self, date_exacte, temperature, humidite):
-        connex = sqlite3.connect("base_arrosage.db")
-        cursor = connex.cursor()
-        cursor.execute("""
-        SELECT id
-        FROM ConditionsMeteorologiques
-        WHERE id IN (SELECT max(id) FROM ConditionsMeteorologiques)
-        """)
-
-        connex.commit()
-        compteur = cursor.fetchone()
-        cursor.execute("""
-             INSERT INTO ConditionsMeteorologiques(id, date_exacte, temperature, humidite_relative)
-            VALUES (?,?,?);
-            """, (str(id + 1), time.asctime(date_exacte), str(temperature), str(humidite) ))
-        connex.close()
-
-    def enregistrer_mesure(self, date_exacte, temperature, humidite):
+    def enregistrer_humidite(self, temperature, humidite):
         connex = sqlite3.connect(self.chemin_base_donnee)
         cursor = connex.cursor()
         cursor.execute("""
-        SELECT id
-        FROM ConditionsMeteorologiques
-        WHERE id IN (SELECT max(id) FROM ConditionsMeteorologiques)
-        """)
-        connex.commit()
-        compteur = cursor.fetchone()
-        cursor.execute("""
-            INSERT INTO ConditionsMeteorologiques(id, date_exacte, temperature, humidite_relative)
+             INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
             VALUES (?,?,?);
-            """, (str(compteur + 1), time.asctime(date_exacte), str(temperature), str(humidite) ))
+            """, (str(temperature), str(humidite), datetime.datetime.now()))
+        connex.close()
+
+    def enregistrer_mesure(self, temperature, humidite):
+        connex = sqlite3.connect(self.chemin_base_donnee)
+        cursor = connex.cursor()
+        cursor.execute("""
+            INSERT INTO ConditionsMeteorologiques(temperature, humidite, date_heure)
+            VALUES (?,?);
+            """, (str(temperature), str(humidite), datetime.datetime.now() ))
         connex.close()
 
 class GestionnaireGmail(threading.Thread):
@@ -273,20 +266,19 @@ class Decideur(threading.Thread):
         en_train_d_arroser = False
         debut_reelle_arrosage = False
 
-        derniere_condo_meteo = ConditionsMeteorologiques.objects.get(
-            id=max([i.id for i in ConditionsMeteorologiques.objects.all()]))
+        compteur, temperature, humidite, date_heure = obtenir_derniere_mesure_meteo()
         print derniere_condo_meteo
-        temperature = derniere_condo_meteo.temperature
-        humidite = derniere_condo_meteo.humidite_relative
+        #temperature = derniere_condo_meteo.temperature
+        #humidite = derniere_condo_meteo.humidite_relative
 
-        derniere_condo_arrosage = ConditionArrosage.objects.get(id=max([i.id for i in ConditionArrosage.objects.all()]))
-        print derniere_condo_arrosage
-        temperature_min = derniere_condo_arrosage.temperature_min
-        humidite_max = derniere_condo_arrosage.humidite_max
-        frequence_min = derniere_condo_arrosage.frequence_min
-        heure_min = derniere_condo_arrosage.heure_min
-        heure_max = derniere_condo_arrosage.heure_max
-        duree_arrosage_prevue = derniere_condo_arrosage.duree
+        compteur, temperature_min, humidite_max, frequence_min, heure_min, heure_max, duree_arrosage_prevue = obtenir_conditions_arrosage() #ConditionArrosage.objects.get(id=max([i.id for i in ConditionArrosage.objects.all()]))
+        #print derniere_condo_arrosage
+        #temperature_min = derniere_condo_arrosage.temperature_min
+        #humidite_max = derniere_condo_arrosage.humidite_max
+        #frequence_min = derniere_condo_arrosage.frequence_min
+        #heure_min = derniere_condo_arrosage.heure_min
+        #heure_max = derniere_condo_arrosage.heure_max
+        #duree_arrosage_prevue = derniere_condo_arrosage.duree
 
         while True:
             #print 'on vérifie'
@@ -365,7 +357,7 @@ class Decideur(threading.Thread):
                         continue
                     #on met à jour la date de dernière mesure et la dernière mesure que si on a bien eu la température
                     ## et l'humidité
-                    ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
+                    enregistrer_temperature(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
 
                     derniere_prise_mesure = maintenant
                 if distance_seconde(maintenant, derniere_prise_mesure) > 3600:
