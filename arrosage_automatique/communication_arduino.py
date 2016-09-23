@@ -11,6 +11,7 @@ from gestion_courriel.Gmail import *
 from gestion_courriel.extraire_xml import extraire_question, extraire_ordre
 from oauth2client.tools import argparser
 from serial import Serial, SerialException
+from arrosage_database_manager import RecuperateurDonnees
 
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
 #import django
@@ -32,139 +33,6 @@ def trouver_ports_libres():
             continue
     print available
 
-
-class RecuperateurDonnees:
-    def __init__(self, chemin_base_donnee):
-        assert isinstance(chemin_base_donnee, str)
-        self.chemin_base_donnee = chemin_base_donnee
-    def enregistrer_courriel(self, emetteur, recepteur, objet, texte):
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-            INSERT INTO COURRIEL(emetteur, recepteur, objet, texte)
-            VALUES (?,?,?,?);
-            """, (emetteur, recepteur, objet, texte))
-        connex.close()
-    def obtenir_conditions_meteorologiques_depuis(self, jours):
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-        SELECT *
-        FROM CONDITIONS_METEOROLOGIQUES
-        """)
-        connex.commit()
-        #[compteur, date, temperature, humidite] = cursor.fetchone()
-        res = cursor.fetchall()
-        print res[0]
-        res = [(i[0],i[1], i[2]) for i in res if datetime.timedelta.total_seconds(i.date - datetime.datetime.now()) < jours*86400]
-        #res = []
-        connex.close()
-        return res
-
-    def obtenir_conditions_meteorologiques(self):
-        """
-        Connexion à la base de données pour obtenir les derniers relevés de la situation météorologique
-        :return:
-        """
-
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-        SELECT *
-        FROM CONDITIONS_METEOROLOGIQUES
-        WHERE compteur IN  (SELECT max(compteur) FROM CONDITIONS_METEOROLOGIQUES)
-        """)
-
-        connex.commit()
-        [compteur, date, temperature, humidite] = cursor.fetchone()
-        res = cursor.fetchone()
-        connex.close()
-        return res
-
-    def enregistrer_arrosage(self, duree):
-        """
-        Remplit la table Arrosage à chaque fin d'arrosage
-        :param duree : durée de l'arrosage
-        :return:
-        """
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-            INSERT INTO ARROSAGE(date_heure, duree)
-            VALUES (?,?);
-            """, (datetime.datetime.now(), str(duree)))
-        connex.close()
-
-    def obtenir_conditions_arrosage(self):
-        """
-        Consulte la base de donnée base_arrosage.db pour récupérer les données sur les
-        moment adéquat pour arroser
-        :return:
-        """
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-        SELECT *
-        FROM CONDITIONS_ARROSAGE
-        WHERE compteur IN (SELECT max(compteur) FROM CONDITIONS_ARROSAGE)
-        """)
-
-        connex.commit()
-        # [compteur, temperature_min, humidite_max, frequence_min, heure_min, heure_max, duree ] = cursor.fetchone()
-        res = cursor.fetchone()
-        connex.close()
-        return res
-
-    def obtenir_derniere_mesure_meteo():
-	connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-        SELECT *
-        FROM CONDITIONS_METEOROLOGIQUES
-        WHERE compteur IN (SELECT max(compteur) FROM CONDITIONS_METEOROLOGIQUES)
-        """)
-
-        connex.commit()
-        # [compteur, temperature, humidite, date_heure = cursor.fetchone()
-        res = cursor.fetchone()
-        connex.close()
-        return res
-
-    def enregistrer_temperature(self, temperature, humidite):
-        # fonction quasiment identique à enregistrer_humidite
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        #cursor.execute("""
-        #SELECT compteur
-        #FROM ConditionsMeteorologiques
-        #WHERE compteur IN (SELECT max(compteur) FROM ConditionsMeteorologiques)
-        #""")
-
-        #connex.commit()
-        #compteur = cursor.fetchone()
-        connex.execute("""
-         INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
-          VALUES (?,?,?);
-           """, (str(temperature), str(humidite), datetime.datetime.now())) #  time.asctime(date_exacte)
-        connex.close()
-
-    def enregistrer_humidite(self, temperature, humidite):
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-             INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
-            VALUES (?,?,?);
-            """, (str(temperature), str(humidite), datetime.datetime.now()))
-        connex.close()
-
-    def enregistrer_mesure(self, temperature, humidite):
-        connex = sqlite3.connect(self.chemin_base_donnee)
-        cursor = connex.cursor()
-        cursor.execute("""
-            INSERT INTO ConditionsMeteorologiques(temperature, humidite, date_heure)
-            VALUES (?,?);
-            """, (str(temperature), str(humidite), datetime.datetime.now() ))
-        connex.close()
 
 class GestionnaireGmail(threading.Thread):
     def __init__(self, json_file, PROVENANCE_SURE, DESTINATAIRES):
@@ -257,6 +125,7 @@ class Decideur(threading.Thread):
     def __init__(self, lePort):
         threading.Thread.__init__(self)
         self.commu = Communication_Arduino(lePort)
+        self.recuperateur = RecuperateurDonnees("base_arrosage.db")
     def run(self):
         """
         Méthode principale, là où tout se passe.
@@ -270,12 +139,11 @@ class Decideur(threading.Thread):
         en_train_d_arroser = False
         debut_reelle_arrosage = False
 
-        compteur, temperature, humidite, date_heure = obtenir_derniere_mesure_meteo()
-        print derniere_condo_meteo
+        # compteur, temperature, humidite, date_heure = self.recuperateur.obtenir_derniere_mesure_meteo()
         #temperature = derniere_condo_meteo.temperature
         #humidite = derniere_condo_meteo.humidite_relative
 
-        compteur, temperature_min, humidite_max, frequence_min, heure_min, heure_max, duree_arrosage_prevue = obtenir_conditions_arrosage() #ConditionArrosage.objects.get(id=max([i.id for i in ConditionArrosage.objects.all()]))
+        # compteur, temperature_min, humidite_max, frequence_min, heure_min, heure_max, duree_arrosage_prevue = self.recuperateur.obtenir_conditions_arrosage() #ConditionArrosage.objects.get(id=max([i.id for i in ConditionArrosage.objects.all()]))
         #print derniere_condo_arrosage
         #temperature_min = derniere_condo_arrosage.temperature_min
         #humidite_max = derniere_condo_arrosage.humidite_max
@@ -327,7 +195,7 @@ class Decideur(threading.Thread):
                 """
 
                 print distance_seconde(maintenant, derniere_prise_mesure)
-                if distance_seconde(maintenant, derniere_prise_mesure) > 60:
+                if distance_seconde(maintenant, derniere_prise_mesure) > 180:
                     #demande la température et l'enregistre dans une base de donnée
                     self.commu.combien_temperature()
                     print "on mesure la température"
@@ -361,8 +229,7 @@ class Decideur(threading.Thread):
                         continue
                     #on met à jour la date de dernière mesure et la dernière mesure que si on a bien eu la température
                     ## et l'humidité
-                    enregistrer_temperature(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
-
+                    self.recuperateur.enregistrer_mesure(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
                     derniere_prise_mesure = maintenant
                 if distance_seconde(maintenant, derniere_prise_mesure) > 3600:
                     pass
