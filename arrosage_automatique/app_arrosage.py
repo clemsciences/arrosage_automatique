@@ -110,7 +110,7 @@ def get_humidite_annee(annee):
 # Obtenir images tout simplement
 
 @app.route("/temperature/image/<int:annee>/<int:mois>/<int:jour>/<string:genre>")
-def get_temperature_jour(annee, mois, jour, genre="moyenne"):
+def get_temperature_jour_image(annee, mois, jour, genre="moyenne"):
     temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
@@ -124,7 +124,7 @@ def get_temperature_jour(annee, mois, jour, genre="moyenne"):
         return image.getvalue()
 
 @app.route("/temperature/image/<int:annee>/<int:mois>/<string:genre>")
-def get_temperature_mois(annee=2016, mois=10, genre="moyenne"):
+def get_temperature_mois_image(annee=2016, mois=10, genre="moyenne"):
     temps, temperatures = recuperateur.obtenir_humidite_mois(annee, mois)
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_temperature_mois(temps, temperatures, annee, mois)
@@ -138,7 +138,7 @@ def get_temperature_mois(annee=2016, mois=10, genre="moyenne"):
         return image.getvalue()
 
 @app.route("/temperature/image/<int:annee>")
-def get_temperature_annee(annee, genre="moyenne"):
+def get_temperature_annee_image(annee, genre="moyenne"):
     temps, temperatures = recuperateur.obtenir_temprature_annee(annee)
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_temperature_annee(temps, temperatures, annee)
@@ -154,7 +154,7 @@ def get_temperature_annee(annee, genre="moyenne"):
 
 
 @app.route("/humidite/image/<int:annee>/<int:mois>/<int:jour>/<string:genre>")
-def get_humidite_jour(annee, mois, jour, genre="moyenne"):
+def get_humidite_jour_image(annee, mois, jour, genre="moyenne"):
     temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_humidite_jour(temps, humidites)
@@ -168,7 +168,7 @@ def get_humidite_jour(annee, mois, jour, genre="moyenne"):
         return image.getvalue()
 
 @app.route("/humidite/image/<int:annee>/<int:mois>/<string:genre>")
-def get_humidite_mois(annee, mois, genre="moyenne"):
+def get_humidite_mois_image(annee, mois, genre="moyenne"):
     temps, humidites = recuperateur.obtenir_humidite_mois(annee, mois)
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_humidite_mois(temps, humidites, annee, mois)
@@ -182,7 +182,7 @@ def get_humidite_mois(annee, mois, genre="moyenne"):
         return image.getvalue()
 
 @app.route("/humidite/image/<int:annee>/<string:genre>")
-def get_humidite_annee(annee, genre="moyenne"):
+def get_humidite_annee_image(annee, genre="moyenne"):
     temps, humidites = recuperateur.obtenir_humidite_annee(annee)
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_humidite_annee(temps, humidites, annee)
