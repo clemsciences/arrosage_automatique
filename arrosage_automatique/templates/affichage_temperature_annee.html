@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Température de l'année {{ annee }}</title>
+</head>
+<body>
+
+<h1> Température en moyenne en {{ annee }}</h1>
+<img src={{ nom_image_min }}>
+<img src={{ nom_image_max }}>
+<img src={{ nom_image_moyenne }}>
+
+<table border="1" cellpadding="5" cellspacing="5">
+<tr>
+<th>Mois</th>
+<th>Température moyenne</th>
+</tr>
+{% for indice in l_indices_mois %}
+    <tr>
+    <td>{{ mois[indice].capitalize() }}</td>
+    <td>{{ temperatures_moyennes_mois[indice] }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Rapport état</title>
+</head>
+<body>
+<h1> Rapport d'état des Arduino </h1>
+{# Il faudra ici pouvoir observer si les Arduinos répondent toujours
+<p> Dernière nouvelle de l'Arduino qui puise l'eau : {{ date_dernier_arrosage }} </p>
+<p>Dernière nouvelle de l'Arduino qui prend les mesures de température : {{ date_derniere_mesure_meteo }} </p>
+<p>Est-ce que l'Arduino est bien branché :
+{% if  arduino_branche_present%}
+ oui
+{% else %}
+non
+{% endif %}
+</p>
+</body>
+</html>
