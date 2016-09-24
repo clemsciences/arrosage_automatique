@@ -72,7 +72,7 @@ def get_temperature_mois(annee, mois):
 @app.route("/temperature/<int:annee>")
 def get_temperature_annee(annee):
     l_indices_mois = range(12)
-    mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
+    mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
                        "novembre", "decembre"]
     temps, temperatures = recuperateur.obtenir_temprature_annee(annee)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_annee(temps, temperatures, annee)
@@ -99,7 +99,7 @@ def get_humidite_mois(annee, mois):
 @app.route("/humidite/<int:annee>")
 def get_humidite_annee(annee):
     l_indices_mois = range(12)
-    mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
+    mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
                        "novembre", "decembre"]
     temps, humidites = recuperateur.obtenir_humidite_annee(annee)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_humidite_annee(temps, humidites, annee)
