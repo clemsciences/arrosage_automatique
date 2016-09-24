@@ -81,7 +81,7 @@ def get_temperature_annee(annee):
     truc_pour_page_web = []
     for timme in range(12):
         if timme in mois_presents:
-            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme]))
+            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme-1]))
         else:
             truc_pour_page_web.append("non mesure")
     return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=mois,
@@ -111,9 +111,17 @@ def get_humidite_annee(annee):
                        "novembre", "decembre"]
     temps, humidites = recuperateur.obtenir_humidite_annee(annee)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_humidite_annee(temps, humidites, annee)
+    mois_presents = list(set([timme.month for timme in temps]))
+    truc_pour_page_web = []
+    for timme in range(12):
+        if timme in mois_presents:
+            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(humidites) if temps[j].month == timme-1]))
+        else:
+            truc_pour_page_web.append("non mesure")
+
     return render_template("affichage_humidite_annee.html", l_indices_mois=l_indices_mois, mois=mois,
                            nom_image_min=nom_image_min, nom_image_max=nom_image_max,
-                           nom_image_moyenne=nom_image_moyenne)
+                           nom_image_moyenne=nom_image_moyenne, humidites_moyennes_mois=truc_pour_page_web)
 
 
 # Obtenir images tout simplement
