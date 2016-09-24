@@ -54,7 +54,8 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
 
 def obtenir_courbe_temperature_mois(temps, temperatures, annee, mois):
     # jour en datetime.datetime.now()
-    jours = list(set([jour.day for jour in temps])).sort()
+    jours = list(set([jour.day for jour in temps]))
+    jours.sort()
     nom_minima_temperatures_mois = os.path.join(DIRECTORY,"minima_temperature_mois.png")
     minima_par_jour = [min([tempe for i, tempe in enumerate(temperatures) if temps[i].day == jour]) for jour in jours]
     plt.axis([0,24, -20, 40])
@@ -85,7 +86,9 @@ def obtenir_courbe_temperature_mois(temps, temperatures, annee, mois):
 def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     # jour en datetime.datetime.now()
     nom_minima = os.path.join(DIRECTORY,"nom_temperature_annee_minima.png")
-    minima_mensuels = [min([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in range(12)]
+    mois_presents = list(set([timme.month for timme in temps]))
+    mois_presents.sort()
+    minima_mensuels = [min([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, -20, 40])
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
@@ -93,7 +96,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     plt.plot(range(12), minima_mensuels, marker="*")
     plt.savefig(nom_minima)
     nom_maxima = os.path.join(DIRECTORY,"nom_temperature_annee_maxima.png")
-    maxima_mensuels = [max([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in range(12)]
+    maxima_mensuels = [max([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, -20, 40])
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
@@ -101,7 +104,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     plt.plot(range(12), maxima_mensuels, marker="*")
     plt.savefig(nom_maxima)
     nom_moyennes = os.path.join(DIRECTORY,"nom_temperature_annee_moyennes.png")
-    moyennes_mensuels = [np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in range(12)]
+    moyennes_mensuels = [np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, -20, 40])
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
