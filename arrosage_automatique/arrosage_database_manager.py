@@ -15,8 +15,8 @@ class RecuperateurDonnees:
 
     def creer_table(self):
         conn = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        #cursor = conn.cursor()
-        conn.execute("""
+        cursor = conn.cursor()
+        cursor.execute("""
 		CREATE TABLE IF NOT EXISTS CONDITIONS_ARROSAGE(
 		compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 		temperature_min REAL,
@@ -29,13 +29,13 @@ class RecuperateurDonnees:
 		""")
         # timestamp : datetime.datetime.now()
         # duree en secondes
-        conn.execute("""
+        cursor.execute("""
 		CREATE TABLE IF NOT EXISTS ARROSAGE(
 		compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 		date_heure timestamp,
 		duree INTEGER)
 		""")
-        conn.execute("""
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS COURRIEL(
             compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
             emmeteur TEXT,
@@ -44,7 +44,7 @@ class RecuperateurDonnees:
             texte TEXT,
             date_heure timestamp)
 		""")
-        conn.execute("""
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS CONDITIONS_METEOROLOGIQUES(
             compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
             temperature REAL,
