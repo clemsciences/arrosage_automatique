@@ -21,8 +21,8 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     plt.title(u"Courbe de temperature du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
-    plt.xlabel("temps")
-    plt.ylabel("temperature en °C")
+    plt.xlabel(u"temps")
+    plt.ylabel(u"temperature en °C")
     plt.plot(temps_minima_par_heure, minima_par_heure, marker="*")
     plt.savefig(os.path.join(DIRECTORY, nom_minima_temperature))
 
