@@ -248,7 +248,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     plt.plot(mois_presents, moyennes_mensuels, marker="*")
     plt.savefig(nom_moyennes)
     plt.close()
-    
+
     return nom_minima, nom_maxima, nom_moyennes
 
 
