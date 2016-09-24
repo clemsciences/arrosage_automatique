@@ -193,7 +193,7 @@ class RecuperateurDonnees:
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
         connex.execute("""
-            INSERT INTO ConditionsMeteorologiques(temperature, humidite, date_heure)
+            INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
             VALUES (?,?);
             """, (str(temperature), str(humidite), datetime.datetime.now() ))
         connex.commit()
