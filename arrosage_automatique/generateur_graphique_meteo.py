@@ -93,7 +93,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.title(u"Courbe de temperature de l'annee "+str(annee)+".")
-    plt.plot(range(12), minima_mensuels, marker="*")
+    plt.plot(mois_presents, minima_mensuels, marker="*")
     plt.savefig(nom_minima)
     nom_maxima = os.path.join(DIRECTORY,"nom_temperature_annee_maxima.png")
     maxima_mensuels = [max([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
@@ -101,7 +101,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.title(u"Courbe de temperature de l'annee "+str(annee)+".")
-    plt.plot(range(12), maxima_mensuels, marker="*")
+    plt.plot(mois_presents, maxima_mensuels, marker="*")
     plt.savefig(nom_maxima)
     nom_moyennes = os.path.join(DIRECTORY,"nom_temperature_annee_moyennes.png")
     moyennes_mensuels = [np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
@@ -109,7 +109,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.title(u"Courbe de temperature de l'annee "+str(annee)+".")
-    plt.plot(range(12), moyennes_mensuels, marker="*")
+    plt.plot(mois_presents, moyennes_mensuels, marker="*")
     plt.savefig(nom_moyennes)
     return nom_minima, nom_maxima, nom_moyennes
 
@@ -202,7 +202,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.title(u"Courbe d'humidite de l'annee "+str(annee)+".")
-    plt.plot(range(12), minima_mensuels, marker="*")
+    plt.plot(mois_presents, minima_mensuels, marker="*")
     plt.savefig(nom_minima)
     nom_maxima = os.path.join(DIRECTORY,"nom_humidite_annee_maxima.png")
     maxima_mensuels = [max([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
@@ -210,7 +210,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.title(u"Courbe d'humidite de l'annee "+str(annee)+".")
-    plt.plot(range(12), maxima_mensuels, marker="*")
+    plt.plot(mois_presents, maxima_mensuels, marker="*")
     plt.savefig(nom_maxima)
     nom_moyennes = os.path.join(DIRECTORY,"nom_humidite_annee_moyennes.png")
     moyennes_mensuels = [np.mean([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
@@ -218,7 +218,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.title(u"Courbe d'humidite de l'annee "+str(annee)+".")
-    plt.plot(range(12), moyennes_mensuels, marker="*")
+    plt.plot(mois_presents, moyennes_mensuels, marker="*")
     plt.savefig(nom_moyennes)
     return nom_minima, nom_maxima, nom_moyennes
 
