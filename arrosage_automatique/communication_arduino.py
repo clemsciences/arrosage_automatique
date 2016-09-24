@@ -293,13 +293,13 @@ if __name__ == "__main__":
         PORT = "/dev/ttyACM0"
     #try:
     dec = Decideur(PORT)
-    json_file = os.path.join("gestion_courriel", "client_secret.json")
-    print json_file
-    PROVENANCE_SURE = ["clemsciences@gmail.com","arrosage.b@gmail.com", "cendrine.besnier37@gmail.com", "patrick.besnier37@gmail.com"]
-    DESTINATAIRES = ["clemsciences@gmail.com", "patrick.besnier37@gmail.com", "cendrine.besnier37@gmail.com"]
-    gest = GestionnaireGmail(json_file, PROVENANCE_SURE, DESTINATAIRES)
+    #json_file = os.path.join("gestion_courriel", "client_secret.json")
+    #print json_file
+    #PROVENANCE_SURE = ["clemsciences@gmail.com","arrosage.b@gmail.com", "cendrine.besnier37@gmail.com", "patrick.besnier37@gmail.com"]
+    #DESTINATAIRES = ["clemsciences@gmail.com", "patrick.besnier37@gmail.com", "cendrine.besnier37@gmail.com"]
+    #gest = GestionnaireGmail(json_file, PROVENANCE_SURE, DESTINATAIRES)
     dec.start()
-    gest.start()
+    #gest.start()
     #except SerialException:
     #    print "port manquant"
         #TODO envoyer un mail?
