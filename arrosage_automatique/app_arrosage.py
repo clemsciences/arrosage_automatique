@@ -56,7 +56,7 @@ def rapport_etat():
 #Obtenir la page web pour une journée, un mois ou une année en particulier.
 @app.route("/temperature/<int:annee>/<int:mois>/<int:jour>")
 def get_temperature_jour(annee, mois, jour):
-    temps, temperatures = recuperateur.obtenir_temprature_annee(annee)
+    temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
     return render_template("affichage_temperature_jour.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
                            nom_image_moyenne=nom_image_moyenne)
