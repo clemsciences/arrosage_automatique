@@ -81,7 +81,7 @@ def get_temperature_annee(annee):
     truc_pour_page_web = []
     for timme in range(12):
         if timme in mois_presents:
-            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme-1]))
+            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme+1]))
         else:
             truc_pour_page_web.append("non mesure")
     return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=mois,
@@ -115,7 +115,7 @@ def get_humidite_annee(annee):
     truc_pour_page_web = []
     for timme in range(12):
         if timme in mois_presents:
-            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(humidites) if temps[j].month == timme-1]))
+            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(humidites) if temps[j].month == timme+1]))
         else:
             truc_pour_page_web.append("non mesure")
 
