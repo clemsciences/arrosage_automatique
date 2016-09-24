@@ -3,7 +3,7 @@ import numpy as np
 import datetime
 import matplotlib.pyplot as plt
 import os
-DIRECTORY = "images"
+DIRECTORY = "/home/pi/arrosage_automatique/arrosage_automatique/images"
 conversion_mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
                        "novembre", "décembre"]
 
