@@ -1,6 +1,7 @@
  # -*-coding:utf-8-*-
-from sqlite3 import *
+import sqlite3
 import os
+import datetime
 """
 Module à améliorer pour faire mieux correspondre les tables aux besoins
 """
