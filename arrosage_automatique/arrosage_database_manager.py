@@ -12,6 +12,7 @@ class RecuperateurDonnees:
         self.chemin_base_donnee = chemin_base_donnee
         if not os.path.isfile(self.chemin_base_donnee):
             self.creer_table()
+            os.system("chmod 777 arrosage_database.db")
 
     def creer_table(self):
         conn = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
