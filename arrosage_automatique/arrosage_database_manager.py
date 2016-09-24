@@ -217,7 +217,7 @@ class RecuperateurDonnees:
         temperatures = [mesure[1] for mesure in mesures_voulues]
         dates = [mesure[3] for mesure in mesures_voulues]
         connex.close()
-        return res
+        return dates, temperatures
 
     def obtenir_temprature_mois(self, annee, mois):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
