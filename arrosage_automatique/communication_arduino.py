@@ -195,7 +195,7 @@ class Decideur(threading.Thread):
                 """
 
                 print distance_seconde(maintenant, derniere_prise_mesure)
-                if distance_seconde(maintenant, derniere_prise_mesure) > 120:
+                if distance_seconde(maintenant, derniere_prise_mesure) > 30:
                     #demande la température et l'enregistre dans une base de donnée
                     self.commu.combien_temperature()
                     print "on mesure la température"

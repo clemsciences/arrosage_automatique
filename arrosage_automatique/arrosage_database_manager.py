@@ -194,7 +194,7 @@ class RecuperateurDonnees:
         #cursor = connex.cursor()
         connex.execute("""
             INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
-            VALUES (?,?);
+            VALUES (?,?,?);
             """, (str(temperature), str(humidite), datetime.datetime.now() ))
         connex.commit()
         connex.close()
