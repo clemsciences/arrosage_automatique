@@ -15,36 +15,36 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     jour = temps[0]
     jour_semaine = jour.ctime()[:3]
     nom_minima_temperature = "minima_temperature_jour.jpg"
-    temps_minima_par_heure = range(24)
-    minima_par_heure = [min([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in range(24)]
+    temps_minima_par_heure = list(set([timme.hour for timme in temps]))
+    minima_par_heure = [min([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_minima_par_heure]
     plt.title("Courbe de temperature du "+
               conversion_jour[jour_semaine]+" "+jour.day+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
     plt.xlabel("temps")
     plt.ylabel("temperature en °C")
-    #p2 = plt.plot(temps_minima_par_heure, minima_par_heure, marker="*")
+    plt.plot(temps_minima_par_heure, minima_par_heure, marker="*")
     plt.savefig(os.path.join(DIRECTORY, nom_minima_temperature))
 
     nom_maxima_temperature = "maxima_temperature_jour.jpg"
-    temps_maxima_par_heure = range(24)
-    maxima_par_heure = [max([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in range(24)]
+    temps_maxima_par_heure = list(set([timme.hour for timme in temps]))
+    maxima_par_heure = [max([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_maxima_par_heure]
     plt.title("Courbe de température du "+
               conversion_jour[jour_semaine]+" "+jour.day+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
     plt.xlabel("temps")
     plt.ylabel("temperature en °C")
-    #p2 = plt.plot(temps_maxima_par_heure, maxima_par_heure, marker="*")
+    plt.plot(temps_maxima_par_heure, maxima_par_heure, marker="*")
     plt.savefig(os.path.join(DIRECTORY, nom_maxima_temperature))
 
     nom_moyennes_temperatures = "moyennes_temperature_jour.jpg"
-    temps_moyennes_par_heure = range(24)
-    moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in range(24)]
+    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+    moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_moyennes_par_heure]
     plt.title("Courbe de température du "+
               conversion_jour[jour_semaine]+" "+jour.day+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
     plt.xlabel("temps")
     plt.ylabel("temperature en °C")
-    #p2 = plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+    plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
     plt.savefig(os.path.join(DIRECTORY, nom_moyennes_temperatures))
     return nom_minima_temperature, nom_maxima_temperature, nom_moyennes_temperatures
 
@@ -114,8 +114,8 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     jour = temps[0]
     jour_semaine = jour.ctime()[:3]
     nom_minima_humidite = "minima_humidite_jour.jpg"
-    temps_minima_par_heure = range(24)
-    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in range(24)]
+    temps_minima_par_heure = list(set([timme.hour for timme in temps]))
+    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_minima_par_heure]
     plt.title("Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+jour.day+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
@@ -125,8 +125,8 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     plt.savefig(os.path.join(DIRECTORY, nom_minima_humidite))
 
     nom_maxima_humidite = "maxima_humidite_jour.jpg"
-    temps_maxima_par_heure = range(24)
-    maxima_par_heure = [max([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in range(24)]
+    temps_maxima_par_heure = list(set([timme.hour for timme in temps]))
+    maxima_par_heure = [max([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_maxima_par_heure]
     plt.title("Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+jour.day+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
@@ -136,8 +136,8 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     plt.savefig(os.path.join(DIRECTORY, nom_maxima_humidite))
 
     nom_moyennes_humidite = "moyennes_humidite_jour.jpg"
-    temps_moyennes_par_heure = range(24)
-    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in range(24)]
+    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_moyennes_par_heure]
     plt.title("Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+jour.day+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
