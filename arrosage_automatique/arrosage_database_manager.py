@@ -51,6 +51,8 @@ class RecuperateurDonnees:
             humidite REAL,
             date_heure timestamp)
 		""")
+        conn.commit()
+        conn.close()
 
     def enregistrer_courriel(self, emetteur, recepteur, objet, texte):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
