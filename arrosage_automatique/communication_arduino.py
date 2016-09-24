@@ -195,7 +195,7 @@ class Decideur(threading.Thread):
                 """
 
                 print distance_seconde(maintenant, derniere_prise_mesure)
-                if distance_seconde(maintenant, derniere_prise_mesure) > 180:
+                if distance_seconde(maintenant, derniere_prise_mesure) > 120:
                     #demande la température et l'enregistre dans une base de donnée
                     self.commu.combien_temperature()
                     print "on mesure la température"
@@ -298,7 +298,7 @@ if __name__ == "__main__":
     PROVENANCE_SURE = ["clemsciences@gmail.com","arrosage.b@gmail.com", "cendrine.besnier37@gmail.com", "patrick.besnier37@gmail.com"]
     DESTINATAIRES = ["clemsciences@gmail.com", "patrick.besnier37@gmail.com", "cendrine.besnier37@gmail.com"]
     gest = GestionnaireGmail(json_file, PROVENANCE_SURE, DESTINATAIRES)
-    #dec.start()
+    dec.start()
     gest.start()
     #except SerialException:
     #    print "port manquant"
