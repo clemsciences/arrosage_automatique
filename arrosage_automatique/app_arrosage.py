@@ -112,6 +112,8 @@ def get_humidite_annee(annee):
 @app.route("/temperature/image/<int:annee>/<int:mois>/<int:jour>/<string:genre>")
 def get_temperature_jour_image(annee, mois, jour, genre="moyenne"):
     temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
+    print temps
+    print temperatures
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
     elif genre == "max":

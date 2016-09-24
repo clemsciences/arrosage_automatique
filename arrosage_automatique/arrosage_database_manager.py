@@ -15,8 +15,8 @@ class RecuperateurDonnees:
 
     def creer_table(self):
         conn = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        cursor = conn.cursor()
-        cursor.execute("""
+        #cursor = conn.cursor()
+        conn.execute("""
 		CREATE TABLE IF NOT EXISTS CONDITIONS_ARROSAGE(
 		compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 		temperature_min REAL,
@@ -29,13 +29,13 @@ class RecuperateurDonnees:
 		""")
         # timestamp : datetime.datetime.now()
         # duree en secondes
-        cursor.execute("""
+        conn.execute("""
 		CREATE TABLE IF NOT EXISTS ARROSAGE(
 		compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
 		date_heure timestamp,
 		duree INTEGER)
 		""")
-        cursor.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS COURRIEL(
             compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
             emmeteur TEXT,
@@ -44,7 +44,7 @@ class RecuperateurDonnees:
             texte TEXT,
             date_heure timestamp)
 		""")
-        cursor.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS CONDITIONS_METEOROLOGIQUES(
             compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
             temperature REAL,
@@ -54,11 +54,12 @@ class RecuperateurDonnees:
 
     def enregistrer_courriel(self, emetteur, recepteur, objet, texte):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        cursor = connex.cursor()
-        cursor.execute("""
+        #cursor = connex.cursor()
+        connex.execute("""
             INSERT INTO COURRIEL(emetteur, recepteur, objet, texte)
             VALUES (?,?,?,?);
             """, (emetteur, recepteur, objet, texte))
+        connex.commit()
         connex.close()
     def obtenir_conditions_meteorologiques_depuis(self, jours):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
@@ -67,7 +68,7 @@ class RecuperateurDonnees:
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
         """)
-        connex.commit()
+        #connex.commit()
         #[compteur, date, temperature, humidite] = cursor.fetchone()
         res = cursor.fetchall()
         print res[0]
@@ -90,7 +91,7 @@ class RecuperateurDonnees:
         WHERE compteur IN  (SELECT max(compteur) FROM CONDITIONS_METEOROLOGIQUES)
         """)
 
-        connex.commit()
+        #connex.commit()
         # [compteur, temperature, humidite, date] = cursor.fetchone()
         res = cursor.fetchone()
         connex.close()
@@ -103,11 +104,12 @@ class RecuperateurDonnees:
         :return:
         """
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        cursor = connex.cursor()
-        cursor.execute("""
+        #cursor = connex.cursor()
+        connex.execute("""
             INSERT INTO ARROSAGE(date_heure, duree)
             VALUES (?,?);
             """, (datetime.datetime.now(), str(duree)))
+        connex.commit()
         connex.close()
 
     def obtenir_dernier_arrosage(self):
@@ -118,7 +120,7 @@ class RecuperateurDonnees:
             FROM  ARROSAGE
             WHERE compteur IN (SELECT max(compteur) FROM ARROSAGE)
             """)
-        res = connex.commit()
+        res = connex.fetchone()
         connex.close()
         # (date_heure, duree)
         return res
@@ -137,7 +139,7 @@ class RecuperateurDonnees:
         WHERE compteur IN (SELECT max(compteur) FROM CONDITIONS_ARROSAGE)
         """)
 
-        connex.commit()
+        #connex.commit()
         # [compteur, temperature_min, humidite_max, frequence_min, heure_min, heure_max, duree ] = cursor.fetchone()
         res = cursor.fetchone()
         connex.close()
@@ -152,7 +154,7 @@ class RecuperateurDonnees:
         WHERE compteur IN (SELECT max(compteur) FROM CONDITIONS_METEOROLOGIQUES)
         """)
 
-        connex.commit()
+        #connex.commit()
         # [compteur, temperature, humidite, date_heure = cursor.fetchone()
         res = cursor.fetchone()
         connex.close()
@@ -161,7 +163,7 @@ class RecuperateurDonnees:
     def enregistrer_temperature_humidite(self, temperature, humidite):
         # fonction quasiment identique à enregistrer_humidite
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        cursor = connex.cursor()
+        #cursor = connex.cursor()
         #cursor.execute("""
         #SELECT compteur
         #FROM ConditionsMeteorologiques
@@ -174,24 +176,27 @@ class RecuperateurDonnees:
          INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
           VALUES (?,?,?);
            """, (str(temperature), str(humidite), datetime.datetime.now())) #  time.asctime(date_exacte)
+        connex.commit()
         connex.close()
 
     def enregistrer_humidite(self, temperature, humidite):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        cursor = connex.cursor()
-        cursor.execute("""
+        #cursor = connex.cursor()
+        connex.execute("""
              INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
             VALUES (?,?,?);
             """, (str(temperature), str(humidite), datetime.datetime.now()))
+        connex.commit()
         connex.close()
 
     def enregistrer_mesure(self, temperature, humidite):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
-        cursor = connex.cursor()
-        cursor.execute("""
+        #cursor = connex.cursor()
+        connex.execute("""
             INSERT INTO ConditionsMeteorologiques(temperature, humidite, date_heure)
             VALUES (?,?);
             """, (str(temperature), str(humidite), datetime.datetime.now() ))
+        connex.commit()
         connex.close()
 
 
@@ -205,7 +210,7 @@ class RecuperateurDonnees:
         FROM CONDITIONS_METEOROLOGIQUES
         """)
 
-        connex.commit() # [compteur, temperature, humidite, date]
+        #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
         mesures_voulues = [mesure for mesure in res if mesure[3].day == jour and mesure[3].month == mois and
                            mesure[3].year == annee]
@@ -222,7 +227,7 @@ class RecuperateurDonnees:
         FROM CONDITIONS_METEOROLOGIQUES
         """)
 
-        connex.commit() # [compteur, temperature, humidite, date]
+        #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
         mesures_voulues = [mesure for mesure in res if mesure[3].month == mois and mesure[3].year == annee]
         temperatures = [mesure[1] for mesure in mesures_voulues]
@@ -239,7 +244,7 @@ class RecuperateurDonnees:
         FROM CONDITIONS_METEOROLOGIQUES
         """)
 
-        connex.commit() # [compteur, temperature, humidite, date]
+        #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
         mesures_voulues = [mesure for mesure in res if mesure[3].year == annee]
         temperatures = [mesure[1] for mesure in mesures_voulues]
@@ -255,7 +260,7 @@ class RecuperateurDonnees:
         FROM CONDITIONS_METEOROLOGIQUES
         """)
 
-        connex.commit() # [compteur, temperature, humidite, date]
+        #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
         mesures_voulues = [mesure for mesure in res if mesure[3].day == jour and mesure[3].month == mois and
                            mesure[3].year == annee]
@@ -272,7 +277,7 @@ class RecuperateurDonnees:
         FROM CONDITIONS_METEOROLOGIQUES
         """)
 
-        connex.commit() # [compteur, temperature, humidite, date]
+        #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
         mesures_voulues = [mesure for mesure in res if mesure[3].month == mois and mesure[3].year == annee]
         humidites = [mesure[2] for mesure in mesures_voulues]
@@ -288,7 +293,7 @@ class RecuperateurDonnees:
         FROM CONDITIONS_METEOROLOGIQUES
         """)
 
-        connex.commit() # [compteur, temperature, humidite, date]
+        #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
         mesures_voulues = [mesure for mesure in res if mesure[3].year == annee]
         humidites = [mesure[2] for mesure in mesures_voulues]

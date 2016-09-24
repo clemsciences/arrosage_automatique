@@ -125,7 +125,7 @@ class Decideur(threading.Thread):
     def __init__(self, lePort):
         threading.Thread.__init__(self)
         self.commu = Communication_Arduino(lePort)
-        self.recuperateur = RecuperateurDonnees("base_arrosage.db")
+        self.recuperateur = RecuperateurDonnees()
     def run(self):
         """
         Méthode principale, là où tout se passe.
