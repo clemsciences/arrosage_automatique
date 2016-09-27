@@ -14,7 +14,8 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     # jour en datetime.datetime.now()
     jour = temps[0]
     jour_semaine = jour.ctime()[:3]
-    nom_minima_temperature = os.path.join(DIRECTORY, "minima_temperature_jour.png")
+    #nom_minima_temperature = os.path.join(DIRECTORY, "minima_temperature_jour.png")
+    nom_minima_temperature = "minima_temperature_jour.png"
     temps_minima_par_heure = list(set([timme.hour for timme in temps]))
     temps_minima_par_heure.sort()
     minima_par_heure = [min([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_minima_par_heure]
@@ -27,7 +28,8 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     plt.savefig(nom_minima_temperature)
     plt.close()
 
-    nom_maxima_temperature = os.path.join(DIRECTORY, "maxima_temperature_jour.png")
+    #nom_maxima_temperature = os.path.join(DIRECTORY, "maxima_temperature_jour.png")
+    nom_maxima_temperature = "maxima_temperature_jour.png"
     temps_maxima_par_heure = list(set([timme.hour for timme in temps]))
     temps_maxima_par_heure.sort()
     maxima_par_heure = [max([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_maxima_par_heure]
@@ -40,7 +42,8 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     plt.savefig(nom_maxima_temperature)
     plt.close()
 
-    nom_moyennes_temperatures = os.path.join(DIRECTORY, "moyennes_temperature_jour.png")
+    #nom_moyennes_temperatures = os.path.join(DIRECTORY, "moyennes_temperature_jour.png")
+    nom_moyennes_temperatures = "moyennes_temperature_jour.png"
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
     temps_moyennes_par_heure.sort()
     moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_moyennes_par_heure]

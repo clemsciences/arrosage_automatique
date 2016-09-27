@@ -84,7 +84,7 @@ def get_temperature_annee(annee):
             truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme]))
         else:
             truc_pour_page_web.append("non mesure")
-    return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=mois,
+    return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=mois, chemin="/home/pi/arrosage_automatique/arrosage_automatique/static/images",
                            nom_image_min=nom_image_min, nom_image_max=nom_image_max,
                            nom_image_moyenne=nom_image_moyenne, temperatures_moyennes_mois=truc_pour_page_web, annee=annee)
 
