@@ -6,9 +6,9 @@
 </head>
 <body>
 <h1> {{ mois }} {{ annee }}</h1>
-<img src="{{ nom_image_min }}" />
-<img src="{{ nom_image_max }}" />
-<img src="{{ nom_image_moyenne }}" />
+<img src="{{ url_for('static', filename = 'images/'+nom_image_min) }}" />
+<img src="{{ url_for('static', filename = 'images/'+nom_image_max) }}" />
+<img src="{{ url_for('static', filename = 'images/'+nom_image_moyenne) }}" />
 
 </body>
 </html>
