@@ -4,8 +4,8 @@ from arrosage_database_manager import RecuperateurDonnees
 import numpy as np
 import io
 import generateur_graphique_meteo
-
-
+import os
+chemin_images = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"
 app = Flask(__name__)
 recuperateur = RecuperateurDonnees()
 
@@ -137,7 +137,7 @@ def get_temperature_jour_image(annee, mois, jour, genre="moyenne"):
         _, nom_image, _ = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
     else:
         _, _, nom_image = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
-    with open(nom_image, "rb") as f:
+    with open(os.path.join(chemin_images, nom_image), "rb") as f:
         image = io.BytesIO()
         image.write(f)
         return image.getvalue()
@@ -151,7 +151,7 @@ def get_temperature_mois_image(annee=2016, mois=10, genre="moyenne"):
         _, nom_image, _ = generateur_graphique_meteo.obtenir_courbe_temperature_mois(temps, temperatures, annee, mois)
     else:
         _, _, nom_image = generateur_graphique_meteo.obtenir_courbe_temperature_mois(temps, temperatures, annee, mois)
-    with open(nom_image, "rb") as f:
+    with open(os.path.join(chemin_images, nom_image), "rb") as f:
         image = io.BytesIO()
         image.write(f)
         return image.getvalue()
@@ -165,7 +165,7 @@ def get_temperature_annee_image(annee, genre="moyenne"):
         _, nom_image, _ = generateur_graphique_meteo.obtenir_courbe_temperature_annee(temps, temperatures, annee)
     else:
         _, _, nom_image = generateur_graphique_meteo.obtenir_courbe_temperature_annee(temps, temperatures, annee)
-    with open(nom_image, "rb") as f:
+    with open(os.path.join(chemin_images, nom_image), "rb") as f:
         image = io.BytesIO()
         image.write(f)
         return image.getvalue()
@@ -181,7 +181,7 @@ def get_humidite_jour_image(annee, mois, jour, genre="moyenne"):
         _, nom_image, _ = generateur_graphique_meteo.obtenir_courbe_humidite_jour(temps, humidites)
     else:
         _, _, nom_image = generateur_graphique_meteo.obtenir_courbe_humidite_jour(temps, humidites)
-    with open(nom_image, "rb") as f:
+    with open(os.path.join(chemin_images, nom_image), "rb") as f:
         image = io.BytesIO()
         image.write(f)
         return image.getvalue()
@@ -195,7 +195,7 @@ def get_humidite_mois_image(annee, mois, genre="moyenne"):
         _, nom_image, _ = generateur_graphique_meteo.obtenir_courbe_humidite_mois(temps, humidites, annee, mois)
     else:
         _, _, nom_image = generateur_graphique_meteo.obtenir_courbe_humidite_mois(temps, humidites, annee, mois)
-    with open(nom_image, "rb") as f:
+    with open(os.path.join(chemin_images, nom_image), "rb") as f:
         image = io.BytesIO()
         image.write(f)
         return image.getvalue()
@@ -209,7 +209,7 @@ def get_humidite_annee_image(annee, genre="moyenne"):
         _, nom_image, _ = generateur_graphique_meteo.obtenir_courbe_humidite_annee(temps, humidites, annee)
     else:
         _, _, nom_image = generateur_graphique_meteo.obtenir_courbe_humidite_annee(temps, humidites, annee)
-    with open(nom_image, "rb") as f:
+    with open(os.path.join(chemin_images, nom_image), "rb") as f:
         image = io.BytesIO()
         image.write(f)
         return image.getvalue()
