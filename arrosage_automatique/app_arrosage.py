@@ -8,7 +8,8 @@ import os
 chemin_images = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"
 app = Flask(__name__)
 recuperateur = RecuperateurDonnees()
-
+l_mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
+                       "novembre", "decembre"]
 
 @app.route("/")
 def accueil():
@@ -61,20 +62,19 @@ def get_temperature_jour(annee, mois, jour):
     print len(temps), len(temperatures)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
     return render_template("affichage_temperature_jour.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
-                           nom_image_moyenne=nom_image_moyenne)
+                           nom_image_moyenne=nom_image_moyenne, annee=annee, mois=l_mois[mois-1], jour=jour)
 
 @app.route("/temperature/<int:annee>/<int:mois>")
 def get_temperature_mois(annee, mois):
     temps, temperatures = recuperateur.obtenir_temprature_mois(annee, mois)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_mois(temps, temperatures, annee, mois)
     return render_template("affichage_temperature_mois.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
-                           nom_image_moyenne=nom_image_moyenne)
+                           nom_image_moyenne=nom_image_moyenne, mois=l_mois[mois-1], annee=annee)
 
 @app.route("/temperature/<int:annee>")
 def get_temperature_annee(annee):
     l_indices_mois = range(12)
-    mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
-                       "novembre", "decembre"]
+
     temps, temperatures = recuperateur.obtenir_temprature_annee(annee)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_annee(temps, temperatures, annee)
     mois_presents = list(set([timme.month for timme in temps]))
@@ -84,7 +84,7 @@ def get_temperature_annee(annee):
             truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme]))
         else:
             truc_pour_page_web.append("non mesure")
-    return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=mois,
+    return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=l_mois,
                            nom_image_min=nom_image_min, nom_image_max=nom_image_max,
                            nom_image_moyenne=nom_image_moyenne, temperatures_moyennes_mois=truc_pour_page_web, annee=annee)
 
@@ -95,20 +95,18 @@ def get_humidite_jour(annee, mois, jour):
     temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_humidite_jour(temps, humidites)
     return render_template("affichage_humidite_jour.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
-                           nom_image_moyenne=nom_image_moyenne)
+                           nom_image_moyenne=nom_image_moyenne, annee=annee, mois=l_mois[mois-1], jour=jour)
 
 @app.route("/humidite/<int:annee>/<int:mois>")
 def get_humidite_mois(annee, mois):
     temps, humidites = recuperateur.obtenir_humidite_mois(annee, mois)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_humidite_mois(temps, humidites, annee, mois)
     return render_template("affichage_humidite_mois.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
-                           nom_image_moyenne=nom_image_moyenne)
+                           nom_image_moyenne=nom_image_moyenne, mois=l_mois[mois-1], annee=annee)
 
 @app.route("/humidite/<int:annee>")
 def get_humidite_annee(annee):
     l_indices_mois = range(12)
-    mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
-                       "novembre", "decembre"]
     temps, humidites = recuperateur.obtenir_humidite_annee(annee)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_humidite_annee(temps, humidites, annee)
     mois_presents = list(set([timme.month for timme in temps]))
@@ -119,9 +117,9 @@ def get_humidite_annee(annee):
         else:
             truc_pour_page_web.append("non mesure")
 
-    return render_template("affichage_humidite_annee.html", l_indices_mois=l_indices_mois, mois=mois,
+    return render_template("affichage_humidite_annee.html", l_indices_mois=l_indices_mois, mois=l_mois,
                            nom_image_min=nom_image_min, nom_image_max=nom_image_max,
-                           nom_image_moyenne=nom_image_moyenne, humidites_moyennes_mois=truc_pour_page_web)
+                           nom_image_moyenne=nom_image_moyenne, humidites_moyennes_mois=truc_pour_page_web, annee=annee)
 
 
 # Obtenir images tout simplement
