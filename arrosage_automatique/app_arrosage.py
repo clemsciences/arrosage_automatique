@@ -61,7 +61,8 @@ def get_temperature_jour(annee, mois, jour):
     print len(temps), len(temperatures)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
     return render_template("affichage_temperature_jour.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
-                           nom_image_moyenne=nom_image_moyenne)
+                           nom_image_moyenne=nom_image_moyenne, chemin="/home/pi/arrosage_automatique/arrosage_automatique/static/images",
+                           )
 
 @app.route("/temperature/<int:annee>/<int:mois>")
 def get_temperature_mois(annee, mois):
@@ -84,7 +85,7 @@ def get_temperature_annee(annee):
             truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme]))
         else:
             truc_pour_page_web.append("non mesure")
-    return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=mois, chemin="/home/pi/arrosage_automatique/arrosage_automatique/static/images",
+    return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=mois,
                            nom_image_min=nom_image_min, nom_image_max=nom_image_max,
                            nom_image_moyenne=nom_image_moyenne, temperatures_moyennes_mois=truc_pour_page_web, annee=annee)
 
