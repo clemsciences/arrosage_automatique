@@ -6,9 +6,9 @@
 </head>
 <body>
 
-<img src="/home/pi/arrosage_automatique/arrosage_automatique/static/images/minima_temperature_jour.png" />
-<img src=/home/pi/arrosage_automatique/arrosage_automatique/static/images/maxima_temperature_jour.png" />
-<img src="/home/pi/arrosage_automatique/arrosage_automatique/static/images/moyennes_temperature_jour.png" />
+<img src="{{ url_for('static', filename = 'images/minima_temperature_jour.png') }}" />
+<img src="{{ url_for('static', filename = 'images/maxima_temperature_jour.png') }}" />
+<img src="{{ url_for('static', filename = 'images/moyennes_temperature_jour.png') }}" />
 
 </body>
 </html>
