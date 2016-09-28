@@ -9,14 +9,21 @@
 <body>
     <h1>Application web pour gerer l'arrosage automatique du jardin</h1>
     <figure>
-        <img src="photo_jardin.jpg" alt="Photo du jardin a Bléré"/>
+        <img src="{{ url_for("static", filename='image/jardin.jpg')}}" alt="Photo du jardin a Bléré"/>
     </figure>
     <ul>
         <li><a href="statistiques_meteo">Arroser maintenant </a></li>
         <li><a href="parametrage_arrosage"> Conditions d'arrosage</a></li>
+        <li><a href="meteo_maintenant"> Les mesures de maintenant à Bléré</a></li>
         <li><a href="statistiques_meteo">Statistiques météorologiques</a></li>
         <li><a href="statistiques_arrosages">Statistiques arrosages</a></li>
+        <li><a href="le_comment_c_est_fait">Savoir refaire ce que j'ai fait</a></li>
+        <li><a href="les_chats">Les chats</a></li>
 	<li><a href="rapport_courriel"> Rapport Courriel</a></li>
     </ul>
+    <p> Attention, on vous observe. </p>
+    <figure>
+    <img src="{{ url_for("static", filename="images/gali.jpg") }}" />
+    </figure>
 </body>
 </html>

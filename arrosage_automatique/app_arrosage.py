@@ -53,8 +53,14 @@ def rapport_etat():
                            arduino_branche_present=arduino_branche_present)
 
 
+@app.route("/le_comment_c_est_fait")
+def le_comment_c_est_fait():
+    return render_template("le_comment_c_est_fait.html")
 
 
+@app.route("/les_chats")
+def voir_les_chats():
+    return render_template("les_chats.html")
 #Obtenir la page web pour une journée, un mois ou une année en particulier.
 @app.route("/temperature/<int:annee>/<int:mois>/<int:jour>")
 def get_temperature_jour(annee, mois, jour):
