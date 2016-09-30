@@ -25,6 +25,7 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     plt.title(u"Courbe de temperature du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.plot(temps_minima_par_heure, minima_par_heure, marker="*")
@@ -40,6 +41,7 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     plt.title(u"Courbe de temperature du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.plot(temps_maxima_par_heure, maxima_par_heure, marker="*")
@@ -55,6 +57,7 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     plt.title(u"Courbe de temperature du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
@@ -71,6 +74,7 @@ def obtenir_courbe_temperature_mois(temps, temperatures, annee, mois):
     nom_minima_temperatures_mois = os.path.join(DIRECTORY, nf_min)
     minima_par_jour = [min([tempe for i, tempe in enumerate(temperatures) if temps[i].day == jour]) for jour in jours]
     plt.axis([0,nombre_jour_par_mois[mois-1], -20, 40])
+    plt.grid(True)
     plt.title(u"Temperature minimale en "+conversion_mois[mois-1]+" "+str(annee))
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
@@ -82,6 +86,7 @@ def obtenir_courbe_temperature_mois(temps, temperatures, annee, mois):
     nom_maxima_temperatures_mois = os.path.join(DIRECTORY, nf_max)
     maxima_par_jour = [max([tempe for i, tempe in enumerate(temperatures) if temps[i].day == jour]) for jour in jours]
     plt.axis([0,nombre_jour_par_mois[mois-1], -20, 40])
+    plt.grid(True)
     plt.title(u"Temperature maximale en "+conversion_mois[mois-1]+" "+str(annee))
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
@@ -93,6 +98,7 @@ def obtenir_courbe_temperature_mois(temps, temperatures, annee, mois):
     nom_moyennes_temperatures_mois = os.path.join(DIRECTORY, nf_moy)
     moyennes_par_jour = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].day == jour]) for jour in jours]
     plt.axis([0,nombre_jour_par_mois[mois-1], -20, 40])
+    plt.grid(True)
     plt.title(u"Temperature moyenne en "+conversion_mois[mois-1]+" "+str(annee))
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
@@ -110,6 +116,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     mois_presents.sort()
     minima_mensuels = [min([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, -20, 40])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.title(u"Courbe de temperature de l'annee "+str(annee)+".")
@@ -121,6 +128,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     nom_maxima = os.path.join(DIRECTORY, nf_max)
     maxima_mensuels = [max([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, -20, 40])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.title(u"Courbe de temperature de l'annee "+str(annee)+".")
@@ -132,6 +140,7 @@ def obtenir_courbe_temperature_annee(temps, temperatures, annee):
     nom_moyennes = os.path.join(DIRECTORY, nf_moy)
     moyennes_mensuels = [np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, -20, 40])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"temperature en °C")
     plt.title(u"Courbe de temperature de l'annee "+str(annee)+".")
@@ -155,6 +164,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.plot(temps_minima_par_heure, minima_par_heure, marker="*")
@@ -169,6 +179,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.plot(temps_maxima_par_heure, maxima_par_heure, marker="*")
@@ -183,6 +194,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
@@ -199,6 +211,7 @@ def obtenir_courbe_humidite_mois(temps, humidites, annee, mois):
     nom_minima_humidites_mois = os.path.join(DIRECTORY, nf_min)
     minima_par_jour = [min([humi for i, humi in enumerate(humidites) if temps[i].day == jour]) for jour in jours]
     plt.axis([0, nombre_jour_par_mois[mois-1], 0, 100])
+    plt.grid(True)
     plt.title(u"Humidite minimale en "+conversion_mois[mois-1]+" "+str(annee)+".")
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
@@ -210,6 +223,7 @@ def obtenir_courbe_humidite_mois(temps, humidites, annee, mois):
     nom_maxima_humidites_mois = os.path.join(DIRECTORY, nf_max)
     maxima_par_jour = [max([humi for i, humi in enumerate(humidites) if temps[i].day == jour]) for jour in jours]
     plt.axis([0, nombre_jour_par_mois[mois-1], 0, 100])
+    plt.grid(True)
     plt.title(u"Humidite maximale en "+conversion_mois[mois-1]+" "+str(annee)+".")
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
@@ -221,6 +235,7 @@ def obtenir_courbe_humidite_mois(temps, humidites, annee, mois):
     nom_moyennes_humidites_mois = os.path.join(DIRECTORY, nf_moy)
     moyennes_par_jour = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].day == jour]) for jour in jours]
     plt.axis([0, nombre_jour_par_mois[mois-1], 0, 100])
+    plt.grid(True)
     plt.title(u"Humidite moyenne en "+conversion_mois[mois-1]+" "+str(annee)+".")
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
@@ -242,6 +257,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     nom_minima = os.path.join(DIRECTORY, nf_min)
     minima_mensuels = [min([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, 0, 100])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.title(u"Courbe d'humidite de l'annee "+str(annee)+".")
@@ -253,6 +269,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     nom_maxima = os.path.join(DIRECTORY, nf_max)
     maxima_mensuels = [max([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, 0, 100])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.title(u"Courbe d'humidite de l'annee "+str(annee)+".")
@@ -264,6 +281,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     nom_moyennes = os.path.join(DIRECTORY, nf_moy)
     moyennes_mensuels = [np.mean([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
     plt.axis([0,12, 0, 100])
+    plt.grid(True)
     plt.xlabel(u"temps")
     plt.ylabel(u"humidite en %")
     plt.title(u"Courbe d'humidite de l'annee "+str(annee)+".")
