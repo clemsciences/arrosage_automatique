@@ -201,8 +201,12 @@ class Decideur(threading.Thread):
                     print "on mesure la température"
                     time.sleep(1)
                     lu = self.commu.ecouter()
+                    taille_lu = len(lu)
+                    lu = lu[:taille_lu - 2]
                     print lu
-                    if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None:
+                    print repr(lu)
+                    #if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None or re.match(r"[0-9].\.[0-9].", lu[5:]) is not None:
+                    if len(lu) > 0:
                         temperature = lu[5:] #TODO à remettre sans RX :
                         print temperature
                     elif re.match(r"[0-9].\.[0-9].", lu):
@@ -217,7 +221,11 @@ class Decideur(threading.Thread):
                     time.sleep(1)
                     lu = self.commu.ecouter()
                     print lu
-                    if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None:
+                    taille_lu = len(lu)
+                    lu = lu[:taille_lu - 2]
+                    print repr(lu)
+                    if len(lu) > 0:
+                    # if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None:
                         humidite = lu[5:] #TODO à remettre sans RX :
                         print humidite
                     elif re.match(r"[0-9].\.[0-9].", lu):
@@ -282,7 +290,7 @@ class Communication_Arduino:
         self.port_serie.write(a_envoyer)
         return a_envoyer
 
-    def quitter(self):
+    def quitter(elf):
         self.port_serie.close()
 
 if __name__ == "__main__":

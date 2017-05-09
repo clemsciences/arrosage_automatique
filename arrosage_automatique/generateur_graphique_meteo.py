@@ -4,8 +4,8 @@ import datetime
 import matplotlib.pyplot as plt
 import os
 DIRECTORY = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"
-conversion_mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre",
-                       "novembre", "décembre"]
+conversion_mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
+                       "novembre", "decembre"]
 
 conversion_jour = {"Mon" : "Lundi", "Tue" : "Mardi", "Wed" : "Mercredi", "Thu" : "Jeudi", "Fri" : "Vendredi",
                        "Sat" : "Samedi", "Sun" : "Dimanche"}
