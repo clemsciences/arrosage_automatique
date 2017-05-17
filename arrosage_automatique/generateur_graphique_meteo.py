@@ -12,6 +12,7 @@ conversion_jour = {"Mon" : "Lundi", "Tue" : "Mardi", "Wed" : "Mercredi", "Thu" :
 
 nombre_jour_par_mois = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
+
 def obtenir_courbe_temperature_jour(temps, temperatures):
     # jour en datetime.datetime.now()
     jour = temps[0]
@@ -97,7 +98,7 @@ def obtenir_courbe_temperature_mois(temps, temperatures, annee, mois):
     nf_moy = "moyennes_temperature_mois_"+str(annee)+"_"+str(mois)+".png"
     nom_moyennes_temperatures_mois = os.path.join(DIRECTORY, nf_moy)
     moyennes_par_jour = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].day == jour]) for jour in jours]
-    plt.axis([0,nombre_jour_par_mois[mois-1], -20, 40])
+    plt.axis([0, nombre_jour_par_mois[mois-1], -20, 40])
     plt.grid(True)
     plt.title(u"Temperature moyenne en "+conversion_mois[mois-1]+" "+str(annee))
     plt.xlabel(u"temps")
@@ -291,4 +292,5 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
 
     return nf_min, nf_max, nf_moy
 
-
+if __name__ == "__main__":
+    pass

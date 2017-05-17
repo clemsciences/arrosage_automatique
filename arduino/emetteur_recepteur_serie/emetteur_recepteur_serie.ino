@@ -8,6 +8,9 @@ const char ordre_eteindre_pompe[] = "eteindre_pompe";
 const char ordre_donner_temperature[] = "donner_temperature";
 const char ordre_donner_humidite[] = "donner_humidite";
 
+const char verification_connexion[] = "connexion_bet";
+const char resultat_connexion[] = "connexion_bet_ok";
+
 const uint8_t tranceiverPin = 6;
 const uint8_t receiverPin = 4;
 long euh = millis();
@@ -79,6 +82,13 @@ void loop()
         //eteindre pompe
         vw_send((uint8_t *)ordre_eteindre_pompe,strlen(ordre_eteindre_pompe)); // On envoie le message 
         vw_wait_tx();
+      }
+      else if(octet_lu == 111) //111 <=> o
+      {
+        //vrification de la connexion
+        vw_send((uint8_t *)verification_connexion,strlen(verification_connexion)); // On envoie le message 
+        vw_wait_tx();
+        Serial.println("demande de connexion...");
       }
     }
 }
