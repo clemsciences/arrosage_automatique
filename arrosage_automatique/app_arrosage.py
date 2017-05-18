@@ -88,7 +88,7 @@ def get_temperature_annee(annee):
     truc_pour_page_web = []
     for timme in range(1,13):
         if timme in mois_presents:
-            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme]))
+            truc_pour_page_web.append(np.mean([tempe for j, tempe in enumerate(temperatures) if temps[j].month == timme and type(tempe) == float]))
         else:
             truc_pour_page_web.append("non mesure")
     return render_template("affichage_temperature_annee.html", l_indices_mois=l_indices_mois, mois=l_mois,
