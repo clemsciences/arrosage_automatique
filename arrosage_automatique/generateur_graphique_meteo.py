@@ -169,7 +169,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     nom_minima_humidite = os.path.join(DIRECTORY, nf_min)
     temps_minima_par_heure = list(set([timme.hour for timme in temps]))
     temps_minima_par_heure.sort()
-    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_minima_par_heure]
+    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heurep]) for heure in temps_minima_par_heure]
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])

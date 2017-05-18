@@ -196,7 +196,7 @@ class Decideur(threading.Thread):
                 """
 
                 print distance_seconde(maintenant, derniere_prise_mesure)
-                if distance_seconde(maintenant, derniere_prise_mesure) > random.randint(5, 60):
+                if distance_seconde(maintenant, derniere_prise_mesure) > 30:  #random.randint(5, 60):
                     #demande la température et l'enregistre dans une base de donnée
                     self.commu.combien_temperature()
                     print "on mesure la température"
@@ -238,7 +238,7 @@ class Decideur(threading.Thread):
                         continue
                     #on met à jour la date de dernière mesure et la dernière mesure que si on a bien eu la température
                     ## et l'humidité
-                    if len(temperature) == 0 and len(humidite) == 0:
+                    if len(temperature) == 0 or len(humidite) == 0:
                         continue
                     self.recuperateur.enregistrer_mesure(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
                     derniere_prise_mesure = maintenant
