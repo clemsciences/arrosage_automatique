@@ -73,7 +73,6 @@ def get_temperature_jour(annee, mois, jour):
 @app.route("/temperature/<int:annee>/<int:mois>")
 def get_temperature_mois(annee, mois):
     temps, temperatures = recuperateur.obtenir_temprature_mois(annee, mois)
-    print(temperatures)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_mois(temps, temperatures, annee, mois)
     return render_template("affichage_temperature_mois.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
                            nom_image_moyenne=nom_image_moyenne, mois=l_mois[mois-1], annee=annee)

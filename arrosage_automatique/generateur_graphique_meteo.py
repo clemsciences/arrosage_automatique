@@ -68,8 +68,7 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
 
 
 def obtenir_courbe_temperature_mois(temps, temperatures, annee, mois):
-    # jour en datetime.datetime.now()
-    print(type(temperatures[0]))
+    # jour en datetime.datetime.now()    
     jours = list(set([jour.day for jour in temps]))
     jours.sort()
     nf_min = "minima_temperature_mois_"+str(annee)+"_"+str(mois)+".png"
