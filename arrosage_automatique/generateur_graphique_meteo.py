@@ -38,7 +38,7 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     #nom_maxima_temperature = "maxima_temperature_jour.png"
     temps_maxima_par_heure = list(set([timme.hour for timme in temps]))
     temps_maxima_par_heure.sort()
-    maxima_par_heure = [max([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_maxima_par_heure]
+    maxima_par_heure = [max([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float] ) for heure in temps_maxima_par_heure]
     plt.title(u"Courbe de temperature du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
@@ -54,7 +54,7 @@ def obtenir_courbe_temperature_jour(temps, temperatures):
     #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
     temps_moyennes_par_heure.sort()
-    moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure]) for heure in temps_moyennes_par_heure]
+    moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float]) for heure in temps_moyennes_par_heure]
     plt.title(u"Courbe de temperature du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0,24, -20, 40])
@@ -170,7 +170,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     nom_minima_humidite = os.path.join(DIRECTORY, nf_min)
     temps_minima_par_heure = list(set([timme.hour for timme in temps]))
     temps_minima_par_heure.sort()
-    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(tempe) == float]) for heure in temps_minima_par_heure]
+    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_minima_par_heure]
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
