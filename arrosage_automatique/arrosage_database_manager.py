@@ -74,7 +74,6 @@ class RecuperateurDonnees:
         #connex.commit()
         #[compteur, date, temperature, humidite] = cursor.fetchone()
         res = cursor.fetchall()
-        print res[0]
         res = [(i[0],i[1], i[2]) for i in res if datetime.timedelta.total_seconds(i.date - datetime.datetime.now()) < jours*86400]
         #res = []
         connex.close()
