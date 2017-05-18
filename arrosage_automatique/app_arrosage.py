@@ -7,7 +7,7 @@ import generateur_graphique_meteo
 import os
 chemin_images = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"
 app = Flask(__name__)
-recuperateur = RecuperateurDonnees()
+recuperateur = RecuperateurDonnees('C:\\Users\\Clément\\PycharmProjects\\arrosage_automatique\\arrosage_automatique\\arrosage_database.db')
 l_mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
                        "novembre", "decembre"]
 
@@ -65,7 +65,7 @@ def voir_les_chats():
 @app.route("/temperature/<int:annee>/<int:mois>/<int:jour>")
 def get_temperature_jour(annee, mois, jour):
     temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
-    print len(temps), len(temperatures)
+    #print len(temps), len(temperatures)
     nom_image_min, nom_image_max, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
     return render_template("affichage_temperature_jour.html", nom_image_min=nom_image_min, nom_image_max=nom_image_max,
                            nom_image_moyenne=nom_image_moyenne, annee=annee, mois=l_mois[mois-1], jour=jour)
@@ -134,8 +134,6 @@ def get_humidite_annee(annee):
 @app.route("/temperature/image/<int:annee>/<int:mois>/<int:jour>/<string:genre>")
 def get_temperature_jour_image(annee, mois, jour, genre="moyenne"):
     temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
-    print temps
-    print temperatures
     if genre == "min":
         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
     elif genre == "max":
