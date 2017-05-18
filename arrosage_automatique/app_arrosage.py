@@ -7,7 +7,7 @@ import generateur_graphique_meteo
 import os
 chemin_images = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"
 app = Flask(__name__)
-recuperateur = RecuperateurDonnees('C:\\Users\\Clément\\PycharmProjects\\arrosage_automatique\\arrosage_automatique\\arrosage_database.db')
+recuperateur = RecuperateurDonnees() #'C:\\Users\\Clément\\PycharmProjects\\arrosage_automatique\\arrosage_automatique\\arrosage_database.db')
 l_mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
                        "novembre", "decembre"]
 
