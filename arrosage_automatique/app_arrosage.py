@@ -133,7 +133,7 @@ def get_global_jour(annee, mois, jour):
     temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
     temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
     #print len(temps), len(temperatures)
-    nom_image_temperature, nom_image_humidite, nom_image_moyenne = generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites)
+    nom_image_temperature, nom_image_humidite = generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites)
     return render_template("affichage_global_jour.html", nom_image_temperature=nom_image_temperature, nom_image_humidite=nom_image_humidite,
                            annee=annee, mois=l_mois[mois-1], jour=jour)
 
