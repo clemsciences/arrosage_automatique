@@ -285,6 +285,9 @@ class Communication_Arduino:
         # eteindre_arrosage
         self.port_serie.write("e")
 
+    def demander_si_bonne_reception(self):
+        self.port_serie.write("o")
+
     # def en_train_d_arroser(self):
     # self.port_serie.write("en_train_d_arroser")
     def ecouter(self):
