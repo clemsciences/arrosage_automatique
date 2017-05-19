@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Suivi des données météorologiques du jour : le {{ jour }} {{ mois }} {{ annee }}</title>
+</head>
+<body>
+<h1> Les données du {{ jour }} {{ mois }} {{ annee }}</h1>
+<img src="{{ url_for('static', filename = 'images/'+nom_image_temperature) }}" alt="Courbes des moyennes de température"/>
+<img src="{{ url_for('static', filename = 'images/'+nom_image_humidite) }}" alt="Courbe moyenne de l'hygrométrie"/>
+<a href="/">Retour à l'accueil </a>
+</body>
+</html>

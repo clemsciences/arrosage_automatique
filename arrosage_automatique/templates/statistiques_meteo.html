@@ -1,12 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head lang="fr">
-    <meta charset="UTF-8">
+
+</html>
+
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="i18n/datepicker-fr.js"></script>
+  <script>
+  $( function() {
+      $( "#datepicker" ).datepicker( $.datepicker.regional[ "fr" ] );
+  } );
+  </script>
     <title>Ici les statistiques sur les données météorologiques !</title>
 </head>
 <body>
-<p> C'est super, je m'amuse</p>
-<p> En fait, c'est déjà fait ailleurs</p>
+
+<body>
+
+<p>Date: <input type="text" id="datepicker">&nbsp;</p>
+<form action="">
+  <input type="radio" name="periode" value="jour"> jour<br>
+  <input type="radio" name="periode" value="mois"> mois<br>
+  <input type="radio" name="periode" value="annee"> année
+</form>
+
+<form action="">
+  <input type="radio" name="grandeur" value="temperature"> température<br>
+  <input type="radio" name="grandeur" value="humidite"> humidité<br>
+  <input type="radio" name="grandur" value="complet"> complet
+</form>
+
+
+<button type="button"">Générer graphique</button>
+
 <a href="/">Retour à l'accueil </a>
 </body>
 </html>

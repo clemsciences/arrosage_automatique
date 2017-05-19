@@ -197,6 +197,8 @@ class Decideur(threading.Thread):
 
                 print distance_seconde(maintenant, derniere_prise_mesure)
                 if distance_seconde(maintenant, derniere_prise_mesure) > 30:  #random.randint(5, 60):
+                    temperature = ""
+                    humidite = ""
                     #demande la température et l'enregistre dans une base de donnée
                     self.commu.combien_temperature()
                     print "on mesure la température"
@@ -217,6 +219,7 @@ class Decideur(threading.Thread):
                         print "mauvaise donnée"
                         temperature = 0
                         continue
+                    time.sleep(0.5)
                     self.commu.combien_humidite()
                     print "on mesure l'humidité"
                     time.sleep(1)

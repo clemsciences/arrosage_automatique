@@ -301,4 +301,45 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     return nf_min, nf_max, nf_moy
 
 
+def obtenir_courbe_global_jour(temps, temperatures, humidites):
+    jour = temps[0]
+    jour_semaine = jour.ctime()[:3]
+
+    nom_im_humi = "moyennes_humidite_jour_"+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+    nom_moyennes_humidite = os.path.join(DIRECTORY, nom_im_humi)
+    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+    temps_moyennes_par_heure.sort()
+    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_moyennes_par_heure]
+    plt.title(u"Courbe d'humidite du "+
+              conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+    plt.axis([0, 24, 0, 100])
+    plt.grid(True)
+    plt.xlabel(u"temps")
+    plt.ylabel(u"humidite en %")
+    plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+    plt.savefig(nom_moyennes_humidite)
+    plt.close()
+
+
+    nom_im_temp = "moyennes_temperature_jour_"+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+    nom_moyennes_temperatures = os.path.join(DIRECTORY, nom_im_temp)
+    #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
+    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+    temps_moyennes_par_heure.sort()
+    moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float]) for heure in temps_moyennes_par_heure]
+    plt.title(u"Courbe de temperature du "+
+              conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+    plt.axis([0,24, -20, 40])
+    plt.grid(True)
+    plt.xlabel(u"temps")
+    plt.ylabel(u"temperature en °C")
+    plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+    plt.savefig(nom_moyennes_temperatures)
+    plt.close()
+
+    return nom_im_temp, nom_im_humi
+
+
+
+
 
