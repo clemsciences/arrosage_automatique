@@ -204,7 +204,7 @@ class Decideur(threading.Thread):
                     lu_pression = self.commu.ecouter()
                     print(lu_pression)
                     taille_lu = len(lu_pression)
-                    pression = lu_pression[9:taille_lu - 3] # extraire la pression de "pression: ..... hPa"
+                    pression = lu_pression[9:taille_lu - 6] # extraire la pression de "pression: ..... hPa"
                     print(pression)
                     self.recuperateur.enregistrer_pression(pression)
 
@@ -214,7 +214,7 @@ class Decideur(threading.Thread):
                     lu_temperature_interieure = self.commu.ecouter()
                     print(lu_temperature_interieure)
                     taille_lu = len(lu_temperature_interieure)
-                    temperature_interieure = lu_temperature_interieure[25:taille_lu - 2]
+                    temperature_interieure = lu_temperature_interieure[24:taille_lu - 4]
                     print(temperature_interieure)
                     derniere_prise_mesure_interieure = maintenant
                     self.recuperateur.enregistrer_temperature_interieure(temperature_interieure)
