@@ -338,7 +338,7 @@ def obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_
     plt.close()
 
     nom_im_pres = "moyennes_pression_jour_"+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
-    nom_moyennes_pressions = os.path.join(DIRECTORY, nom_im_temp)
+    nom_moyennes_pressions = os.path.join(DIRECTORY, nom_im_pres)
     #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
     temps_moyennes_par_heure.sort()
