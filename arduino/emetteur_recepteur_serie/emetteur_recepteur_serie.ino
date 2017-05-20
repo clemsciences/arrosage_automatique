@@ -113,8 +113,10 @@ void loop()
             /* Display atmospheric pressue in hPa */
             Serial.print("pression:");
             Serial.print(event.pressure+7.23); //calibration
-            Serial.println(" hPa");
-            delay(2000);
+            Serial.println(" hPa");            
+          }
+          else if(octet_lu == 105) //105 <=> i
+          {
             float temperature;
             bmp.getTemperature(&temperature);
             Serial.print("temperature_interieure: ");

@@ -201,15 +201,18 @@ class Decideur(threading.Thread):
                     print("on lit la pression")
                     self.commu.combien_pression()
                     lu_pression = self.commu.ecouter()
+                    time.sleep(1)
                     taille_lu = len(lu_pression)
                     pression = lu_pression[9:taille_lu - 3] # extraire la pression de "pression: ..... hPa"
                     self.recuperateur.enregistrer_pression(pression)
+
                     print("on lit la température intérieure")
+                    self.commu.combien_temperature_interieure()
+                    time.sleep(1)
                     lu_temperature_interieure = self.commu.ecouter()
                     taille_lu = len(lu_temperature_interieure)
                     temperature_interieure = lu_temperature_interieure[25:taille_lu - 2]
                     derniere_prise_mesure_interieure = maintenant
-                    time.sleep(1)
                     self.recuperateur.enregistrer_temperature_interieure(temperature_interieure)
                 if distance_seconde(maintenant, derniere_prise_mesure_exterieure) > 30:  #random.randint(5, 60):
 
@@ -296,6 +299,9 @@ class Communication_Arduino:
     def combien_pression(self):
         # combien pression atmosphérique
         self.port_serie.write("p")
+
+    def combien_temperature_interieure(self):
+        self.port_serie.write("i")
 
     def arroser(self):
         # arroser
