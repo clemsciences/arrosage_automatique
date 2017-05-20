@@ -200,7 +200,7 @@ class Decideur(threading.Thread):
                 if distance_seconde(maintenant, derniere_prise_mesure_interieure) > 30:  #random.randint(5, 60):
                     print("on lit la pression")
                     self.commu.combien_pression()
-                    time.sleep(3)
+                    time.sleep(1)
                     lu_pression = self.commu.ecouter()
                     print(lu_pression)
                     taille_lu = len(lu_pression)
@@ -210,7 +210,7 @@ class Decideur(threading.Thread):
 
                     print("on lit la température intérieure")
                     self.commu.combien_temperature_interieure()
-                    time.sleep(3)
+                    time.sleep(1)
                     lu_temperature_interieure = self.commu.ecouter()
                     print(lu_temperature_interieure)
                     taille_lu = len(lu_temperature_interieure)
