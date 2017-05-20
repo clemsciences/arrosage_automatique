@@ -9,7 +9,13 @@ if platform.system() == "Windows":
 else:
     PORT = "/dev/ttyACM0"
 commu = communication_arduino.Communication_Arduino(PORT)
-
+time.sleep(3)
+print(commu.ecouter())
+print(commu.ecouter())
 commu.combien_pression()
 time.sleep(1)
+print(commu.ecouter())
+print(commu.ecouter())
+print(commu.ecouter())
+print(commu.ecouter())
 print(commu.ecouter())
