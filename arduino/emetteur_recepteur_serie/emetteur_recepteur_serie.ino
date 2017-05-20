@@ -103,6 +103,14 @@ void loop()
         vw_wait_tx();
         Serial.println("demande de connexion...");
       }
+      else if(octet_lu == 105) //105 <=> i
+      {
+        float temperature;
+        bmp.getTemperature(&temperature);
+        Serial.print("temperature_interieure: ");
+        Serial.print(temperature);
+        Serial.println(" C");
+      }
       else if(octet_lu == 112) //112 <=> p
       {
           //demande de la pression
@@ -115,14 +123,7 @@ void loop()
             Serial.print(event.pressure+7.23); //calibration
             Serial.println(" hPa");            
           }
-          else if(octet_lu == 105) //105 <=> i
-          {
-            float temperature;
-            bmp.getTemperature(&temperature);
-            Serial.print("temperature_interieure: ");
-            Serial.print(temperature); //pour ramener la pression au niveau de la mer
-            Serial.println(" °C");
-          }
+          
           else
           {
             Serial.println("Probleme avec le barometre");
