@@ -38,7 +38,6 @@ void setup()
       /* There was a problem detecting the BMP085 ... check your connections */
       Serial.print("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
     }
-    Serial.println("ca commence");
 
 }
 

@@ -200,18 +200,22 @@ class Decideur(threading.Thread):
                 if distance_seconde(maintenant, derniere_prise_mesure_interieure) > 30:  #random.randint(5, 60):
                     print("on lit la pression")
                     self.commu.combien_pression()
+                    time.sleep(3)
                     lu_pression = self.commu.ecouter()
-                    time.sleep(1)
+                    print(lu_pression)
                     taille_lu = len(lu_pression)
                     pression = lu_pression[9:taille_lu - 3] # extraire la pression de "pression: ..... hPa"
+                    print(pression)
                     self.recuperateur.enregistrer_pression(pression)
 
                     print("on lit la température intérieure")
                     self.commu.combien_temperature_interieure()
-                    time.sleep(1)
+                    time.sleep(3)
                     lu_temperature_interieure = self.commu.ecouter()
+                    print(lu_temperature_interieure)
                     taille_lu = len(lu_temperature_interieure)
                     temperature_interieure = lu_temperature_interieure[25:taille_lu - 2]
+                    print(temperature_interieure)
                     derniere_prise_mesure_interieure = maintenant
                     self.recuperateur.enregistrer_temperature_interieure(temperature_interieure)
                 if distance_seconde(maintenant, derniere_prise_mesure_exterieure) > 30:  #random.randint(5, 60):
