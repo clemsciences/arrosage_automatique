@@ -384,3 +384,7 @@ class RecuperateurDonnees:
         dates = [mesure[2] for mesure in mesures_voulues]
         connex.close()
         return dates, pressions
+
+if __name__ == "__main__":
+    a = RecuperateurDonnees()
+    a.creer_table()

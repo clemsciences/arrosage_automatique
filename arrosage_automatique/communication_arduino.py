@@ -261,8 +261,8 @@ class Decideur(threading.Thread):
                     derniere_prise_mesure_exterieure = maintenant
 
 
-                if distance_seconde(maintenant, derniere_prise_mesure) > 3600:
-                    pass
+                #if distance_seconde(maintenant, derniere_prise_mesure) > 3600:
+                #    pass
                     #TODO problème de réception, il faut envoyer un courriel d'erreur !
                 time.sleep(0.5)
             except SerialException:
