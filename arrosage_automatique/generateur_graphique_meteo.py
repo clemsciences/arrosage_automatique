@@ -301,7 +301,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     return nf_min, nf_max, nf_moy
 
 
-def obtenir_courbe_global_jour(temps, temperatures, humidites):
+def obtenir_courbe_global_jour(temps, temperatures, humidites, pressions):
     jour = temps[0]
     jour_semaine = jour.ctime()[:3]
 
@@ -337,7 +337,24 @@ def obtenir_courbe_global_jour(temps, temperatures, humidites):
     plt.savefig(nom_moyennes_temperatures)
     plt.close()
 
-    return nom_im_temp, nom_im_humi
+    nom_im_pres = "moyennes_pression_jour_"+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+    nom_moyennes_pressions = os.path.join(DIRECTORY, nom_im_temp)
+    #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
+    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+    temps_moyennes_par_heure.sort()
+    moyennes_par_heure = [np.mean([pres for i, pres in enumerate(pressions) if temps[i].hour == heure and type(pres) == float]) for heure in temps_moyennes_par_heure]
+    plt.title(u"Courbe de pression du "+
+              conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+    plt.axis([0,24, 970, 1040])
+    plt.grid(True)
+    plt.xlabel(u"temps")
+    plt.ylabel(u"pression en hPa")
+    plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+    plt.savefig(nom_moyennes_pressions)
+    plt.close()
+
+    return nom_im_temp, nom_im_humi, nom_im_pres
+
 
 
 

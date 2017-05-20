@@ -134,7 +134,8 @@ class Decideur(threading.Thread):
         """
         print "on mesure aussi !"
         derniere_mise_a_jour = time.time()
-        derniere_prise_mesure = time.time()
+        derniere_prise_mesure_exterieure = time.time()
+        derniere_prise_mesure_interieure = time.time()
         temps_dernier_arrosage = 0
 
         en_train_d_arroser = False
@@ -195,8 +196,23 @@ class Decideur(threading.Thread):
                         Arrosage(duree=duree_reelle_arrosage).save()
                 """
 
-                print distance_seconde(maintenant, derniere_prise_mesure)
-                if distance_seconde(maintenant, derniere_prise_mesure) > 30:  #random.randint(5, 60):
+                print distance_seconde(maintenant, derniere_prise_mesure_interieure)
+                if distance_seconde(maintenant, derniere_prise_mesure_interieure) > 30:  #random.randint(5, 60):
+                    self.commu.combien_pression()
+                    time.sleep(1)
+                    lu_pression = self.commu.ecouter()
+                    taille_lu = len(lu_pression)
+                    pression = lu_pression[9:taille_lu - 3] # extraire la pression de "pression: ..... hPa"
+                    self.recuperateur.enregistrer_pression(pression)
+
+                    lu_temperature_interieure = self.commu.ecouter()
+                    taille_lu = len(lu_temperature_interieure)
+                    temperature_interieure = lu_temperature_interieure[25:taille_lu - 2]
+                    derniere_prise_mesure_interieure = maintenant
+                    time.sleep(1)
+                    self.recuperateur.enregistrer_temperature_interieure(temperature_interieure)
+                if distance_seconde(maintenant, derniere_prise_mesure_exterieure) > 30:  #random.randint(5, 60):
+
                     temperature = ""
                     humidite = ""
                     #demande la température et l'enregistre dans une base de donnée
@@ -217,7 +233,6 @@ class Decideur(threading.Thread):
                         print temperature
                     else:
                         print "mauvaise donnée"
-                        temperature = 0
                         continue
                     time.sleep(0.5)
                     self.commu.combien_humidite()
@@ -237,14 +252,15 @@ class Decideur(threading.Thread):
                         print humidite
                     else:
                         print "mauvaise donnée humidité"
-                        humidite = 0
                         continue
                     #on met à jour la date de dernière mesure et la dernière mesure que si on a bien eu la température
                     ## et l'humidité
                     if len(temperature) == 0 or len(humidite) == 0:
                         continue
                     self.recuperateur.enregistrer_mesure(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
-                    derniere_prise_mesure = maintenant
+                    derniere_prise_mesure_exterieure = maintenant
+
+
                 if distance_seconde(maintenant, derniere_prise_mesure) > 3600:
                     pass
                     #TODO problème de réception, il faut envoyer un courriel d'erreur !
@@ -276,6 +292,10 @@ class Communication_Arduino:
     def combien_humidite(self):
         # combien_humidite
         self.port_serie.write("h")
+
+    def combien_pression(self):
+        # combien pression atmosphérique
+        self.port_serie.write("p")
 
     def arroser(self):
         # arroser

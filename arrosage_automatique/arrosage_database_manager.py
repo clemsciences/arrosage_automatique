@@ -52,6 +52,18 @@ class RecuperateurDonnees:
             humidite REAL,
             date_heure timestamp)
 		""")
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS CONDITIONS_INTRIEURES(
+            compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+            temperature REAL,
+            date_heure timestamp)
+            """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS PRESSION_ATMO(
+            compteur INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+            pression REAL,
+            date_heure timestamp)
+            """)
         conn.commit()
         conn.close()
 
@@ -64,6 +76,7 @@ class RecuperateurDonnees:
             """, (emetteur, recepteur, objet, texte))
         connex.commit()
         connex.close()
+
     def obtenir_conditions_meteorologiques_depuis(self, jours):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         cursor = connex.cursor()
@@ -201,6 +214,25 @@ class RecuperateurDonnees:
         connex.commit()
         connex.close()
 
+    def enregistrer_pression(self, pression):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        #cursor = connex.cursor()
+        connex.execute("""
+            INSERT INTO PRESSION_ATMO(pression, date_heure)
+            VALUES (?,?);
+            """, (pression, datetime.datetime.now()))
+        connex.commit()
+        connex.close()
+
+    def enregistrer_temperature_interieure(self, temperature_interieure):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        #cursor = connex.cursor()
+        connex.execute("""
+            INSERT INTO CONDITIONS_INTRIEURES(temperature, date_heure)
+            VALUES (?,?);
+            """, (temperature_interieure, datetime.datetime.now() ))
+        connex.commit()
+        connex.close()
 
 
     # Fonctions pour afficher les graphiques voulus
@@ -302,3 +334,53 @@ class RecuperateurDonnees:
         dates = [mesure[3] for mesure in mesures_voulues]
         connex.close()
         return dates, humidites
+
+
+    def obtenir_pression_jour(self, annee, mois, jour):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
+        cursor.execute("""
+        SELECT *
+        FROM PRESSION_ATMO
+        """)
+
+        #connex.commit() # [compteur, temperature, humidite, date]
+        res = cursor.fetchall()
+        mesures_voulues = [mesure for mesure in res if mesure[2].day == jour and mesure[2].month == mois and
+                           mesure[2].year == annee]
+        pressions = [mesure[1] for mesure in mesures_voulues]
+        dates = [mesure[2] for mesure in mesures_voulues]
+        connex.close()
+        return dates, pressions
+
+    def obtenir_pression_mois(self, annee, mois):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
+        cursor.execute("""
+        SELECT *
+        FROM PRESSION_ATMO
+        """)
+
+        #connex.commit() # [compteur, temperature, humidite, date]
+        res = cursor.fetchall()
+        mesures_voulues = [mesure for mesure in res if mesure[2].month == mois and mesure[2].year == annee]
+        pressions = [mesure[1] for mesure in mesures_voulues]
+        dates = [mesure[2] for mesure in mesures_voulues]
+        connex.close()
+        return dates, pressions
+
+    def obtenir_pression_annee(self, annee):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
+        cursor.execute("""
+        SELECT *
+        FROM PRESSION_ATMO
+        """)
+
+        #connex.commit() # [compteur, temperature, humidite, date]
+        res = cursor.fetchall()
+        mesures_voulues = [mesure for mesure in res if mesure[2].year == annee]
+        pressions = [mesure[1] for mesure in mesures_voulues]
+        dates = [mesure[2] for mesure in mesures_voulues]
+        connex.close()
+        return dates, pressions

@@ -2,6 +2,11 @@
  * Ce code permet la réception de signaux se baladant sur une onde-électromégnétique de longueur d'onde 434MHz.
  */
 #include <VirtualWire.h> // On inclut la librairie VirtualWire
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BMP085_U.h>
+
+
 const char ordre_allumer_pompe[] = "allumer_pompe";
 const char ordre_eteindre_pompe[] = "eteindre_pompe";
 
@@ -17,6 +22,8 @@ long euh = millis();
 
 int octet_lu = 0;
 
+Adafruit_BMP085_Unified bmp = Adafruit_BMP085_Unified(10085);
+
 void setup()
 {
     Serial.begin(9600); // Initialisation du port série pour avoir un retour sur le serial monitor
@@ -25,7 +32,13 @@ void setup()
     vw_set_rx_pin(receiverPin);   // On indique que l'on veut utiliser la broche 2 pour recevoir
     vw_set_tx_pin(tranceiverPin);     // On indique que l'on veut utiliser la pin 10 de l'Arduino pour émettre
     vw_rx_start();      // Activation de la partie réception de la librairie VirtualWire
-    
+    /* Initialise the sensor */
+    if(!bmp.begin())
+    {
+      /* There was a problem detecting the BMP085 ... check your connections */
+      Serial.print("Ooops, no BMP085 detected ... Check your wiring or I2C ADDR!");
+    }
+    Serial.println("ca commence");
 
 }
 
@@ -90,7 +103,28 @@ void loop()
         vw_wait_tx();
         Serial.println("demande de connexion...");
       }
-    }
-    
+      else if(octet_lu == 112) //112 <=> p
+      {
+          //demande de la pression
+          sensors_event_t event;
+          bmp.getEvent(&event);
+          if (event.pressure)
+          {
+            /* Display atmospheric pressue in hPa */
+            Serial.print("pression:");
+            Serial.print(event.pressure+7.23); //calibration
+            Serial.println(" hPa");
+            delay(2000);
+            float temperature;
+            bmp.getTemperature(&temperature);
+            Serial.print("temperature_interieure: ");
+            Serial.print(temperature); //pour ramener la pression au niveau de la mer
+            Serial.println(" °C");
+          }
+          else
+          {
+            Serial.println("Probleme avec le barometre");
+          }
+        }
+      }   
 }
-
