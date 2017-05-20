@@ -39,7 +39,8 @@ def rapport_courriel():
 @app.route("/meteo_maintenant/")
 def meteo_maintenant():
     _, temperature, humidite, date_heure = recuperateur.obtenir_derniere_mesure_meteo()
-    return render_template("meteo_maintenant.html", temperature=temperature, humidite=humidite, date_heure=date_heure)
+    _, pression, _ = recuperateur.obtenir_derniere_pression()
+    return render_template("meteo_maintenant.html", temperature=temperature, humidite=humidite, date_heure=date_heure, pression=pression)
 
 
 @app.route("/rapport_etat_systeme")
