@@ -169,7 +169,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     nom_minima_humidite = os.path.join(DIRECTORY, nf_min)
     temps_minima_par_heure = list(set([timme.hour for timme in temps]))
     temps_minima_par_heure.sort()
-    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_minima_par_heure]
+    minima_par_heure = [min([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float]) for heure in temps_minima_par_heure]
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
@@ -184,7 +184,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     nom_maxima_humidite = os.path.join(DIRECTORY, nf_max)
     temps_maxima_par_heure = list(set([timme.hour for timme in temps]))
     temps_maxima_par_heure.sort()
-    maxima_par_heure = [max([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_maxima_par_heure]
+    maxima_par_heure = [max([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float]) for heure in temps_maxima_par_heure]
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
@@ -199,7 +199,7 @@ def obtenir_courbe_humidite_jour(temps, humidites):
     nom_moyennes_humidite = os.path.join(DIRECTORY, nf_moy)
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
     temps_moyennes_par_heure.sort()
-    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_moyennes_par_heure]
+    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float]) for heure in temps_moyennes_par_heure]
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
@@ -218,7 +218,7 @@ def obtenir_courbe_humidite_mois(temps, humidites, annee, mois):
     jours.sort()
     nf_min = "minima_humidite_mois_"+str(annee)+"_"+str(mois)+".png"
     nom_minima_humidites_mois = os.path.join(DIRECTORY, nf_min)
-    minima_par_jour = [min([humi for i, humi in enumerate(humidites) if temps[i].day == jour]) for jour in jours]
+    minima_par_jour = [min([humi for i, humi in enumerate(humidites) if temps[i].day == jour and type(humi) == float]) for jour in jours]
     plt.axis([0, nombre_jour_par_mois[mois-1], 0, 100])
     plt.grid(True)
     plt.title(u"Humidite minimale en "+conversion_mois[mois-1]+" "+str(annee)+".")
@@ -230,7 +230,7 @@ def obtenir_courbe_humidite_mois(temps, humidites, annee, mois):
 
     nf_max = "maxima_humidite_mois_"+str(annee)+"_"+str(mois)+".png"
     nom_maxima_humidites_mois = os.path.join(DIRECTORY, nf_max)
-    maxima_par_jour = [max([humi for i, humi in enumerate(humidites) if temps[i].day == jour]) for jour in jours]
+    maxima_par_jour = [max([humi for i, humi in enumerate(humidites) if temps[i].day == jour and type(humi) == float]) for jour in jours]
     plt.axis([0, nombre_jour_par_mois[mois-1], 0, 100])
     plt.grid(True)
     plt.title(u"Humidite maximale en "+conversion_mois[mois-1]+" "+str(annee)+".")
@@ -242,7 +242,7 @@ def obtenir_courbe_humidite_mois(temps, humidites, annee, mois):
 
     nf_moy = "moyennes_humidite_mois_"+str(annee)+"_"+str(mois)+".png"
     nom_moyennes_humidites_mois = os.path.join(DIRECTORY, nf_moy)
-    moyennes_par_jour = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].day == jour]) for jour in jours]
+    moyennes_par_jour = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].day == jour and type(humi) == float]) for jour in jours]
     plt.axis([0, nombre_jour_par_mois[mois-1], 0, 100])
     plt.grid(True)
     plt.title(u"Humidite moyenne en "+conversion_mois[mois-1]+" "+str(annee)+".")
@@ -264,7 +264,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     #temps_repartis_par_mois = [[j for j, te in enumerate(temps) if te.month == i].sort(lambda x: x.day) for i in mois_presents]
     nf_min = "nom_humidite_annee_minima_"+str(annee)+".png"
     nom_minima = os.path.join(DIRECTORY, nf_min)
-    minima_mensuels = [min([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
+    minima_mensuels = [min([humi for j, humi in enumerate(humidites) if temps[j].month == i and type(humi) == float]) for i in mois_presents]
     plt.axis([0,12, 0, 100])
     plt.grid(True)
     plt.xlabel(u"temps")
@@ -276,7 +276,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
 
     nf_max = "nom_humidite_annee_maxima_"+str(annee)+".png"
     nom_maxima = os.path.join(DIRECTORY, nf_max)
-    maxima_mensuels = [max([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
+    maxima_mensuels = [max([humi for j, humi in enumerate(humidites) if temps[j].month == i and type(humi) == float]) for i in mois_presents]
     plt.axis([0,12, 0, 100])
     plt.grid(True)
     plt.xlabel(u"temps")
@@ -288,7 +288,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
 
     nf_moy = "nom_humidite_annee_moyennes_"+str(annee)+".png"
     nom_moyennes = os.path.join(DIRECTORY, nf_moy)
-    moyennes_mensuels = [np.mean([humi for j, humi in enumerate(humidites) if temps[j].month == i]) for i in mois_presents]
+    moyennes_mensuels = [np.mean([humi for j, humi in enumerate(humidites) if temps[j].month == i and type(humi) == float]) for i in mois_presents]
     plt.axis([0,12, 0, 100])
     plt.grid(True)
     plt.xlabel(u"temps")
@@ -309,7 +309,7 @@ def obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_
     nom_moyennes_humidite = os.path.join(DIRECTORY, nom_im_humi)
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
     temps_moyennes_par_heure.sort()
-    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure]) for heure in temps_moyennes_par_heure]
+    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float]) for heure in temps_moyennes_par_heure]
     plt.title(u"Courbe d'humidite du "+
               conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
     plt.axis([0, 24, 0, 100])
