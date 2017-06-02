@@ -10,13 +10,9 @@ class RecuperateurDonnees:
     def __init__(self, chemin_base_donnee="/home/pi/arrosage_automatique/arrosage_automatique/arrosage_database.db"):
         assert isinstance(chemin_base_donnee, str)
         self.chemin_base_donnee = chemin_base_donnee
-        self.connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         if not os.path.isfile(self.chemin_base_donnee):
             self.creer_table()
             os.system("chmod 777 arrosage_database.db")
-
-    def __del__(self):
-        self.connex.close()
 
     def creer_table(self):
         conn = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
@@ -72,15 +68,18 @@ class RecuperateurDonnees:
         conn.close()
 
     def enregistrer_courriel(self, emetteur, recepteur, objet, texte):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
-        self.connex.execute("""
+        connex.execute("""
             INSERT INTO COURRIEL(emetteur, recepteur, objet, texte)
             VALUES (?,?,?,?);
             """, (emetteur, recepteur, objet, texte))
-        self.connex.commit()
+        connex.commit()
+        connex.close()
 
     def obtenir_conditions_meteorologiques_depuis(self, jours):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -90,7 +89,7 @@ class RecuperateurDonnees:
         res = cursor.fetchall()
         res = [(i[0],i[1], i[2]) for i in res if datetime.timedelta.total_seconds(i.date - datetime.datetime.now()) < jours*86400]
         #res = []
-        self.connex.close()
+        connex.close()
         return res
 
     def obtenir_conditions_meteorologiques(self):
@@ -99,7 +98,8 @@ class RecuperateurDonnees:
         :return:
         """
 
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -109,6 +109,7 @@ class RecuperateurDonnees:
         #connex.commit()
         # [compteur, temperature, humidite, date] = cursor.fetchone()
         res = cursor.fetchone()
+        connex.close()
         return res
 
     def enregistrer_arrosage(self, duree):
@@ -117,21 +118,25 @@ class RecuperateurDonnees:
         :param duree : durée de l'arrosage
         :return:
         """
-        self.connex.execute("""
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        #cursor = connex.cursor()
+        connex.execute("""
             INSERT INTO ARROSAGE(date_heure, duree)
             VALUES (?,?);
             """, (datetime.datetime.now(), str(duree)))
-        self.connex.commit()
+        connex.commit()
+        connex.close()
 
     def obtenir_dernier_arrosage(self):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
             SELECT *
             FROM  ARROSAGE
             WHERE compteur IN (SELECT max(compteur) FROM ARROSAGE)
             """)
-        res = cursor.fetchone()
-        cursor.close()
+        res = connex.fetchone()
+        connex.close()
         # (date_heure, duree)
         return res
 
@@ -141,7 +146,8 @@ class RecuperateurDonnees:
         moment adéquat pour arroser
         :return:
         """
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_ARROSAGE
@@ -151,11 +157,12 @@ class RecuperateurDonnees:
         #connex.commit()
         # [compteur, temperature_min, humidite_max, frequence_min, heure_min, heure_max, duree ] = cursor.fetchone()
         res = cursor.fetchone()
-        cursor.close()
+        connex.close()
         return res
 
     def obtenir_derniere_mesure_meteo(self):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -165,26 +172,12 @@ class RecuperateurDonnees:
         #connex.commit()
         # [compteur, temperature, humidite, date_heure = cursor.fetchone()
         res = cursor.fetchone()
-        cursor.close()
-        return res
-
-
-    def obtenir_derniere_pression(self):
-        cursor = self.connex.cursor()
-        cursor.execute("""
-        SELECT *
-        FROM PRESSION_ATMO
-        WHERE compteur IN (SELECT max(compteur) FROM PRESSION_ATMO)
-        """)
-
-        #connex.commit()
-        # [compteur, temperature, humidite, date_heure = cursor.fetchone()
-        res = cursor.fetchone()
-        cursor.close()
+        connex.close()
         return res
 
     def enregistrer_temperature_humidite(self, temperature, humidite):
         # fonction quasiment identique à enregistrer_humidite
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
         #cursor.execute("""
         #SELECT compteur
@@ -194,48 +187,58 @@ class RecuperateurDonnees:
 
         #connex.commit()
         #compteur = cursor.fetchone()
-        self.connex.execute("""
+        connex.execute("""
          INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
           VALUES (?,?,?);
            """, (str(temperature), str(humidite), datetime.datetime.now())) #  time.asctime(date_exacte)
-        self.connex.commit()
+        connex.commit()
+        connex.close()
 
     def enregistrer_humidite(self, temperature, humidite):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
-        self.connex.execute("""
+        connex.execute("""
              INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
             VALUES (?,?,?);
             """, (str(temperature), str(humidite), datetime.datetime.now()))
-        self.connex.commit()
+        connex.commit()
+        connex.close()
 
     def enregistrer_mesure(self, temperature, humidite):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
-        self.connex.execute("""
+        connex.execute("""
             INSERT INTO CONDITIONS_METEOROLOGIQUES(temperature, humidite, date_heure)
             VALUES (?,?,?);
             """, (str(temperature), str(humidite), datetime.datetime.now() ))
-        self.connex.commit()
+        connex.commit()
+        connex.close()
 
     def enregistrer_pression(self, pression):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
-        self.connex.execute("""
+        connex.execute("""
             INSERT INTO PRESSION_ATMO(pression, date_heure)
             VALUES (?,?);
             """, (pression, datetime.datetime.now()))
-        self.connex.commit()
+        connex.commit()
+        connex.close()
 
     def enregistrer_temperature_interieure(self, temperature_interieure):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
-        self.connex.execute("""
+        connex.execute("""
             INSERT INTO CONDITIONS_INTRIEURES(temperature, date_heure)
             VALUES (?,?);
             """, (temperature_interieure, datetime.datetime.now() ))
-        self.connex.commit()
+        connex.commit()
+        connex.close()
 
 
     # Fonctions pour afficher les graphiques voulus
     def obtenir_temperature_jour(self, annee, mois, jour):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -247,11 +250,12 @@ class RecuperateurDonnees:
                            mesure[3].year == annee]
         temperatures = [mesure[1] for mesure in mesures_voulues]
         dates = [mesure[3] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, temperatures
 
     def obtenir_temprature_mois(self, annee, mois):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -262,12 +266,13 @@ class RecuperateurDonnees:
         mesures_voulues = [mesure for mesure in res if mesure[3].month == mois and mesure[3].year == annee]
         temperatures = [mesure[1] for mesure in mesures_voulues]
         dates = [mesure[3] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, temperatures
 
 
     def obtenir_temprature_annee(self, annee):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -278,11 +283,12 @@ class RecuperateurDonnees:
         mesures_voulues = [mesure for mesure in res if mesure[3].year == annee]
         temperatures = [mesure[1] for mesure in mesures_voulues]
         dates = [mesure[3] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, temperatures
 
     def obtenir_humidite_jour(self, annee, mois, jour):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -294,11 +300,12 @@ class RecuperateurDonnees:
                            mesure[3].year == annee]
         humidites = [mesure[2] for mesure in mesures_voulues]
         dates = [mesure[3] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, humidites
 
     def obtenir_humidite_mois(self, annee, mois):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -309,11 +316,12 @@ class RecuperateurDonnees:
         mesures_voulues = [mesure for mesure in res if mesure[3].month == mois and mesure[3].year == annee]
         humidites = [mesure[2] for mesure in mesures_voulues]
         dates = [mesure[3] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, humidites
 
     def obtenir_humidite_annee(self, annee):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM CONDITIONS_METEOROLOGIQUES
@@ -324,12 +332,13 @@ class RecuperateurDonnees:
         mesures_voulues = [mesure for mesure in res if mesure[3].year == annee]
         humidites = [mesure[2] for mesure in mesures_voulues]
         dates = [mesure[3] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, humidites
 
 
     def obtenir_pression_jour(self, annee, mois, jour):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM PRESSION_ATMO
@@ -341,11 +350,12 @@ class RecuperateurDonnees:
                            mesure[2].year == annee]
         pressions = [mesure[1] for mesure in mesures_voulues]
         dates = [mesure[2] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, pressions
 
     def obtenir_pression_mois(self, annee, mois):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM PRESSION_ATMO
@@ -356,11 +366,12 @@ class RecuperateurDonnees:
         mesures_voulues = [mesure for mesure in res if mesure[2].month == mois and mesure[2].year == annee]
         pressions = [mesure[1] for mesure in mesures_voulues]
         dates = [mesure[2] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, pressions
 
     def obtenir_pression_annee(self, annee):
-        cursor = self.connex.cursor()
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
         cursor.execute("""
         SELECT *
         FROM PRESSION_ATMO
@@ -371,7 +382,7 @@ class RecuperateurDonnees:
         mesures_voulues = [mesure for mesure in res if mesure[2].year == annee]
         pressions = [mesure[1] for mesure in mesures_voulues]
         dates = [mesure[2] for mesure in mesures_voulues]
-        cursor.close()
+        connex.close()
         return dates, pressions
 
 if __name__ == "__main__":
