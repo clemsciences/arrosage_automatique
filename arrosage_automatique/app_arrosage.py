@@ -133,14 +133,18 @@ def get_humidite_annee(annee):
 # Obtenir toutes les infos météo valide que pour une journée
 @app.route("/global/<int:annee>/<int:mois>/<int:jour>")
 def get_global_jour(annee, mois, jour):
-    try:
-        temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
-    try:
-        temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
-    try:
-        temps_pression, pressions = recuperateur.obtenir_pression_jour(annee, mois, jour)
-    except sqlite3.OperationalError:
-
+    #try:
+    temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
+    #except sqlite3.OperationalError:
+    #    pass
+    #try:
+    temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
+    #except sqlite3.OperationalError:
+    #    pass
+    #try:
+    temps_pression, pressions = recuperateur.obtenir_pression_jour(annee, mois, jour)
+    # except sqlite3.OperationalError:
+    #    pass
     #print len(temps), len(temperatures)
     nom_image_temperature, nom_image_humidite, nom_image_pression = generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
     return render_template("affichage_global_jour.html", nom_image_temperature=nom_image_temperature,

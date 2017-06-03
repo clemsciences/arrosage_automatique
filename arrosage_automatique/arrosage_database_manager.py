@@ -174,7 +174,7 @@ class RecuperateurDonnees:
         res = cursor.fetchone()
         connex.close()
         return res
-    
+
     def obtenir_derniere_pression(self):
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         cursor = connex.cursor()
