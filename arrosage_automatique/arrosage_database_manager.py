@@ -6,6 +6,9 @@ import datetime
 Module à améliorer pour faire mieux correspondre les tables aux besoins
 """
 
+
+__author__ = 'besnier'
+
 class RecuperateurDonnees:
     def __init__(self, chemin_base_donnee="/home/pi/arrosage_automatique/arrosage_automatique/arrosage_database.db"):
         assert isinstance(chemin_base_donnee, str)
