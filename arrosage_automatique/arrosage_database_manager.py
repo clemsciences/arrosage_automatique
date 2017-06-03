@@ -174,6 +174,21 @@ class RecuperateurDonnees:
         res = cursor.fetchone()
         connex.close()
         return res
+    
+    def obtenir_derniere_pression(self):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
+        cursor.execute("""
+        SELECT *
+        FROM PRESSION_ATMO
+        WHERE compteur IN (SELECT max(compteur) FROM PRESSION_ATMO)
+        """)
+
+        #connex.commit()
+        # [compteur, temperature, humidite, date_heure = cursor.fetchone()
+        res = cursor.fetchone()
+        connex.close()
+        return res
 
     def enregistrer_temperature_humidite(self, temperature, humidite):
         # fonction quasiment identique à enregistrer_humidite
