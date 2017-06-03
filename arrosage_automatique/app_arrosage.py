@@ -5,9 +5,13 @@ import numpy as np
 import io
 import generateur_graphique_meteo
 import datetime
-import serveur_fichier
+import serveur_fichiers
 
 import os
+
+__author__ = "spraakforskaren"
+
+
 chemin_images = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"
 app = Flask(__name__)
 recuperateur = RecuperateurDonnees() #'C:\\Users\\Clément\\PycharmProjects\\arrosage_automatique\\arrosage_automatique\\arrosage_database.db')
