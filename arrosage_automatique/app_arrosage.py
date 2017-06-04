@@ -5,6 +5,7 @@ import numpy as np
 import io
 import generateur_graphique_meteo
 import datetime
+import collections
 
 import os
 
@@ -156,21 +157,24 @@ def get_data_global_jour(annee, mois, jour):
     #d["temps"] = range(24)
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
     temps_moyennes_par_heure.sort()
-    moyennes_par_heure_temperature = {heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float])))[:6] for heure in temps_moyennes_par_heure}
+    moyennes_par_heure_temperature = collections.defaultdict(str)
+    moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
 
     #d["temperature"] = moyennes_par_heure_temperature
 
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
     temps_moyennes_par_heure.sort()
-    moyennes_par_heure_humidite = {heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float])))[:6] for heure in temps_moyennes_par_heure}
+    moyennes_par_heure_humidite = collections.defaultdict(str)
+
+    moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
 
     #d["humidite"] = moyennes_par_heure_humidite
     temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
     temps_moyennes_par_heure.sort()
-    moyennes_par_heure_pression = {heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:8] for heure in temps_moyennes_par_heure}
+    moyennes_par_heure_pression = collections.defaultdict()
+    moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
 
     #d['pression'] = moyennes_par_heure_pression
-
     d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
 
     return jsonify(d)
