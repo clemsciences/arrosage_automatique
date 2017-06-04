@@ -5,7 +5,6 @@ import numpy as np
 import io
 import generateur_graphique_meteo
 import datetime
-import serveur_fichiers
 
 import os
 
@@ -139,7 +138,7 @@ def get_humidite_annee(annee):
 @app.route("/aujourdhui")
 def get_global_aujourdhui():
     maintenant = datetime.datetime.now()
-    get_global_jour(maintenant.year, maintenant.month, maintenant.day)
+    return get_global_jour(maintenant.year, maintenant.month, maintenant.day)
 
 
 @app.route("/data/<int:annee>/<int:mois>/<int:jour>")
@@ -178,7 +177,7 @@ def get_data_global_jour(annee, mois, jour):
 def get_data_global_aujourdhui():
     maintenant = datetime.datetime.now()
     annee, mois, jour = maintenant.year, maintenant.month, maintenant.day
-    get_data_global_jour(annee, mois, jour)
+    return get_data_global_jour(annee, mois, jour)
 
 # Obtenir toutes les infos météo valide que pour une journée
 @app.route("/global/<int:annee>/<int:mois>/<int:jour>")
