@@ -5,14 +5,16 @@ import argparse
 import os
 import platform
 import re
-import sqlite3
-import random
 import threading
 from gestion_courriel.Gmail import *
 from gestion_courriel.extraire_xml import extraire_question, extraire_ordre
 from oauth2client.tools import argparser
 from serial import Serial, SerialException
 from arrosage_database_manager import RecuperateurDonnees
+import datetime
+import collections
+import numpy as np
+import pickle
 
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
 #import django
@@ -133,6 +135,8 @@ class Decideur(threading.Thread):
         :return:
         """
         print "on mesure aussi !"
+        date_maintenant = datetime.datetime.now()
+        heure_des_mesures = datetime.datetime.now().hour
         derniere_mise_a_jour = time.time()
         derniere_prise_mesure_exterieure = time.time()
         derniere_prise_mesure_interieure = time.time()
@@ -158,6 +162,8 @@ class Decideur(threading.Thread):
             #print 'on vérifie'
             try:
                 maintenant = time.time()
+                date_maintenant = datetime.datetime.now()
+
                 # mise à jour des données toutes les 5 minutes
                 """
                 if distance_seconde(maintenant, derniere_mise_a_jour) > 300:
@@ -195,7 +201,6 @@ class Decideur(threading.Thread):
                         duree_reelle_arrosage = distance_seconde(debut_reelle_arrosage, fin_reelle_arrosage)
                         Arrosage(duree=duree_reelle_arrosage).save()
                 """
-
                 print distance_seconde(maintenant, derniere_prise_mesure_interieure)
                 if distance_seconde(maintenant, derniere_prise_mesure_interieure) > 30:  #random.randint(5, 60):
                     print("on lit la pression")
@@ -218,8 +223,8 @@ class Decideur(threading.Thread):
                     print(temperature_interieure)
                     derniere_prise_mesure_interieure = maintenant
                     self.recuperateur.enregistrer_temperature_interieure(temperature_interieure)
-                if distance_seconde(maintenant, derniere_prise_mesure_exterieure) > 30:  #random.randint(5, 60):
 
+                if distance_seconde(maintenant, derniere_prise_mesure_exterieure) > 30:  #random.randint(5, 60):
                     temperature = ""
                     humidite = ""
                     #demande la température et l'enregistre dans une base de donnée
@@ -267,11 +272,40 @@ class Decideur(threading.Thread):
                     self.recuperateur.enregistrer_mesure(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
                     derniere_prise_mesure_exterieure = maintenant
 
+                if date_maintenant.hour != heure_des_mesures:
+                    # Toutes les heures, on modifie les images
+                    heure_des_mesures = date_maintenant.hour
+                    annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
+                    temps, temperatures = self.recuperateur.obtenir_temperature_jour(annee, mois, jour)
+                    temps, humidites = self.recuperateur.obtenir_humidite_jour(annee, mois, jour)
+                    temps_pression, pressions = self.recuperateur.obtenir_pression_jour(annee, mois, jour)
+                    generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
 
-                #if distance_seconde(maintenant, derniere_prise_mesure) > 3600:
-                #    pass
-                    #TODO problème de réception, il faut envoyer un courriel d'erreur !
-                time.sleep(0.5)
+
+                    # Création ou mise à jour du fichier json pour l'API REST
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_temperature = collections.defaultdict(str)
+                    moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
+
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_humidite = collections.defaultdict(str)
+
+                    moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
+
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_pression = collections.defaultdict()
+                    moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
+
+                    d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
+                    with open(os.path.join('static','json_files',nommer_jour_json("data_jour_", annee, mois, jour)), "wb") as f:
+                        myp = pickle.Pickler(f)
+                        myp.dump(d)
+
+
+                time.sleep(1)
             except SerialException:
                 print "impossible d'accéder au port"
                 break
