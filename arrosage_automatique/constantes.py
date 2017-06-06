@@ -15,9 +15,9 @@ MOHA = "nom_humidite_annee_moyennes_"
 # graphique pression moyenne jour
 MOPJ = "moyennes_pression_jour_"
 # graphique pression moyenne mois
-MOPM
+MOPM = "moyennes_pression_mois_"
 # graphique pression moyenne annee
-MOPA
+MOPA = "moyennes_pression_annee_"
 
 # graphique temperature moyenne jour
 MOTJ = "moyennes_temperature_jour_"
