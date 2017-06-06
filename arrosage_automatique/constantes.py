@@ -75,15 +75,15 @@ MATM = "maxima_temperature_mois_"
 MATA = "nom_temperature_annee_maxima"
 
 def nommer_jour(racine, annee, mois, jour):
-    return racine+annee+"_"+mois+"_"+jour+".png"
+    return racine+str(annee)+"_"+str(mois)+"_"+str(jour)+".png"
 
 def nommer_mois(racine, annee, mois):
-    return racine+annee+"_"+mois+".png"
+    return racine+str(annee)+"_"+str(mois)+".png"
 
 def nommer_annee(racine, annee):
-    return racine+annee+".png"
+    return racine+str(annee)+".png"
 
 def nommer_jour_json(racine, annee, mois, jour):
-    return racine+annee+"_"+mois+"_"+jour+".json"
+    return racine+str(annee)+"_"+str(mois)+"_"+str(jour)+".json"
 
 DIRECTORY_JSON = "/home/pi/arrosage_automatique/arrosage_automatique/static/json_files"
