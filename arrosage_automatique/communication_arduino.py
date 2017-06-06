@@ -15,6 +15,8 @@ import datetime
 import collections
 import numpy as np
 import pickle
+import generateur_graphique_meteo
+from constantes import *
 
 #os.environ.setdefault("DJANGO_SETTINGS_MODULE", "arrosage_automatique.settings")
 #import django
@@ -136,7 +138,7 @@ class Decideur(threading.Thread):
         """
         print "on mesure aussi !"
         date_maintenant = datetime.datetime.now()
-        heure_des_mesures = datetime.datetime.now().hour
+        heure_des_mesures = -1
         derniere_mise_a_jour = time.time()
         derniere_prise_mesure_exterieure = time.time()
         derniere_prise_mesure_interieure = time.time()
@@ -300,7 +302,7 @@ class Decideur(threading.Thread):
                     moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
 
                     d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
-                    with open(os.path.join('static','json_files',nommer_jour_json("data_jour_", annee, mois, jour)), "wb") as f:
+                    with open(os.path.join('static','json_files', nommer_jour_json("data_jour_", annee, mois, jour)), "wb") as f:
                         myp = pickle.Pickler(f)
                         myp.dump(d)
 

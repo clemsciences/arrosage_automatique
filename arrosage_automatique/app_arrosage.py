@@ -202,7 +202,7 @@ def get_data_global_jour(annee, mois, jour):
         myp = pickle.Unpickler(f)
         d = myp.load()
     return jsonify(d)
-µ
+
 
 @app.route("/data/aujourdhui")
 def get_data_global_aujourdhui():
