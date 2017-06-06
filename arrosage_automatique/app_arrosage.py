@@ -170,7 +170,7 @@ def get_global_jour(annee, mois, jour):
 @app.route("/data/<int:annee>/<int:mois>/<int:jour>")
 def get_data_global_jour(annee, mois, jour):
     nom_fichier_json = nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))
-    if nom_fichier_json not in os.listdir('static/json_files'):
+    if nom_fichier_json not in os.listdir(DIRECTORY_JSON):
         temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
         temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
         temps_pression, pressions = recuperateur.obtenir_pression_jour(annee, mois, jour)
@@ -194,11 +194,11 @@ def get_data_global_jour(annee, mois, jour):
 
         #d['pression'] = moyennes_par_heure_pression
         d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
-        with open(os.path.join('static','json_files', nom_fichier_json), "wb") as f:
+        with open(os.path.join(DIRECTORY_JSON, nom_fichier_json), "wb") as f:
             myp = pickle.Pickler(f)
             myp.dump(d)
 
-    with open(os.path.join('static','json_files', nom_fichier_json), "rb") as f:
+    with open(os.path.join(DIRECTORY_JSON, nom_fichier_json), "rb") as f:
         myp = pickle.Unpickler(f)
         d = myp.load()
     return jsonify(d)
