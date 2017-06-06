@@ -87,3 +87,4 @@ def nommer_jour_json(racine, annee, mois, jour):
     return racine+str(annee)+"_"+str(mois)+"_"+str(jour)+".json"
 
 DIRECTORY_JSON = "/home/pi/arrosage_automatique/arrosage_automatique/static/json_files"
+DIRECTORY_IMAGES = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"

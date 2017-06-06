@@ -152,7 +152,7 @@ def get_global_jour(annee, mois, jour):
     nom_image_temperature = nommer_jour(MOTJ, annee, mois, jour)
     nom_image_humidite = nommer_jour(MOHJ, annee, mois, jour)
     nom_image_pression = nommer_jour(MOPJ, annee, mois, jour)
-    dossiers_images = os.listdir('static/images')
+    dossiers_images = os.listdir(DIRECTORY_IMAGES)
 
     if nom_image_humidite not in dossiers_images or nom_image_pression not in dossiers_images or nom_image_temperature not in dossiers_images:
         temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
