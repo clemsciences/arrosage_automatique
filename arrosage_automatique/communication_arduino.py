@@ -138,7 +138,7 @@ class Decideur(threading.Thread):
         """
         print "on mesure aussi !"
         date_maintenant = datetime.datetime.now()
-        heure_des_mesures = -1
+        heure_des_mesures = datetime.datetime.now().hour
         derniere_mise_a_jour = time.time()
         derniere_prise_mesure_exterieure = time.time()
         derniere_prise_mesure_interieure = time.time()
@@ -274,37 +274,37 @@ class Decideur(threading.Thread):
                     self.recuperateur.enregistrer_mesure(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
                     derniere_prise_mesure_exterieure = maintenant
 
-                if date_maintenant.hour != heure_des_mesures:
-                    # Toutes les heures, on modifie les images
-                    heure_des_mesures = date_maintenant.hour
-                    annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
-                    temps, temperatures = self.recuperateur.obtenir_temperature_jour(annee, mois, jour)
-                    temps, humidites = self.recuperateur.obtenir_humidite_jour(annee, mois, jour)
-                    temps_pression, pressions = self.recuperateur.obtenir_pression_jour(annee, mois, jour)
-                    generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
+                    if date_maintenant.hour != heure_des_mesures or date_maintenant.hour % 15 == 0:
+                        # Toutes les heures, on modifie les images
+                        heure_des_mesures = date_maintenant.hour
+                        annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
+                        temps, temperatures = self.recuperateur.obtenir_temperature_jour(annee, mois, jour)
+                        temps, humidites = self.recuperateur.obtenir_humidite_jour(annee, mois, jour)
+                        temps_pression, pressions = self.recuperateur.obtenir_pression_jour(annee, mois, jour)
+                        generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
 
 
-                    # Création ou mise à jour du fichier json pour l'API REST
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_temperature = collections.defaultdict(str)
-                    moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
+                        # Création ou mise à jour du fichier json pour l'API REST
+                        temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+                        temps_moyennes_par_heure.sort()
+                        moyennes_par_heure_temperature = collections.defaultdict(str)
+                        moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
 
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_humidite = collections.defaultdict(str)
+                        temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+                        temps_moyennes_par_heure.sort()
+                        moyennes_par_heure_humidite = collections.defaultdict(str)
 
-                    moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
+                        moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
 
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_pression = collections.defaultdict()
-                    moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
+                        temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
+                        temps_moyennes_par_heure.sort()
+                        moyennes_par_heure_pression = collections.defaultdict()
+                        moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
 
-                    d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
-                    with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
-                        myp = pickle.Pickler(f)
-                        myp.dump(d)
+                        d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
+                        with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
+                            myp = pickle.Pickler(f)
+                            myp.dump(d)
 
 
                 time.sleep(1)
