@@ -403,6 +403,24 @@ class RecuperateurDonnees:
         connex.close()
         return dates, pressions
 
+    def data_this_day(self, annee, mois, jour):
+        connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
+        cursor = connex.cursor()
+        cursor.execute("""
+        SELECT date_heure
+        FROM PRESSION_ATMO
+        """)
+
+        #connex.commit() # [compteur, temperature, humidite, date]
+        res = cursor.fetchall()
+        mesures_voulues = [mesure for mesure in res if mesure[2].day == jour and mesure[2].month == mois and
+                           mesure[2].year == annee]
+        pressions = [mesure[1] for mesure in mesures_voulues]
+        dates = [mesure[2] for mesure in mesures_voulues]
+        connex.close()
+        return dates, pressions
+        return dates, pressions
+
 if __name__ == "__main__":
     a = RecuperateurDonnees()
     a.creer_table()
