@@ -215,7 +215,7 @@ def get_data_global_aujourdhui():
 
 # Obtenir images tout simplement
 
-@app.route("/image/<str:grandeur>/<int:annee>/<int:mois>/<int:jour>")
+@app.route("/image/<grandeur>/<int:annee>/<int:mois>/<int:jour>")
 def get_data_jour_image(grandeur, annee, mois, jour):
     if grandeur == "temperature":
         nom_image = nommer_jour(MOTJ, annee, mois, jour)
