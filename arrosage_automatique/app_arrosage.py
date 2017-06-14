@@ -232,7 +232,7 @@ def get_data_jour_image(grandeur, annee, mois, jour):
         temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
         temps_pression, pressions = recuperateur.obtenir_pression_jour(annee, mois, jour)
         generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
-    chemin_et_nom_fichier = os.path.join(dossiers_images, nom_image)
+    chemin_et_nom_fichier = os.path.join(DIRECTORY_IMAGES, nom_image)
     return send_file(chemin_et_nom_fichier, "image/png")
 
 #
