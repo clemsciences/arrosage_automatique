@@ -1,11 +1,12 @@
 # -*-coding:utf-8-*-
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, send_file
 from arrosage_database_manager import RecuperateurDonnees
 import numpy as np
 import io
 import generateur_graphique_meteo
 import datetime
 import collections, pickle
+import mimetypes
 
 import os
 
@@ -214,19 +215,27 @@ def get_data_global_aujourdhui():
 
 # Obtenir images tout simplement
 
-# @app.route("/temperature/image/<int:annee>/<int:mois>/<int:jour>/<string:genre>")
-# def get_temperature_jour_image(annee, mois, jour, genre="moyenne"):
-#     temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
-#     if genre == "min":
-#         nom_image, _, _ = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
-#     elif genre == "max":
-#         _, nom_image, _ = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
-#     else:
-#         _, _, nom_image = generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
-#     with open(os.path.join(chemin_images, nom_image), "rb") as f:
-#         image = io.BytesIO()
-#         image.write(f)
-#         return image.getvalue()
+@app.route("/image/<str:grandeur>/<int:annee>/<int:mois>/<int:jour>")
+def get_data_jour_image(grandeur, annee, mois, jour):
+    if grandeur == "temperature":
+        nom_image = nommer_jour(MOTJ, annee, mois, jour)
+    elif grandeur == "humidite":
+        nom_image = nommer_jour(MOHJ, annee, mois, jour)
+    elif grandeur == "pression":
+        nom_image = nommer_jour(MOPJ, annee, mois, jour)
+    else:
+        return None
+    dossiers_images = os.listdir(DIRECTORY_IMAGES)
+
+    if nom_image not in dossiers_images:
+        temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
+        temps, humidites = recuperateur.obtenir_humidite_jour(annee, mois, jour)
+        temps_pression, pressions = recuperateur.obtenir_pression_jour(annee, mois, jour)
+        generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
+    chemin_et_nom_fichier = os.path.join(dossiers_images, nom_image)
+    return send_file(chemin_et_nom_fichier, "image/png")
+
+#
 #
 # @app.route("/temperature/image/<int:annee>/<int:mois>/<string:genre>")
 # def get_temperature_mois_image(annee=2016, mois=10, genre="moyenne"):
@@ -300,7 +309,7 @@ def get_data_global_aujourdhui():
 #         image.write(f)
 #         return image.getvalue()
 #
-#
+# rb
 
 
 if __name__ == "__main__":
