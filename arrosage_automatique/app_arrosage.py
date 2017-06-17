@@ -78,7 +78,7 @@ def voir_les_chats():
 def get_temperature_jour(annee, mois, jour):
     temps, temperatures = recuperateur.obtenir_temperature_jour(annee, mois, jour)
     generateur_graphique_meteo.obtenir_courbe_temperature_jour(temps, temperatures)
-    return render_template("affichage_temperature_jour.html", nom_image_min=nommer_jour(MITJ, annee, mois, jour), nom_image_max=nommer_jour(MATJ, annee, mois),
+    return render_template("affichage_temperature_jour.html", nom_image_min=nommer_jour(MITJ, annee, mois, jour), nom_image_max=nommer_jour(MATJ, annee, mois, jour),
                            nom_image_moyenne=nommer_jour(MOTJ, annee, mois, jour), annee=annee, mois=l_mois[mois-1], jour=jour)
 
 @app.route("/temperature/<int:annee>/<int:mois>")
