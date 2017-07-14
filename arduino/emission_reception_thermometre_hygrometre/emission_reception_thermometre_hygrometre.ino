@@ -16,7 +16,7 @@ const uint8_t receiverPin = 4;
 const uint32_t TRHSTEP   = 10000UL; // période de mesure
 
 
-Sensirion sht = Sensirion(dataPin, sclkPin);
+Sensirion sht = Sensirion(dasclkPintaPin, );
 
 uint16_t rawData;
 

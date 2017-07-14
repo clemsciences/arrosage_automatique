@@ -11,10 +11,14 @@ const char ordre_allumer_pompe[] = "allumer_pompe";
 const char ordre_eteindre_pompe[] = "eteindre_pompe";
 
 const char ordre_donner_temperature[] = "donner_temperature";
-const char ordre_donner_humidite[] = "donner_humidite";
+const char ordre_donner_humidite_air[] = "donner_humidite_air";
+const char ordre_donner_humidite_sol[] = "donner_humidite_sol";
+const char ordre_donner_luminosite[] = "donner_luminosite";
 
-const char verification_connexion[] = "connexion_bet";
-const char resultat_connexion[] = "connexion_bet_ok";
+const char verification_connexion_gimel[] = "connexion_gimel";
+const char resultat_connexion_gimel[] = "connexion_gimel_ok";
+const char verification_connexion_bet[] = "connexion_bet";
+const char resultat_connexion_bet[] = "connexion_bet_ok";
 
 const uint8_t tranceiverPin = 6;
 const uint8_t receiverPin = 4;
@@ -55,13 +59,12 @@ void loop()
         {
           char msg_received[buflen];
           int i;
-          Serial.print("RX : ");
+          //Serial.print("RX : ");
           
           for (i = 0; i < buflen; i++) // On affiche tout ce que l'on a
           {
               Serial.print(char(buf[i]));
               msg_received[i] = char(buf[i]);
-              
           }
           Serial.println("");
         }
@@ -79,8 +82,8 @@ void loop()
       }
       else if(octet_lu == 104) //104 <=> h
       {
-        //demander humidité
-        vw_send((uint8_t *)ordre_donner_humidite,strlen(ordre_donner_humidite)); // On envoie le message 
+        //demander humidité air
+        vw_send((uint8_t *)ordre_donner_humidite_air,strlen(ordre_donner_humidite_air)); // On envoie le message 
         vw_wait_tx();
       }
       else if(octet_lu == 97 ) // 97 <=> a
@@ -98,17 +101,24 @@ void loop()
       else if(octet_lu == 111) //111 <=> o
       {
         //vrification de la connexion
-        vw_send((uint8_t *)verification_connexion,strlen(verification_connexion)); // On envoie le message 
+        vw_send((uint8_t *)verification_connexion_gimel,strlen(verification_connexion_gimel)); // On envoie le message 
         vw_wait_tx();
-        Serial.println("demande de connexion...");
+        Serial.println("demande de connexion à gimel...");
+      }
+      else if(octet_lu == 118) //118 <=>  v
+      {
+        //vrification de la connexion
+        vw_send((uint8_t *)verification_connexion_bet,strlen(verification_connexion_bet)); // On envoie le message 
+        vw_wait_tx();
+        Serial.println("demande de connexion à bet...");
       }
       else if(octet_lu == 105) //105 <=> i
       {
         float temperature;
         bmp.getTemperature(&temperature);
-        Serial.print("temperature_interieure: ");
+        Serial.print("TI_");
         Serial.print(temperature);
-        Serial.println(" C");
+        Serial.println("");
       }
       else if(octet_lu == 112) //112 <=> p
       {
@@ -118,9 +128,9 @@ void loop()
           if (event.pressure)
           {
             /* Display atmospheric pressue in hPa */
-            Serial.print("pression:");
+            Serial.print("PR_");
             Serial.print(event.pressure+7.23); //calibration
-            Serial.println(" hPa");            
+            Serial.println("");
           }
           
           else
@@ -128,5 +138,15 @@ void loop()
             Serial.println("Probleme avec le barometre");
           }
         }
-      }   
+      else if(octet_lu == 108) //108 <=> l
+      {
+        vw_send((uint8_t *)ordre_donner_luminosite,strlen(ordre_donner_luminosite)); // On envoie le message 
+        vw_wait_tx();
+      }
+      else if(octet_lu == 115) //115 <=> s
+      {
+        vw_send((uint8_t *)ordre_donner_humidite_sol,strlen(ordre_donner_humidite_sol)); // On envoie le message 
+        vw_wait_tx();
+      }
+     }   
 }
