@@ -3,4 +3,9 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <string name="temperature">Température</string>
+    <string name="humidite">Humidité</string>
+    <string name="pression">Pression</string>
+    <string name="courbes">Courbes</string>
 </resources>

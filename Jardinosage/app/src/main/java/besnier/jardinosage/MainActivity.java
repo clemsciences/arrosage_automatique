@@ -1,26 +1,20 @@
 package besnier.jardinosage;
 
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Calendar;
 
 public class MainActivity extends Activity {
 
@@ -34,13 +28,47 @@ public class MainActivity extends Activity {
     TableRow row; // création d'un élément : ligne
     TextView tv1, tv2; // création des cellules
 
+
+
+
+    TextView text_date;
+    Button button_precedent;
+    Button button_suivant;
+    Button button_voir_courbes;
+    DateObservation date_selectionnee;
+    DateObservation date_aujourdhui;
+
+
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        table = (TableLayout) findViewById(R.id.idTable); // on prend le tableau défini dans le layout
 
+        date_selectionnee = (DateObservation) getIntent().getSerializableExtra("date");
+        if (date_selectionnee == null)
+        {
+            Calendar rightNow = Calendar.getInstance();
+            int jour_selectionne = rightNow.get(Calendar.DAY_OF_MONTH);
+            int mois_selectionne = rightNow.get(Calendar.MONTH) + 1;
+            int annee_selectionne = rightNow.get(Calendar.YEAR);
+
+            date_selectionnee = new DateObservation(jour_selectionne, mois_selectionne, annee_selectionne);
+            date_aujourdhui = new DateObservation(jour_selectionne, mois_selectionne, annee_selectionne);
+
+        }
+
+        text_date = (TextView) findViewById(R.id.textDateView);
+        text_date.setText(date_selectionnee.toString());
+
+        button_precedent = (Button) findViewById(R.id.buttonPrecedent);
+        button_suivant = (Button) findViewById(R.id.buttonSuivant);
+        button_voir_courbes = (Button) findViewById(R.id.button_courbes);
+
+        //Le tableau
+
+        table = (TableLayout) findViewById(R.id.idTable); // on prend le tableau défini dans le layout
 
         // pour chaque ligne
         for (int i = 0; i < col1.length + 1; i++) {
@@ -68,6 +96,74 @@ public class MainActivity extends Activity {
             }
             table.addView(row);
         }
+        button_precedent.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try {
+                            date_selectionnee = date_selectionnee.getPreviousDay();
+                            Log.d(TAG, date_selectionnee.s_annee+ date_selectionnee.s_mois+
+                                    date_selectionnee.s_jour);
+                            final ArrayList<DataMeteorologicae> donnees =
+                                    ConnexionAPI.getDataDay(date_selectionnee.s_annee, date_selectionnee.s_mois,
+                                            date_selectionnee.s_jour);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    update_table(donnees);
+                                    text_date.setText(date_selectionnee.toString());
+                                }
+                            });
+                        } catch (Exception e) {
+                            Log.e(TAG, "getWeather()", e);
+                        }
+                    }
+                }).start();
+            }
+        });
+
+        button_suivant.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            date_selectionnee = date_selectionnee.getNextDay();
+                            Log.d(TAG, date_selectionnee.s_annee+ date_selectionnee.s_mois+
+                                    date_selectionnee.s_jour);
+                            final ArrayList<DataMeteorologicae> donnees =
+                                    ConnexionAPI.getDataDay(date_selectionnee.s_annee, date_selectionnee.s_mois,
+                                            date_selectionnee.s_jour);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    update_table(donnees);
+                                    text_date.setText(date_selectionnee.toString());
+                                }
+                            });
+                        }catch (Exception e )
+                        {
+                            Log.e(TAG, "getWeather()", e);
+                        }
+                    }
+                }).start();
+            }
+        });
+
+
+        button_voir_courbes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, CourbesActivity.class);
+                i.putExtra("date", date_selectionnee);
+                startActivity(i);
+            }
+        });
 
         //istNetzwerkVerfuegbar();
         new Thread(new Runnable() {
@@ -75,15 +171,15 @@ public class MainActivity extends Activity {
                 try {
                     Log.d(TAG, "on récupère les données");
 
-                    final ArrayList<DataMeteorologicae> donnee_aujourdhui = ConnexionAPI.getDataToday();
+                    final ArrayList<DataMeteorologicae> donnee_aujourdhui = ConnexionAPI.getDataDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                     runOnUiThread(new Runnable() {
                                       @Override
                                       public void run() {
                                           Log.d(TAG, "on va mettre à jour le tableau");
                                           update_table(donnee_aujourdhui);
+
                                       }
                                   }
-
                     );
                 } catch (Exception e /* IOException, MalformedURLException, JSONException */) {
                     Log.e(TAG, "getWeather()", e);
@@ -92,10 +188,14 @@ public class MainActivity extends Activity {
         }).start();
 
 
+
+
+
+
     }
 
 
-    public void update_table(ArrayList<DataMeteorologicae> donnee_aujourdhui) {
+    public void update_table(ArrayList<DataMeteorologicae> data) {
 
         table.removeAllViewsInLayout();
         TableRow row1; // création d'un élément : ligne
@@ -104,7 +204,7 @@ public class MainActivity extends Activity {
         // pour chaque ligne
         for (int i = 0; i < col1.length + 1; i++) {
             row1 = new TableRow(this); // création d'une nouvelle ligne
-            Log.d(TAG, "ligne" + i);
+            //Log.d(TAG, "ligne" + i);
             for (int j = 0; j < lig1.length; j++) {
 
                 if (i == 0) {
@@ -121,16 +221,16 @@ public class MainActivity extends Activity {
                     tv2.setLayoutParams(new TableRow.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1));
                     row1.addView(tv2);
                 } else if(i > 0) {
-                    DataMeteorologicae dm = donnee_aujourdhui.get(i-1);
+                    DataMeteorologicae dm = data.get(i-1);
                     TextView cellule = new TextView(this);
                     if (j == 1) {
-                        Log.d(TAG, dm.temperature);
+                        //Log.d(TAG, dm.temperature);
                         cellule.setText(dm.temperature);
                     } else if (j == 2) {
-                        Log.d(TAG, dm.hygrometrie);
+                        //Log.d(TAG, dm.hygrometrie);
                         cellule.setText(dm.hygrometrie);
                     } else if (j == 3) {
-                        Log.d(TAG, dm.pression);
+                        //Log.d(TAG, dm.pression);
                         cellule.setText(dm.pression);
                     }
                     cellule.setLayoutParams(new TableRow.LayoutParams(0, android.view.ViewGroup.LayoutParams.WRAP_CONTENT, 1));
@@ -141,7 +241,38 @@ public class MainActivity extends Activity {
             }
 
         }
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
     }
+
+    @Override
+    protected void onRestart()
+    {
+        super.onRestart();
+        date_selectionnee = (DateObservation) getIntent().getSerializableExtra("date");
+
+    }
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+    }
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+    }
+}
 
 
 //        final Button button = (Button) findViewById(R.id.button);

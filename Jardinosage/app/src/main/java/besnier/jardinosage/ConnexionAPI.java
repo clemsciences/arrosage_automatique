@@ -23,6 +23,7 @@ public class ConnexionAPI {
 
     private static final String URL = "http://arrobes.hopto.org/data/aujourdhui";
     private static final String URL_date = "http://arrobes.hopto.org/data/{0}/{1}/{2}";
+    public static final String URL_Image = "http://arrobes.hopto.org/image/{0}/{1}/{2}/{3}";
 
     static private ArrayList<DataMeteorologicae> data;
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -56,7 +57,7 @@ public class ConnexionAPI {
         String a = getFromServer(URL);
         String TAG = MainActivity.class.getSimpleName();
 
-        Log.d(TAG, a);
+        Log.d(TAG, "réponse"+a);
         JSONObject jsonObject = new JSONObject(a);
         data = new ArrayList<>();
 
@@ -103,6 +104,32 @@ public class ConnexionAPI {
         httpURLConnection.disconnect();
         return sb.toString();
     }
+
+
+    public static Bitmap getTemperatureImageDay(String year, String month, String day) throws IOException
+    {
+        return getImageDay(year, month, day, "temperature");
+    }
+    public static Bitmap getHumiditeImageDay(String year, String month, String day) throws IOException
+    {
+        return getImageDay(year, month, day, "humidite");
+    }
+    public static Bitmap getPressionImageDay(String year, String month, String day) throws IOException
+    {
+        return getImageDay(year, month, day, "pression");
+    }
+
+    public static Bitmap getImageDay(String year, String month, String day, String categorie)
+            throws IOException
+    {
+        URL req = new URL(MessageFormat.format(URL_Image, categorie, year, month, day));
+        HttpURLConnection c = (HttpURLConnection)  req.openConnection();
+        Bitmap bmp = BitmapFactory.decodeStream(c.getInputStream());
+        c.disconnect();
+        return bmp;
+    }
+
+
 
     /*public static Bitmap getImage(WeatherData w) throws IOException  {
         URL req = new URL("http://openweathermap.org/img/w/" + w.icon + ".png");

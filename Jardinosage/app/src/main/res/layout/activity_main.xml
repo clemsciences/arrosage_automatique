@@ -6,30 +6,37 @@
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
     <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/pourCalendrier"
-        android:layout_above="@+id/pourTable">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/titreLayout"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Date"
-            android:id="@+id/dateTextView"
+            android:text="Tableau"
+            android:id="@+id/textTitreView"
             android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true" />
+            android:layout_centerHorizontal="true" />
 
-        <CalendarView
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/calendarView"
-            android:layout_alignParentTop="true" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/textDateView"
+            android:layout_below="@+id/textTitreView"
+            android:layout_centerHorizontal="true" />
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/pourTable">
+        android:id="@+id/tableauLayout"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/titreLayout"
+        android:layout_alignParentBottom="true">
 
         <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/scrollView1"
@@ -44,8 +51,50 @@
         </TableLayout>
 
     </ScrollView>
+
     </RelativeLayout>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/boutonsLayout"
+        android:layout_alignParentTop="true">
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Précédent"
+            android:id="@+id/buttonPrecedent"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:enabled="true"
+            android:clickable="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Suivant"
+            android:id="@+id/buttonSuivant"
+            android:layout_alignTop="@+id/buttonPrecedent"
+            android:layout_centerHorizontal="true"
+            android:enabled="true"
+            android:clickable="true" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Voir courbes"
+            android:id="@+id/button_courbes"
+            android:layout_alignBottom="@+id/buttonSuivant"
+            android:layout_alignParentEnd="true"
+            android:enabled="true"
+            android:clickable="true" />
+
+    </RelativeLayout>
 
 
 </RelativeLayout>
