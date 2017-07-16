@@ -79,7 +79,7 @@ void loop() {
           vw_send((uint8_t *)string_allumage_pompe,strlen(string_allumage_pompe)); // On envoie le message 
           vw_wait_tx();
          }
-        else if(strcmp(msg_received,string_extinction_pompe) == 0)
+        else if(strcmp(msg_received,ordre_eteindre_pompe) == 0)
         {
           digitalWrite(pompePin, LOW);
           Serial.print(string_extinction_pompe);
