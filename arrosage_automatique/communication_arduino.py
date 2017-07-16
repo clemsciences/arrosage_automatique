@@ -1,11 +1,13 @@
 # -*-coding:utf-8-*-
-__author__ = 'spraakforskaren'
+
 
 import argparse
 import os
 import platform
+import json
 import re
 import threading
+import time
 from gestion_courriel.Gmail import *
 from gestion_courriel.extraire_xml import extraire_question, extraire_ordre
 from oauth2client.tools import argparser
@@ -24,7 +26,7 @@ from constantes import *
 from gestion_temps import *
 #from gestion_arrosage_automatique.models import ConditionsMeteorologiques, ConditionArrosage
 
-
+__author__ = 'besnier'
 # port_serie = Serial(port = PORT, baudrate = 9600)
 
 def trouver_ports_libres():
@@ -36,93 +38,10 @@ def trouver_ports_libres():
             s.close()
         except:
             continue
-    print available
+    print(available)
 
 
-class GestionnaireGmail(threading.Thread):
-    def __init__(self, json_file, PROVENANCE_SURE, DESTINATAIRES):
-        print "on gère les courriels"
-        threading.Thread.__init__(self)
-        parser = argparse.ArgumentParser(parents=[argparser])
-        self.flags = parser.parse_args()
-        self.PROVENANCE_SURE = PROVENANCE_SURE
-        self.json_file = json_file
-        self.parser = argparse.ArgumentParser(parents=[argparser])
-        self.gmail_lire = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
-        messages = self.gmail_lire.getMessagesList()
-        if messages['messages']:
-            self.l_id_courriels = [ msg['id'] for msg in messages['messages']]
-            #= gmail.getMessageDetails(msg['id'])
-        self.destinataires = DESTINATAIRES
-        systeme = platform.system()
-        self.rec = RecuperateurDonnees(os.getcwd())
-        print "initialisation"
-        self.gmail_envoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
-        texte = """
-                Bonjour\n\nLe service d'arrosage automatique a redémarré.\n\nCordialement\n\n Clément Besnier
-                """
-        message = Message(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
-                                                 message_text= texte, service=self.gmail_envoyer.gmail_service)
-                    #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
-                    #                             message_text= "test", file_dir=os.getcwd(), filename= "",
-                    #                             service=gmail.gmail_service)
-        message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
-    def run(self):
-        derniere_mise_a_jour = time.time()
-        periode_mise_a_jour_gmail = 120
-        six_jours = 518400
-        trois_jours = 3*24*3600
-        reinitialisation_gmail = time.time()
-        #maintenant = 0 #permet d'envoyer un message de démarrage
-        while True:
 
-            maintenant = time.time()
-            if distance_seconde(maintenant,derniere_mise_a_jour) > periode_mise_a_jour_gmail:
-                print "on vérifie les courriels reçus"
-                messages = self.gmail_lire.getMessagesList()
-                if messages['messages']:
-                    l_id = [msg['id'] for msg in messages['messages'] if not msg['id'] in self.l_id_courriels ]
-                    for msg_id in l_id:
-                        m = self.gmail_lire.getMessageDetails(msg_id)
-                        if m.getFrom() in self.PROVENANCE_SURE:
-                            self.rec.enregistrer_courriel(self, m.getFrom(), m.getTo(), m.getSubject(), m.getText(self.gmail_lire.gmail_service, 'me', msg_id))
-                            if m.getSubject() == "ordre":
-                                l_instructions = extraire_ordre(m.getText(self.gmail_lire.gmail_service,"clemsciences@gmail.com", msg_id))
-                                # for instruction in l_instructions:
-                                #     if instruction['categorie']
-                                #     RecuperateurDonnees.obtenir_conditions_meteorologiques()
-                            elif m.getSubject() == "questions":
-                                l_instructions = extraire_question(m.getText(self.gmail_lire.gmail_service, "clemsciences@gmail.com", msg_id))
-                            else:
-                                pass
-                            if m.getSubject() == "IP":
-                                self.gmail_envoyer = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
-                                #ip = os.system("ifconfig")
-                                message = Message(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="IP",
-                                                 message_text= "faut m'extraire", service=self.gmail_envoyer.gmail_service)
-                                message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
-                                self.gmail_lire = Gmail(self.flags, client_secret_file =self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
-
-
-                derniere_mise_a_jour = maintenant
-            elif distance_jour(maintenant, reinitialisation_gmail) > 6:
-                print "on réinitialise la connexion"
-                self.gmail_lire = Gmail(self.flags, client_secret_file = self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.readonly')
-                self.gmail_envoyer = Gmail(self.flags, client_secret_file = self.json_file, oauth_scope = 'https://www.googleapis.com/auth/gmail.send')
-                reinitialisation_gmail = maintenant
-            elif distance_jour(maintenant, reinitialisation_gmail) > 3:
-                print "on envoie un courriel à tout le monde"
-                for destinataire in self.destinataires:
-
-                    print self.rec.obtenir_conditions_meteorologiques()
-                    #res = [(i.temperature,i.humidite_relative, i.date) for i in ConditionsMeteorologiques.objects.all() if datetime.timedelta.total_seconds(i.date - datetime.datetime.now())]
-                    self.rec.obtenir_conditions_meteorologiques_depuis(3)
-                    message = Message_Attachment(sender="clemsciences@gmail.com",to="clemsciences@gmail.com",subject="rapport météo",
-                                                 message_text= "test", service=self.gmail_envoyer.gmail_service)
-                    #message = Message_Attachment(sender="arrosage.b@gmail.com",to=destinataire,subject="rapport météo",
-                    #                             message_text= "test", file_dir=os.getcwd(), filename= "",
-                    #                             service=gmail.gmail_service)
-                    message.sendMessage(self.gmail_envoyer.gmail_service, "clemsciences@gmail.com")
 
 
 
@@ -131,13 +50,18 @@ class Decideur(threading.Thread):
         threading.Thread.__init__(self)
         self.commu = Communication_Arduino(lePort)
         self.recuperateur = RecuperateurDonnees()
+        self.dm = Mesure(codes_arduino)
+        self.arro = Arrosage(l_code_arrosage)
+
     def run(self):
         """
         Méthode principale, là où tout se passe.
         :return:
         """
-        print "on mesure aussi !"
+        print("on mesure aussi !")
         date_maintenant = datetime.datetime.now()
+
+
         heure_des_mesures = datetime.datetime.now().hour
         derniere_mise_a_jour = time.time()
         derniere_prise_mesure_exterieure = time.time()
@@ -163,153 +87,76 @@ class Decideur(threading.Thread):
         while True:
             #print 'on vérifie'
             try:
-                maintenant = time.time()
-                date_maintenant = datetime.datetime.now()
+                # maintenant = time.time()
+                # date_maintenant = datetime.datetime.now()
+                self.dm.pour_faire_nouvelles_mesures(30)
+                for code in self.dm.l_grandeurs_a_mesurer:
+                    self.commu.parler(code)
+                    self.dm.mettre_a_jour_demandes(code)
+                    time.sleep(1)
+                    recu = self.commu.ecouter()
+                    recu = recu.split("_")
+                    if len(recu) == 2 and recu in codes_capteurs:
+                        code_capteur = recu[0]
+                        valeur = recu[1]
+                        self.dm.mettre_a_jour_receptions(code_capteur)
+                        self.recuperateur.enregistrer_mesure(valeur, d_code_table_capteurs[code_capteur])
+                    else:
+                        with open(os.path.join("static", "json_files", "log.json"), "a") as f:
+                            json.dump({datetime.datetime.now(): "truc bizarre reçu"}, f)
 
-                # mise à jour des données toutes les 5 minutes
-                """
-                if distance_seconde(maintenant, derniere_mise_a_jour) > 300:
-                    print "on fait la mise à jour des paramètres d'arrosage"
-                    #se tient à jour des paramètres pour arroser
-                    derniere_condo_arrosage = ConditionArrosage.objects.get(
-                        id=max([i.id for i in ConditionArrosage.objects.all()]))
-                    temperature_min = derniere_condo_arrosage.temperature_min
-                    humidite_max = derniere_condo_arrosage.humidite_max
-                    frequence_min = derniere_condo_arrosage.frequence_min
-                    heure_min = derniere_condo_arrosage.heure_min
-                    heure_max = derniere_condo_arrosage.heure_max
-                    duree_arrosage_prevue = derniere_condo_arrosage.duree
-                    derniere_mise_a_jour = maintenant
+                # Voir si la carte renvoie quelque chose malgré la non réception de valeurs des capteurs
+                if self.dm.non_reception[codes_capteurs.index("HS")]:
+                    self.commu.demander_si_bonne_reception("beth")
+                elif self.dm.non_reception[codes_capteurs.index("TE")] and dm.non_reception[codes_capteurs.index("HA")] \
+                    and self.dm.non_reception[codes_capteurs.index("LU")]:
+                    self.commu.demander_si_bonne_reception("gimel")
 
-                if humidite < humidite_max and distance_jour(maintenant, temps_dernier_arrosage) > \
-                        frequence_min and donner_heure(maintenant) > heure_min and donner_heure(maintenant) < heure_max:
-                    #vérifie si les conditions pour arroser sont remplies, si oui, on arrose
-                    print "on arrose"
+
+                if self.arro.verifier_si_on_arrose():
                     self.commu.arroser()
-
-                    temps_dernier_arrosage = time.time()
-                    lu = self.commu.ecouter()
-                    if lu == "pompe_allumee":
-                        debut_reelle_arrosage = maintenant
-                        en_train_d_arroser = True
-                if distance_seconde(maintenant, debut_reelle_arrosage) > duree_arrosage_prevue and en_train_d_arroser:
-                    print "on n'arrose plus"
-                    #si la durée de l'arrosage est supérieure à la durée prévue, alors on éteint la pompe
+                if self.arro.verifier_si_on_arrete():
                     self.commu.eteindre_arrosage()
-                    lu = self.commu.ecouter()
-                    if lu == "pompe_eteinte":
-                        fin_reelle_arrosage = maintenant
-                        en_train_d_arroser = False
-                        duree_reelle_arrosage = distance_seconde(debut_reelle_arrosage, fin_reelle_arrosage)
-                        Arrosage(duree=duree_reelle_arrosage).save()
-                """
-                print distance_seconde(maintenant, derniere_prise_mesure_interieure)
-                if distance_seconde(maintenant, derniere_prise_mesure_interieure) > 30:  #random.randint(5, 60):
-                    print("on lit la pression")
-                    self.commu.combien_pression()
-                    time.sleep(1)
-                    lu_pression = self.commu.ecouter()
-                    print(lu_pression)
-                    taille_lu = len(lu_pression)
-                    pression = lu_pression[9:taille_lu - 6] # extraire la pression de "pression: ..... hPa"
-                    print(pression)
-                    self.recuperateur.enregistrer_pression(pression)
-
-                    print("on lit la température intérieure")
-                    self.commu.combien_temperature_interieure()
-                    time.sleep(1)
-                    lu_temperature_interieure = self.commu.ecouter()
-                    print(lu_temperature_interieure)
-                    taille_lu = len(lu_temperature_interieure)
-                    temperature_interieure = lu_temperature_interieure[24:taille_lu - 4]
-                    print(temperature_interieure)
-                    derniere_prise_mesure_interieure = maintenant
-                    self.recuperateur.enregistrer_temperature_interieure(temperature_interieure)
-
-                if distance_seconde(maintenant, derniere_prise_mesure_exterieure) > 30:  #random.randint(5, 60):
-                    temperature = ""
-                    humidite = ""
-                    #demande la température et l'enregistre dans une base de donnée
-                    self.commu.combien_temperature()
-                    print "on mesure la température"
-                    time.sleep(1)
-                    lu = self.commu.ecouter()
-                    taille_lu = len(lu)
-                    lu = lu[:taille_lu - 2]
-                    print lu
-                    print repr(lu)
-                    #if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None or re.match(r"[0-9].\.[0-9].", lu[5:]) is not None:
-                    if len(lu) > 0:
-                        temperature = lu[5:] #TODO à remettre sans RX :
-                        print temperature
-                    elif re.match(r"[0-9].\.[0-9].", lu):
-                        temperature = lu
-                        print temperature
-                    else:
-                        print "mauvaise donnée"
-                        continue
-                    time.sleep(0.5)
-                    self.commu.combien_humidite()
-                    print "on mesure l'humidité"
-                    time.sleep(1)
-                    lu = self.commu.ecouter()
-                    print lu
-                    taille_lu = len(lu)
-                    lu = lu[:taille_lu - 2]
-                    print repr(lu)
-                    if len(lu) > 0:
-                    # if re.match(r"(RX : )[0-9].\.[0-9].", lu) is not None:
-                        humidite = lu[5:] #TODO à remettre sans RX :
-                        print humidite
-                    elif re.match(r"[0-9].\.[0-9].", lu):
-                        humidite = lu
-                        print humidite
-                    else:
-                        print "mauvaise donnée humidité"
-                        continue
-                    #on met à jour la date de dernière mesure et la dernière mesure que si on a bien eu la température
-                    ## et l'humidité
-                    if len(temperature) == 0 or len(humidite) == 0:
-                        continue
-                    self.recuperateur.enregistrer_mesure(temperature, humidite)#ConditionsMeteorologiques(temperature=temperature, humidite_relative=humidite).save()
-                    derniere_prise_mesure_exterieure = maintenant
-
-                    if date_maintenant.hour != heure_des_mesures or date_maintenant.hour % 15 == 0:
-                        # Toutes les heures, on modifie les images
-                        heure_des_mesures = date_maintenant.hour
-                        annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
-                        temps, temperatures = self.recuperateur.obtenir_temperature_jour(annee, mois, jour)
-                        temps, humidites = self.recuperateur.obtenir_humidite_jour(annee, mois, jour)
-                        temps_pression, pressions = self.recuperateur.obtenir_pression_jour(annee, mois, jour)
-                        generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
 
 
-                        # Création ou mise à jour du fichier json pour l'API REST
-                        temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
-                        temps_moyennes_par_heure.sort()
-                        moyennes_par_heure_temperature = collections.defaultdict(str)
-                        moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
 
-                        temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
-                        temps_moyennes_par_heure.sort()
-                        moyennes_par_heure_humidite = collections.defaultdict(str)
 
-                        moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
+                if date_maintenant.hour != heure_des_mesures or date_maintenant.hour % 15 == 0:
+                    # Toutes les heures, on modifie les images
+                    heure_des_mesures = date_maintenant.hour
+                    annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
+                    temps_te, temperatures = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
+                    temps_hu, humidites = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs[HA])
+                    temps_pression, pressions = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
+                    generateur_graphique_meteo.obtenir_courbe_global_jour(temps_te, temperatures, humidites, pressions, temps_pression)
 
-                        temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
-                        temps_moyennes_par_heure.sort()
-                        moyennes_par_heure_pression = collections.defaultdict()
-                        moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
 
-                        d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
-                        with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
-                            myp = pickle.Pickler(f)
-                            myp.dump(d)
+                    # Création ou mise à jour du fichier json pour l'API REST
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_te]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_temperature = collections.defaultdict(str)
+                    moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps_te[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
+
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_te]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_humidite = collections.defaultdict(str)
+
+                    moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps_te[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
+
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_pression = collections.defaultdict()
+                    moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
+
+                    d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
+                    with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
+                        myp = pickle.Pickler(f)
+                        myp.dump(d)
 
 
                 time.sleep(1)
             except SerialException:
-                print "impossible d'accéder au port"
+                print("impossible d'accéder au port")
                 break
             """
             except:
@@ -319,14 +166,98 @@ class Decideur(threading.Thread):
                 """
 
 
+class Arrosage:
+    def __init__(self, l_code_arrosage, chemin=os.path.join("static", "json_files", "parametres_simples_arrosage.json")):
+        self.chemin = chemin
+        if os.path.exists(chemin):
+            self.creer_parametres_par_defaut()
+        self.en_train_d_arroser = False
+        self.charger_horaires()
+
+
+    def creer_parametres_par_defaut(self):
+        with open(self.chemin, "w") as f:
+            d = {1: [{"heure": 6, "minute": 0}, {"heure": 6, "minute": 15}],
+                 2: {{"heure": 20, "minute": 30}, {"heure": 20, "minute": 45}}}
+            json.dump(d, f)
+
+    def charger_horaires(self):
+        with open(self.chemin, "r") as f:
+            self.horaires_d_arrosage = json.load(f)
+
+    def verifier_si_on_arrose(self, type_arrosage="defaut"):
+        if type_arrosage == "defaut":
+            self.decision_temporel(1)
+            self.en_train_d_arroser = True
+        else:
+            return False
+
+    def verifier_si_on_arrete(self):
+        if self.en_train_d_arroser :
+            for n in self.horaires_d_arrosage:
+                heure_d_arrosage = maintenant.replace(hour=n["heure"][1], minute=n["minute"][1])
+                if moins_minute(maintenant, heure_d_arrosage, minutes):
+                    return True
+        return False
+
+    def decision_temporel(self, minutes):
+        """
+
+        :param minutes: plus ou moins ça quand on va arroser
+        :return:
+        """
+        maintenant = datetime.datetime.now()
+        for n in self.horaires_d_arrosage:
+            heure_d_arrosage = maintenant.replace(hour=n["heure"][0], minute=n["minute"][0])
+            if moins_minute(maintenant, heure_d_arrosage, minutes):
+                return True
+        return False
+
+
+class Mesure:
+    """
+    Classe instanciée qu'une seule fois
+    """
+    def __init__(self, l_grandeurs_codee):
+        self.l_grandeurs_codee = l_grandeurs_codee
+        self.dates_dernieres_demandes = [datetime.datetime.now()]*len(l_grandeurs_codee)
+        self.dates_dernieres_receptions = [datetime.datetime.now()]* len(l_grandeurs_codee)
+        self.non_reception = [False]* len(l_grandeurs_codee)
+        self.l_grandeurs_a_mesurer = []
+
+    def pour_faire_nouvelles_mesures(self, intervalle_mesures):
+        for i in range(len(self.l_grandeurs_codee)):
+            intervalle_mesuree = (self.dates_dernieres_receptions[i] - self.dates_dernieres_demandes[i])
+            if intervalle_mesuree.seconds > intervalle_mesures and not self.non_reception[i]:
+                self.l_grandeurs_a_mesurer.append(self.l_grandeurs_codee[i])
+
+            elif intervalle_mesuree.seconds > intervalle_mesures*3 and self.non_reception[i]:
+                self.l_grandeurs_a_mesurer.append(self.l_grandeurs_codee[i])
+
+    def log_etat_capteurs(self):
+        try:
+            with open(os.path.join("static", "json_files", "log_etats_capteurs.json"), "w") as f:
+                json.dump({self.l_grandeurs_codee[i]: self.non_reception[i] for i in range(len(self.l_grandeurs_codee))}, f)
+        except IOError:
+             with open(os.path.join("static", "json_files", "log.json"), "a") as f:
+                json.dump({datetime.datetime.now(): "problème avec le log de l'état des capteurs"}, f)
+
+    def mettre_a_jour_demandes(self, code):
+        self.dates_dernieres_demandes[codes_arduino.index(code)] = datetime.datetime.now()
+
+    def mettre_a_jour_receptions(self, code_capteur):
+        self.dates_dernieres_receptions[codes_capteurs.index(code_capteur)] = datetime.datetime.now()
+
+
+
 class Communication_Arduino:
     def __init__(self, lePort):
         self.port = lePort
         try:
             self.port_serie = Serial(port=self.port, baudrate=9600, timeout=0)
-            print self.port_serie.isOpen()
+            print(self.port_serie.isOpen())
         except SerialException:
-            print "port série introuvable"
+            print("port série introuvable")
 
     def combien_temperature(self):
         # combien_temperature
@@ -351,13 +282,31 @@ class Communication_Arduino:
         # eteindre_arrosage
         self.port_serie.write("e")
 
-    def demander_si_bonne_reception(self):
-        self.port_serie.write("o")
+    def demander_si_bonne_reception(self, nom_carte):
+        if nom_carte in noms_cartes_arduino:
+            if nom_carte == "beth":
+                self.port_serie.write("v")
+            elif nom_carte == "gimel":
+                self.port_serie.write("o")
+            retour = self.port_serie.readline()
+            time.sleep(3)
+            if retour == "connexion_bet_ok":
+                self.contact_beth = True
+            elif retour == "connexion_gimel_ok":
+                self.contact_gimel = True
+            else:
+                with open(os.path.join("static", "json_files", "log.json"), "a") as f:
+                    json.dump({datetime.datetime.now(): "plus de contact avec la carte "+nom_carte}, f)
+
+        else:
+            with open(os.path.join("static", "json_files", "log.json"), "a") as f:
+                json.dump({datetime.datetime.now(): "mauvais nom de crate arduino"}, f)
+
 
     # def en_train_d_arroser(self):
     # self.port_serie.write("en_train_d_arroser")
     def ecouter(self):
-        print "on lit"
+        print("on lit")
         return self.port_serie.readline()
 
     def parler(self, a_envoyer):
@@ -367,6 +316,8 @@ class Communication_Arduino:
 
     def quitter(self):
         self.port_serie.close()
+
+
 
 if __name__ == "__main__":
 

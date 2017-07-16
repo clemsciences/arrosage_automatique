@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import os
 
 from constantes import *
+
+__author__ = 'besnier'
+
 conversion_mois = ["janvier", "fevrier", "mars", "avril", "mai", "juin", "juillet", "aout", "septembre", "octobre",
                        "novembre", "decembre"]
 

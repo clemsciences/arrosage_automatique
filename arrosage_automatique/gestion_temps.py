@@ -20,11 +20,18 @@ def distance_seconde(t1,t2):
     return abs(t2-t1)
 
 
+def moins_minute(t1, t2, minutes):
+    if t2  >  t1 and (t2 - t1).seconds/60. < minutes:
+        return True
+    elif t2  <=  t1 and (t1 - t2).seconds/60. < minutes:
+        return True
+    else:
+        return False
 
 
 def calculer_duree(h1,m1,s1,ms1,h2,m2,s2,ms2):
     """
-    Calcule la durÃ©e en secondes entre le temps t1 et t2
+    Calcule la durée en secondes entre le temps t1 et t2
     """
     duree = 0.001*((int(ms2)-int(ms1))%1000)
     if int(ms2)-int(ms1)<0:

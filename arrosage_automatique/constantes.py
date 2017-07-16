@@ -1,9 +1,22 @@
+# -*-coding:utf-8-*-
+__author__ = 'besnier'
+
+# code pour communiquer de la série à l'Arduino pour faire des mesures
+
+codes_arduino = ["t", "i", "p", "h", "s","l"]
+codes_capteurs = ["TE", "TI", "PR", "HA", "HS", "LU"]
+
+noms_tables_capteurs = ["TEMPERATURE_EXTERIEURE", "TEMPERATURE_INTRIEURE", "PRESSION_ATMO", "HUMIDITE_AIR_EXTERIEUR",
+                        "HUMIDITE_SOL", "LUMINOSITE_EXTERIEUR"]
 
 
+d_code_table_capteurs = {code: table  for code, table in zip(codes_capteurs, noms_tables_capteurs)}
 
 
+l_code_arduino_sarrosage = ["a", "e"]
+l_code_arrosage = ["PA", "PE"]
 
-
+noms_cartes_arduino = ["alef", "beth", "gimel", "dalet"]
 
 # graphique humidite moyenne jour
 MOHJ = "moyennes_humidite_jour_"
