@@ -95,7 +95,7 @@ class Decideur(threading.Thread):
                 for code in self.dm.l_grandeurs_a_mesurer:
                     self.commu.parler(code)
                     self.dm.mettre_a_jour_demandes(code)
-                    time.sleep(1)
+                    time.sleep(3)
                     recu = self.commu.ecouter()
                     recu = recu.split("_")
                     print(recu)
@@ -248,10 +248,10 @@ class Mesure:
             intervalle_mesuree = (self.dates_dernieres_receptions[i] - self.dates_dernieres_demandes[i])
             intervalle_attente = (maintenant - self.dates_dernieres_receptions[i])
             print(intervalle_mesuree)
-            if intervalle_attente.seconds > intervalle_entre_mesures and not self.non_reception[i]:
+            if intervalle_attente.seconds > intervalle_entre_mesures and not self.non_reception[i] and self.l_grandeurs_codee[i] not in self.l_grandeurs_a_mesurer:
                 self.l_grandeurs_a_mesurer.append(self.l_grandeurs_codee[i])
 
-            elif intervalle_attente.seconds > intervalle_entre_mesures*3 and self.non_reception[i]:
+            elif intervalle_attente.seconds > intervalle_entre_mesures*3 and self.non_reception[i] and self.l_grandeurs_codee[i] not in self.l_grandeurs_a_mesurer:
                 self.l_grandeurs_a_mesurer.append(self.l_grandeurs_codee[i])
 
             if - intervalle_mesuree.seconds > intervalle_entre_mesures*10:

@@ -191,12 +191,11 @@ class RecuperateurDonnees:
         FROM %s
         """ % nom_table)
 
-        #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
-        mesures_voulues = [mesure for mesure in res if mesure[3].day == jour and mesure[3].month == mois and
-                           mesure[3].year == annee]
+        mesures_voulues = [mesure for mesure in res if mesure[2].day == jour and mesure[2].month == mois and
+                           mesure[2].year == annee]
         valeurs = [mesure[1] for mesure in mesures_voulues]
-        dates = [mesure[3] for mesure in mesures_voulues]
+        dates = [mesure[2] for mesure in mesures_voulues]
         connex.close()
         return dates, valeurs
 
@@ -210,9 +209,9 @@ class RecuperateurDonnees:
 
         #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
-        mesures_voulues = [mesure for mesure in res if mesure[3].month == mois and mesure[3].year == annee]
+        mesures_voulues = [mesure for mesure in res if mesure[2].month == mois and mesure[2].year == annee]
         valeurs = [mesure[1] for mesure in mesures_voulues]
-        dates = [mesure[3] for mesure in mesures_voulues]
+        dates = [mesure[2] for mesure in mesures_voulues]
         connex.close()
         return dates, valeurs
 
@@ -227,9 +226,9 @@ class RecuperateurDonnees:
 
         #connex.commit() # [compteur, temperature, humidite, date]
         res = cursor.fetchall()
-        mesures_voulues = [mesure for mesure in res if mesure[3].year == annee]
+        mesures_voulues = [mesure for mesure in res if mesure[2].year == annee]
         valeurs = [mesure[1] for mesure in mesures_voulues]
-        dates = [mesure[3] for mesure in mesures_voulues]
+        dates = [mesure[2] for mesure in mesures_voulues]
         connex.close()
         return dates, valeurs
 
@@ -237,7 +236,7 @@ class RecuperateurDonnees:
         connex = sqlite3.connect(self.chemin_base_donnee, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
         #cursor = connex.cursor()
         connex.execute("""
-            INSERT INTO """+nom_table+"""(pression, date_heure)
+            INSERT INTO """+nom_table+"""(mesure, date_heure)
             VALUES (?,?);
             """, (valeur, datetime.datetime.now()))
         connex.commit()
@@ -255,6 +254,7 @@ class RecuperateurDonnees:
         """ % (nom_table, nom_table))
         res = cursor.fetchone()
         connex.close()
+        print(res)
         return res[1], res[2]
 
 
