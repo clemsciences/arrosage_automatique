@@ -63,13 +63,13 @@ class Decideur(threading.Thread):
 
 
         heure_des_mesures = datetime.datetime.now().hour
-        derniere_mise_a_jour = time.time()
-        derniere_prise_mesure_exterieure = time.time()
-        derniere_prise_mesure_interieure = time.time()
-        temps_dernier_arrosage = 0
-
-        en_train_d_arroser = False
-        debut_reelle_arrosage = False
+        # derniere_mise_a_jour = time.time()
+        # derniere_prise_mesure_exterieure = time.time()
+        # derniere_prise_mesure_interieure = time.time()
+        # temps_dernier_arrosage = 0
+        #
+        # en_train_d_arroser = False
+        # debut_reelle_arrosage = False
 
         # compteur, temperature, humidite, date_heure = self.recuperateur.obtenir_derniere_mesure_meteo()
         #temperature = derniere_condo_meteo.temperature
