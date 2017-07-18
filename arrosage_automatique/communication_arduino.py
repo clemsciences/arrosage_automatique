@@ -86,10 +86,12 @@ class Decideur(threading.Thread):
 
         while True:
             #print 'on vérifie'
+            print("début boucle")
             try:
                 # maintenant = time.time()
                 # date_maintenant = datetime.datetime.now()
                 self.dm.pour_faire_nouvelles_mesures(30)
+                print(self.dm.l_grandeurs_a_mesurer)
                 for code in self.dm.l_grandeurs_a_mesurer:
                     self.commu.parler(code)
                     self.dm.mettre_a_jour_demandes(code)
@@ -99,6 +101,7 @@ class Decideur(threading.Thread):
                     if len(recu) == 2 and recu in codes_capteurs:
                         code_capteur = recu[0]
                         valeur = recu[1]
+                        print(recu)
                         self.dm.mettre_a_jour_receptions(code_capteur)
                         self.recuperateur.enregistrer_mesure(valeur, d_code_table_capteurs[code_capteur])
                     else:
@@ -112,11 +115,11 @@ class Decideur(threading.Thread):
                     and self.dm.non_reception[codes_capteurs.index("LU")]:
                     self.commu.demander_si_bonne_reception("gimel")
 
-
-                if self.arro.verifier_si_on_arrose():
+                if self.arro.verifier_si_on_arrose(5):
                     self.commu.arroser()
-                if self.arro.verifier_si_on_arrete():
+                if self.arro.verifier_si_on_arrete(5):
                     self.commu.eteindre_arrosage()
+                time.sleep(3)
 
 
 
@@ -177,24 +180,27 @@ class Arrosage:
 
     def creer_parametres_par_defaut(self):
         with open(os.path.join(self.chemin, self.nom_fichier), "w") as f:
-            d = {1: [{"heure": 6, "minute": 0}, {"heure": 6, "minute": 15}],
-                 2: [{"heure": 20, "minute": 30}, {"heure": 20, "minute": 45}]}
+            d = {"1": [{"heure": 6, "minute": 0}, {"heure": 6, "minute": 15}],
+                "2": [{"heure": 20, "minute": 30}, {"heure": 20, "minute": 45}]}
+	    #  print(d)
             json.dump(d, f)
 
     def charger_horaires(self):
         with open(os.path.join(self.chemin, self.nom_fichier), "r") as f:
             self.horaires_d_arrosage = json.load(f)
 
-    def verifier_si_on_arrose(self, type_arrosage="defaut"):
+    def verifier_si_on_arrose(self, minutes, type_arrosage="defaut"):
         if type_arrosage == "defaut":
-            self.decision_temporelle_pour_demarrer(1)
+            self.decision_temporelle_pour_demarrer(5)
             self.en_train_d_arroser = True
         else:
             return False
 
-    def verifier_si_on_arrete(self):
+    def verifier_si_on_arrete(self, minutes):
+        maintenant = datetime.datetime.now()
         if self.en_train_d_arroser :
-            for n in self.horaires_d_arrosage:
+            for cle in self.horaires_d_arrosage.keys():
+                n = self.horaires_d_arrosage[cle]
                 heure_d_arrosage = maintenant.replace(hour=n[1]["heure"], minute=n[1]["minute"])
                 if moins_minute(maintenant, heure_d_arrosage, minutes):
                     return True
@@ -203,11 +209,15 @@ class Arrosage:
     def decision_temporelle_pour_demarrer(self, minutes):
         """
 
+
         :param minutes: plus ou moins ça quand on va arroser
         :return:
         """
         maintenant = datetime.datetime.now()
-        for n in self.horaires_d_arrosage:
+        #  print(self.horaires_d_arrosage)
+        for cle in self.horaires_d_arrosage.keys():
+            n = self.horaires_d_arrosage[cle]
+            #  print(n, self.horaires_d_arrosage)
             heure_d_arrosage = maintenant.replace(hour=n[0]["heure"], minute=n[0]["minute"])
             if moins_minute(maintenant, heure_d_arrosage, minutes):
                 return True
