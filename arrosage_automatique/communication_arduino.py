@@ -174,7 +174,6 @@ class Arrosage:
         self.en_train_d_arroser = False
         self.charger_horaires()
 
-
     def creer_parametres_par_defaut(self):
         with open(self.chemin, "w") as f:
             d = {1: [{"heure": 6, "minute": 0}, {"heure": 6, "minute": 15}],
