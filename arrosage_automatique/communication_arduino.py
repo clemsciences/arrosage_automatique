@@ -98,6 +98,7 @@ class Decideur(threading.Thread):
                     time.sleep(1)
                     recu = self.commu.ecouter()
                     recu = recu.split("_")
+                    print(recu)
                     if len(recu) == 2 and recu in codes_capteurs:
                         code_capteur = recu[0]
                         valeur = recu[1]
@@ -106,7 +107,7 @@ class Decideur(threading.Thread):
                         self.recuperateur.enregistrer_mesure(valeur, d_code_table_capteurs[code_capteur])
                     else:
                         with open(os.path.join("static", "json_files", "log.json"), "a") as f:
-                            json.dump({datetime.datetime.now(): "truc bizarre reçu"}, f)
+                            json.dump({repr(datetime.datetime.now()): "truc bizarre reçu"}, f)
 
                 # Voir si la carte renvoie quelque chose malgré la non réception de valeurs des capteurs
                 if self.dm.non_reception[codes_capteurs.index("HS")]:
@@ -231,8 +232,12 @@ class Mesure:
     def __init__(self, l_grandeurs_codee):
         self.l_grandeurs_codee = l_grandeurs_codee
         maintenant = datetime.datetime.now()
-        avant = maintenant.replace(year=maintenant.year-1)
-        self.dates_dernieres_demandes = []*len(l_grandeurs_codee)
+        if maintenant.minute < 59:
+            
+            avant = maintenant.replace(minute=maintenant.minute+1)
+        else:
+            avant = maintenant.replace(minute=maintenant.minute-1)
+        self.dates_dernieres_demandes = [avant]*len(l_grandeurs_codee)
         self.dates_dernieres_receptions = [maintenant]*len(l_grandeurs_codee)
         self.non_reception = [False]* len(l_grandeurs_codee)
         self.l_grandeurs_a_mesurer = []
@@ -240,6 +245,7 @@ class Mesure:
     def pour_faire_nouvelles_mesures(self, intervalle_mesures):
         for i in range(len(self.l_grandeurs_codee)):
             intervalle_mesuree = (self.dates_dernieres_receptions[i] - self.dates_dernieres_demandes[i])
+            print(intervalle_mesuree)
             if intervalle_mesuree.seconds > intervalle_mesures and not self.non_reception[i]:
                 self.l_grandeurs_a_mesurer.append(self.l_grandeurs_codee[i])
 
@@ -252,14 +258,15 @@ class Mesure:
                 json.dump({self.l_grandeurs_codee[i]: self.non_reception[i] for i in range(len(self.l_grandeurs_codee))}, f)
         except IOError:
              with open(os.path.join("static", "json_files", "log.json"), "a") as f:
-                json.dump({datetime.datetime.now(): "problème avec le log de l'état des capteurs"}, f)
+                json.dump({repr(datetime.datetime.now()): "problème avec le log de l'état des capteurs"}, f)
 
     def mettre_a_jour_demandes(self, code):
         self.dates_dernieres_demandes[codes_arduino.index(code)] = datetime.datetime.now()
 
     def mettre_a_jour_receptions(self, code_capteur):
         self.dates_dernieres_receptions[codes_capteurs.index(code_capteur)] = datetime.datetime.now()
-
+        i = self.l_grandeurs_a_mesurer.index(code_capteur)
+        del self.l_grandeurs_a_mesurer[i]
 
 
 class Communication_Arduino:
@@ -308,11 +315,11 @@ class Communication_Arduino:
                 self.contact_gimel = True
             else:
                 with open(os.path.join("static", "json_files", "log.json"), "a") as f:
-                    json.dump({datetime.datetime.now(): "plus de contact avec la carte "+nom_carte}, f)
+                    json.dump({repr(datetime.datetime.now()): "plus de contact avec la carte "+nom_carte}, f)
 
         else:
             with open(os.path.join("static", "json_files", "log.json"), "a") as f:
-                json.dump({datetime.datetime.now(): "mauvais nom de crate arduino"}, f)
+                json.dump({repr(datetime.datetime.now()): "mauvais nom de crate arduino"}, f)
 
 
     # def en_train_d_arroser(self):
