@@ -51,7 +51,7 @@ class Decideur(threading.Thread):
         self.commu = Communication_Arduino(lePort)
         self.recuperateur = RecuperateurDonnees()
         self.dm = Mesure(codes_arduino)
-        self.arro = Arrosage(l_code_arrosage)
+        self.arro = Arrosage()
 
     def run(self):
         """
@@ -167,9 +167,10 @@ class Decideur(threading.Thread):
 
 
 class Arrosage:
-    def __init__(self, l_code_arrosage, chemin=os.path.join("static", "json_files", "parametres_simples_arrosage.json")):
+    def __init__(self, chemin=os.path.join("static", "json_files"), nom_fichier="parametres_simples_arrosage.json"):
         self.chemin = chemin
-        if os.path.exists(chemin):
+        self.nom_fichier = nom_fichier
+        if os.listdir(self.chemin):
             self.creer_parametres_par_defaut()
         self.en_train_d_arroser = False
         self.charger_horaires()
