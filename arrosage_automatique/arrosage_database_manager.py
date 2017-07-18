@@ -251,7 +251,7 @@ class RecuperateurDonnees:
         SELECT *
         FROM %s
         WHERE compteur IN (SELECT max(compteur) FROM %s)
-        """, (nom_table, nom_table))
+        """ % (nom_table, nom_table))
         res = cursor.fetchone()
         connex.close()
         return res
