@@ -182,7 +182,7 @@ class Arrosage:
         with open(os.path.join(self.chemin, self.nom_fichier), "w") as f:
             d = {"1": [{"heure": 6, "minute": 0}, {"heure": 6, "minute": 15}],
                 "2": [{"heure": 20, "minute": 30}, {"heure": 20, "minute": 45}]}
-	    #  print(d)
+            #  print(d)
             json.dump(d, f)
 
     def charger_horaires(self):
@@ -230,8 +230,10 @@ class Mesure:
     """
     def __init__(self, l_grandeurs_codee):
         self.l_grandeurs_codee = l_grandeurs_codee
-        self.dates_dernieres_demandes = [datetime.datetime.now()]*len(l_grandeurs_codee)
-        self.dates_dernieres_receptions = [datetime.datetime.now()]* len(l_grandeurs_codee)
+        maintenant = datetime.datetime.now()
+        avant = maintenant.replace(year=maintenant.year-1)
+        self.dates_dernieres_demandes = []*len(l_grandeurs_codee)
+        self.dates_dernieres_receptions = [maintenant]*len(l_grandeurs_codee)
         self.non_reception = [False]* len(l_grandeurs_codee)
         self.l_grandeurs_a_mesurer = []
 
