@@ -187,7 +187,7 @@ class Arrosage:
 
     def verifier_si_on_arrose(self, type_arrosage="defaut"):
         if type_arrosage == "defaut":
-            self.decision_temporel(1)
+            self.decision_temporelle_pour_demarrer(1)
             self.en_train_d_arroser = True
         else:
             return False
@@ -195,12 +195,12 @@ class Arrosage:
     def verifier_si_on_arrete(self):
         if self.en_train_d_arroser :
             for n in self.horaires_d_arrosage:
-                heure_d_arrosage = maintenant.replace(hour=n["heure"][1], minute=n["minute"][1])
+                heure_d_arrosage = maintenant.replace(hour=n[1]["heure"], minute=n[1]["minute"])
                 if moins_minute(maintenant, heure_d_arrosage, minutes):
                     return True
         return False
 
-    def decision_temporel(self, minutes):
+    def decision_temporelle_pour_demarrer(self, minutes):
         """
 
         :param minutes: plus ou moins ça quand on va arroser
@@ -208,7 +208,7 @@ class Arrosage:
         """
         maintenant = datetime.datetime.now()
         for n in self.horaires_d_arrosage:
-            heure_d_arrosage = maintenant.replace(hour=n["heure"][0], minute=n["minute"][0])
+            heure_d_arrosage = maintenant.replace(hour=n[0]["heure"], minute=n[0]["minute"])
             if moins_minute(maintenant, heure_d_arrosage, minutes):
                 return True
         return False
