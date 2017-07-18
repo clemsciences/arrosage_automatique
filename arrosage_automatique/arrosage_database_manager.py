@@ -11,6 +11,7 @@ Module à améliorer pour faire mieux correspondre les tables aux besoins
 
 __author__ = 'besnier'
 
+
 class RecuperateurDonnees:
     def __init__(self, chemin_base_donnee="/home/pi/arrosage_automatique/arrosage_automatique/mesures_et_arrosages.db"):
         assert isinstance(chemin_base_donnee, str)
@@ -254,7 +255,7 @@ class RecuperateurDonnees:
         """ % (nom_table, nom_table))
         res = cursor.fetchone()
         connex.close()
-        return res
+        return res[1], res[2]
 
 
     # def obtenir_conditions_arrosage(self):
