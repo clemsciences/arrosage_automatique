@@ -176,13 +176,13 @@ class Arrosage:
         self.charger_horaires()
 
     def creer_parametres_par_defaut(self):
-        with open(self.chemin, "w") as f:
+        with open(os.path.join(self.chemin, self.nom_fichier), "w") as f:
             d = {1: [{"heure": 6, "minute": 0}, {"heure": 6, "minute": 15}],
                  2: {{"heure": 20, "minute": 30}, {"heure": 20, "minute": 45}}}
             json.dump(d, f)
 
     def charger_horaires(self):
-        with open(self.chemin, "r") as f:
+        with open(os.path.join(self.chemin, self.nom_fichier), "r") as f:
             self.horaires_d_arrosage = json.load(f)
 
     def verifier_si_on_arrose(self, type_arrosage="defaut"):
