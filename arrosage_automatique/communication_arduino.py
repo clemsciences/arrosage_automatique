@@ -99,11 +99,11 @@ class Decideur(threading.Thread):
                     recu = self.commu.ecouter()
                     recu = recu.split("_")
                     print(recu)
-                    if len(recu) == 2 and recu in codes_capteurs:
+                    if len(recu) == 2 and recu[0] in codes_capteurs:
                         code_capteur = recu[0]
-                        valeur = recu[1]
+                        valeur = recu[1].split("\r")[0]
                         print(recu)
-                        self.dm.mettre_a_jour_receptions(code_capteur)
+                        self.dm.mettre_a_jour_receptions(code)
                         self.recuperateur.enregistrer_mesure(valeur, d_code_table_capteurs[code_capteur])
                     else:
                         with open(os.path.join("static", "json_files", "log.json"), "a") as f:
@@ -263,10 +263,9 @@ class Mesure:
     def mettre_a_jour_demandes(self, code):
         self.dates_dernieres_demandes[codes_arduino.index(code)] = datetime.datetime.now()
 
-    def mettre_a_jour_receptions(self, code_capteur):
-        self.dates_dernieres_receptions[codes_capteurs.index(code_capteur)] = datetime.datetime.now()
-        i = self.l_grandeurs_a_mesurer.index(code_capteur)
-        del self.l_grandeurs_a_mesurer[i]
+    def mettre_a_jour_receptions(self, code):
+        self.dates_dernieres_receptions[codes_arduino.index(code)] = datetime.datetime.now()
+        self.l_grandeurs_a_mesurer.remove(code)
 
 
 class Communication_Arduino:
