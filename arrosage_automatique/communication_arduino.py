@@ -141,11 +141,11 @@ class Decideur(threading.Thread):
                     moyennes_par_heure_temperature = collections.defaultdict(str)
                     moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps_te[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
 
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_te]))
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_hu]))
                     temps_moyennes_par_heure.sort()
                     moyennes_par_heure_humidite = collections.defaultdict(str)
 
-                    moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps_te[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
+                    moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps_hu[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
 
                     temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
                     temps_moyennes_par_heure.sort()

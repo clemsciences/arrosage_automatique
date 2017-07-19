@@ -160,7 +160,7 @@ def get_global_jour(annee, mois, jour):
         temps, temperatures = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
         temps, humidites = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
         temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
-        generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
+        generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression)
 
 
     return render_template("affichage_global_jour.html", nom_image_temperature=nom_image_temperature,
@@ -232,7 +232,7 @@ def get_data_jour_image(grandeur, annee, mois, jour):
         temps, temperatures = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
         temps, humidites = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
         temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
-        generateur_graphique_meteo.obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression)
+        generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression)
     chemin_et_nom_fichier = os.path.join(DIRECTORY_IMAGES, nom_image)
     return send_file(chemin_et_nom_fichier, "image/png")
 
