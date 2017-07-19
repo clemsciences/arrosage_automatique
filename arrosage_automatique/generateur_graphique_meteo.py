@@ -305,7 +305,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
     #return nf_min, nf_max, nf_moy
 
 
-def obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_pression):
+def obtenir_courbe_global_jour(temps, temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression):
     jour = temps[0]
     jour_semaine = jour.ctime()[:3]
 

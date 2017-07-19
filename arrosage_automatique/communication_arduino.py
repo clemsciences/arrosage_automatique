@@ -107,7 +107,7 @@ class Decideur(threading.Thread):
                         self.recuperateur.enregistrer_mesure(valeur, d_code_table_capteurs[code_capteur])
                     else:
                         with open(os.path.join("static", "json_files", "log.json"), "a") as f:
-                            json.dump({repr(datetime.datetime.now()): "truc bizarre reçu"}, f)
+                            json.dump({repr(datetime.datetime.now()): "truc bizarre reçu "+"_".join(recu)}, f)
 
                 # Voir si la carte renvoie quelque chose malgré la non réception de valeurs des capteurs
                 if self.dm.non_reception[codes_capteurs.index("HS")]:
@@ -130,7 +130,7 @@ class Decideur(threading.Thread):
                     heure_des_mesures = date_maintenant.hour
                     annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
                     temps_te, temperatures = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
-                    temps_hu, humidites = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs[HA])
+                    temps_hu, humidites = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
                     temps_pression, pressions = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
                     generateur_graphique_meteo.obtenir_courbe_global_jour(temps_te, temperatures, humidites, pressions, temps_pression)
 
