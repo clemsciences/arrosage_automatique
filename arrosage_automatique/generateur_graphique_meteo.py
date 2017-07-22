@@ -376,7 +376,7 @@ def creer_courbe_humidite_sol(humidite_sol, temps):
         temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
         temps_moyennes_par_heure.sort()
         moyennes_par_heure = [np.mean([pres for i, pres in enumerate(humidite_sol) if temps[i].hour == heure and type(pres) == float]) for heure in temps_moyennes_par_heure]
-        plt.title(u"Courbe de pression du "+
+        plt.title(u"Courbe de humidite du sol du "+
                   conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
         plt.axis([0,24, 0, 1023])
         plt.grid(True)

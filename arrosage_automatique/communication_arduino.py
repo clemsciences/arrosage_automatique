@@ -89,7 +89,7 @@ class Decideur(threading.Thread):
             print("début boucle")
             try:
                 # maintenant = time.time()
-                # date_maintenant = datetime.datetime.now()
+                date_maintenant = datetime.datetime.now()
                 self.dm.pour_faire_nouvelles_mesures(30)
                 print(self.dm.l_grandeurs_a_mesurer)
                 for code in self.dm.l_grandeurs_a_mesurer:
@@ -102,6 +102,7 @@ class Decideur(threading.Thread):
                     recu = recu.split("_")
                     if len(recu) == 2 and recu[0] in codes_capteurs:
                         code_capteur = recu[0]
+                        #mesures_et_arrosages.db
                         valeur = recu[1].split("\r")[0]
                         self.dm.mettre_a_jour_receptions(code)
                         self.recuperateur.enregistrer_mesure(valeur, d_code_table_capteurs[code_capteur])
