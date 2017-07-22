@@ -7,7 +7,7 @@ import generateur_graphique_meteo
 import datetime
 import collections, pickle
 import mimetypes
-
+import sqlite3
 import os
 
 from constantes import *
@@ -160,17 +160,27 @@ def get_global_jour(annee, mois, jour):
 
     if nom_image_humidite not in dossiers_images or nom_image_pression not in dossiers_images \
             or nom_image_temperature not in dossiers_images or nom_image_hs in dossiers_images \
-            or  nom_image_luminosite in dossiers_images:
-        temps_temperatures, temperatures = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
-        temps_humidites, humidites = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
-        temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
-        generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression)
+            or nom_image_luminosite in dossiers_images:
+        try:
+            temps_temperatures, temperatures = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
+            temps_humidites, humidites = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
+            temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
+            generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression)
 
-        temps_luminosite, luminosite = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["LU"])
-        generateur_graphique_meteo.creer_courbe_luminosite_jour(luminosite, temps_luminosite)
+        except sqlite3.OperationalError:
+            return None
+        try:
+            temps_luminosite, luminosite = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["LU"])
+            generateur_graphique_meteo.creer_courbe_luminosite_jour(luminosite, temps_luminosite)
+        except sqlite3.OperationalError:
+            return None
 
-        temps_hs, humidite_sol = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HS"])
-        generateur_graphique_meteo.creer_courbe_humidite_sol(humidite_sol, temps_hs)
+        try:
+            temps_hs, humidite_sol = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HS"])
+            generateur_graphique_meteo.creer_courbe_humidite_sol(humidite_sol, temps_hs)
+        except sqlite3.OperationalError:
+                return None
+
     return render_template("affichage_global_jour.html", nom_image_temperature=nom_image_temperature,
                            nom_image_humidite=nom_image_humidite, nom_image_pression=nom_image_pression,
                            nom_image_luminosite=nom_image_luminosite, nom_image_hs=nom_image_hs,

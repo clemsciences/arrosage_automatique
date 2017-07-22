@@ -90,7 +90,7 @@ class Decideur(threading.Thread):
             try:
                 # maintenant = time.time()
                 date_maintenant = datetime.datetime.now()
-                self.dm.pour_faire_nouvelles_mesures(30)
+                self.dm.initialiser_mesures()
                 print(self.dm.l_grandeurs_a_mesurer)
                 for code in self.dm.l_grandeurs_a_mesurer:
                     print(code)
@@ -111,7 +111,7 @@ class Decideur(threading.Thread):
                     else:
                         with open(os.path.join("static", "json_files", "log.json"), "a") as f:
                             json.dump({repr(datetime.datetime.now()): "truc bizarre reçu "+"_".join(recu)}, f)
-
+                self.dm.pour_faire_nouvelles_mesures(30)
                 # Voir si la carte renvoie quelque chose malgré la non réception de valeurs des capteurs
                 if self.dm.non_reception[codes_capteurs.index("HS")]:
                     self.commu.demander_si_bonne_reception("beth")
@@ -260,6 +260,9 @@ class Mesure:
         self.dates_dernieres_receptions = [maintenant]*len(l_grandeurs_codee)
         self.non_reception = [False]* len(l_grandeurs_codee)
         self.l_grandeurs_a_mesurer = []
+
+    def initialiser_mesures(self):
+        self.l_grandeurs_a_mesurer = self.l_grandeurs_codee
 
     def pour_faire_nouvelles_mesures(self, intervalle_entre_mesures):
         maintenant = datetime.datetime.now()
