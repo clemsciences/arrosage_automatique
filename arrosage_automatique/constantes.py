@@ -39,7 +39,20 @@ MOTM = "moyennes_temperature_mois_"
 # graphique temperature moyenne annee
 MOTA = "nom_temperature_annee_moyennes"
 
+# graphique luminosite moyenne jour
+MOLJ = "moyennes_luminosite_jour_"
+# graphique pression moyenne mois
+MOLM = "moyennes_luminosite_mois_"
+# graphique pression moyenne annee
+MOLA = "moyennes_luminosite_annee_"
 
+
+# graphique humidite du sol moyenne jour
+MOHSJ = "moyennes_humidite_sol_jour_"
+# graphique pression moyenne mois
+MOHSM = "moyennes_humidite_sol_mois_"
+# graphique pression moyenne annee
+MOHSA = "moyennes_humidite_sol_annee_"
 
 
 # graphique humidite minima jour

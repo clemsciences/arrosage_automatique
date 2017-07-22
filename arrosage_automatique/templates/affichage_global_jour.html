@@ -8,7 +8,9 @@
 <h1> Les données du {{ jour }} {{ mois }} {{ annee }}</h1>
 <img src="{{ url_for('static', filename = 'images/'+nom_image_temperature) }}" alt="Courbes des moyennes de température"/>
 <img src="{{ url_for('static', filename = 'images/'+nom_image_humidite) }}" alt="Courbe moyenne de l'hygrométrie"/>
-<img src="{{ url_for('static', filename = 'images/'+nom_image_pression) }}" alt="Courbe moyenne de la prssion atmosphérique"/>
+<img src="{{ url_for('static', filename = 'images/'+nom_image_pression) }}" alt="Courbe moyenne de la pression atmosphérique"/>
+<img src="{{ url_for('static', filename = 'images/'+nom_image_hs) }}" alt="Courbe moyenne de l'humidité du sol"/>
+<img src="{{ url_for('static', filename = 'images/'+nom_image_luminosite) }}" alt="Courbe moyenne de la luminosité"/>
 <a href="/">Retour à l'accueil </a>
 </body>
 </html>

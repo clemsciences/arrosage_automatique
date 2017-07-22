@@ -309,53 +309,108 @@ def obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_tempera
     jour = temps_temperatures[0]
     jour_semaine = jour.ctime()[:3]
 
-    nom_im_humi = MOHJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
-    nom_moyennes_humidite = os.path.join(DIRECTORY_IMAGES, nom_im_humi)
-    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_humidites]))
-    temps_moyennes_par_heure.sort()
-    moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps_humidites[i].hour == heure and type(humi) == float]) for heure in temps_moyennes_par_heure]
-    plt.title(u"Courbe d'humidite du "+
-              conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
-    plt.axis([0, 24, 0, 100])
-    plt.grid(True)
-    plt.xlabel(u"temps")
-    plt.ylabel(u"humidite en %")
-    plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
-    plt.savefig(nom_moyennes_humidite)
-    plt.close()
+    if len(temps_humidites) > 0:
+        nom_im_humi = MOHJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+        nom_moyennes_humidite = os.path.join(DIRECTORY_IMAGES, nom_im_humi)
+        temps_moyennes_par_heure = list(set([timme.hour for timme in temps_humidites]))
+        temps_moyennes_par_heure.sort()
+        moyennes_par_heure = [np.mean([humi for i, humi in enumerate(humidites) if temps_humidites[i].hour == heure and type(humi) == float]) for heure in temps_moyennes_par_heure]
+        plt.title(u"Courbe d'humidite du "+
+                  conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+        plt.axis([0, 24, 0, 100])
+        plt.grid(True)
+        plt.xlabel(u"temps")
+        plt.ylabel(u"humidite en %")
+        plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+        plt.savefig(nom_moyennes_humidite)
+        plt.close()
+    else:
+        print("Il n'y a pas de données d'humidité de l'air aujourd'hui")
+
+    if len(temps_temperatures) > 0:
+        nom_im_temp = MOTJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+        nom_moyennes_temperatures = os.path.join(DIRECTORY_IMAGES, nom_im_temp)
+        #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
+        temps_moyennes_par_heure = list(set([timme.hour for timme in temps_temperatures]))
+        temps_moyennes_par_heure.sort()
+        moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps_temperatures[i].hour == heure and type(tempe) == float]) for heure in temps_moyennes_par_heure]
+        plt.title(u"Courbe de temperature du "+
+                  conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+        plt.axis([0,24, -20, 40])
+        plt.grid(True)
+        plt.xlabel(u"temps")
+        plt.ylabel(u"temperature en °C")
+        plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+        plt.savefig(nom_moyennes_temperatures)
+        plt.close()
+    else:
+        print("Il n'y a pas de données de température aujourd'hui")
+
+    if len(temps_pression) > 0:
+        nom_im_pres = MOPJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+        nom_moyennes_pressions = os.path.join(DIRECTORY_IMAGES, nom_im_pres)
+        #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
+        temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
+        temps_moyennes_par_heure.sort()
+        moyennes_par_heure = [np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float]) for heure in temps_moyennes_par_heure]
+        plt.title(u"Courbe de pression du "+
+                  conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+        plt.axis([0,24, 970, 1040])
+        plt.grid(True)
+        plt.xlabel(u"temps")
+        plt.ylabel(u"pression en hPa")
+        plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+        plt.savefig(nom_moyennes_pressions)
+        plt.close()
+    else:
+        print("Il n'y a pas de données de pression aujourd'hui")
 
 
-    nom_im_temp = MOTJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
-    nom_moyennes_temperatures = os.path.join(DIRECTORY_IMAGES, nom_im_temp)
-    #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
-    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_temperatures]))
-    temps_moyennes_par_heure.sort()
-    moyennes_par_heure = [np.mean([tempe for i, tempe in enumerate(temperatures) if temps_temperatures[i].hour == heure and type(tempe) == float]) for heure in temps_moyennes_par_heure]
-    plt.title(u"Courbe de temperature du "+
-              conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
-    plt.axis([0,24, -20, 40])
-    plt.grid(True)
-    plt.xlabel(u"temps")
-    plt.ylabel(u"temperature en °C")
-    plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
-    plt.savefig(nom_moyennes_temperatures)
-    plt.close()
+def creer_courbe_humidite_sol(humidite_sol, temps):
+    if len(temps) > 0:
+        jour = temps[0]
+        jour_semaine = jour.ctime()[:3]
+        nom_im_pres = MOHSJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+        nom_moyennes_humidite_sol = os.path.join(DIRECTORY_IMAGES, nom_im_pres)
+        #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
+        temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+        temps_moyennes_par_heure.sort()
+        moyennes_par_heure = [np.mean([pres for i, pres in enumerate(humidite_sol) if temps[i].hour == heure and type(pres) == float]) for heure in temps_moyennes_par_heure]
+        plt.title(u"Courbe de pression du "+
+                  conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+        plt.axis([0,24, 0, 1023])
+        plt.grid(True)
+        plt.xlabel(u"Temps")
+        plt.ylabel(u"Humidite du sol")
+        plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+        plt.savefig(nom_moyennes_humidite_sol)
+        plt.close()
+    else:
+        print("Il n'y a pas de mesure de l'humidité du sol pour aujourd'hui")
 
-    nom_im_pres = MOPJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
-    nom_moyennes_pressions = os.path.join(DIRECTORY_IMAGES, nom_im_pres)
-    #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
-    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
-    temps_moyennes_par_heure.sort()
-    moyennes_par_heure = [np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float]) for heure in temps_moyennes_par_heure]
-    plt.title(u"Courbe de pression du "+
-              conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
-    plt.axis([0,24, 970, 1040])
-    plt.grid(True)
-    plt.xlabel(u"temps")
-    plt.ylabel(u"pression en hPa")
-    plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
-    plt.savefig(nom_moyennes_pressions)
-    plt.close()
+
+def creer_courbe_luminosite_jour(luminosite, temps):
+    if len(temps) > 0:
+        jour = temps[0]
+        jour_semaine = jour.ctime()[:3]
+        nom_im_pres = MOLJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
+        nom_moyennes_luminosite = os.path.join(DIRECTORY_IMAGES, nom_im_pres)
+        #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
+        temps_moyennes_par_heure = list(set([timme.hour for timme in temps]))
+        temps_moyennes_par_heure.sort()
+        moyennes_par_heure = [np.mean([pres for i, pres in enumerate(luminosite) if temps[i].hour == heure and type(pres) == float]) for heure in temps_moyennes_par_heure]
+        plt.title(u"Courbe de luminosite du "+
+                  conversion_jour[jour_semaine]+" "+str(jour.day)+" "+conversion_mois[jour.month-1]+".")
+        plt.axis([0,24, 0, 1023])
+        plt.grid(True)
+        plt.xlabel(u"Temps")
+        plt.ylabel(u"Luminosite")
+        plt.plot(temps_moyennes_par_heure, moyennes_par_heure, marker="*")
+        plt.savefig(nom_moyennes_luminosite)
+        plt.close()
+    else:
+        print("Il n'y a pas de mesure de luminosité pour aujourd'hui")
+
 
     #return nom_im_temp, nom_im_humi, nom_im_pres
 

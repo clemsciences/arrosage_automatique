@@ -154,6 +154,8 @@ def get_global_jour(annee, mois, jour):
     nom_image_temperature = nommer_jour(MOTJ, annee, mois, jour)
     nom_image_humidite = nommer_jour(MOHJ, annee, mois, jour)
     nom_image_pression = nommer_jour(MOPJ, annee, mois, jour)
+    nom_image_hs = nommer_jour(MOHSJ, annee, mois, jour)
+    nom_image_luminosite = nommer_jour(MOLJ, annee, mois, jour)
     dossiers_images = os.listdir(DIRECTORY_IMAGES)
 
     if nom_image_humidite not in dossiers_images or nom_image_pression not in dossiers_images or nom_image_temperature not in dossiers_images:
@@ -162,9 +164,14 @@ def get_global_jour(annee, mois, jour):
         temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
         generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression)
 
+        temps_luminosite, luminosite = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["LU"])
+        generateur_graphique_meteo.creer_courbe_luminosite_jour(luminosite, temps_luminosite)
 
+        temps_hs, humidite_sol = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HS"])
+        generateur_graphique_meteo.creer_courbe_humidite_sol(humidite_sol, temps_hs)
     return render_template("affichage_global_jour.html", nom_image_temperature=nom_image_temperature,
                            nom_image_humidite=nom_image_humidite, nom_image_pression=nom_image_pression,
+                           nom_image_luminosite=nom_image_luminosite, nom_image_hs=nom_image_hs,
                            annee=annee, mois=l_mois[mois-1], jour=jour)
 
 # API REST
@@ -177,6 +184,9 @@ def get_data_global_jour(annee, mois, jour):
         temps_humidites, humidites = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
         temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
 
+        temps_luminosite, luminosite = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["LU"])
+        temps_hs, humidite_sol = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HS"])
+
         temps_moyennes_par_heure = list(set([timme.hour for timme in temps_temperatures]))
         temps_moyennes_par_heure.sort()
         moyennes_par_heure_temperature = collections.defaultdict(str)
@@ -185,17 +195,33 @@ def get_data_global_jour(annee, mois, jour):
         temps_moyennes_par_heure = list(set([timme.hour for timme in temps_humidites]))
         temps_moyennes_par_heure.sort()
         moyennes_par_heure_humidite = collections.defaultdict(str)
-
         moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps_humidites[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
 
-        #d["humidite"] = moyennes_par_heure_humidite
+
         temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
         temps_moyennes_par_heure.sort()
         moyennes_par_heure_pression = collections.defaultdict()
         moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
 
-        #d['pression'] = moyennes_par_heure_pression
-        d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
+        temps_moyennes_par_heure = list(set([timme.hour for timme in temps_hs]))
+        temps_moyennes_par_heure.sort()
+        moyennes_par_heure_hs = collections.defaultdict(str)
+        moyennes_par_heure_hs.update({heure : str(float(np.mean([hs for i, hs in enumerate(humidite_sol) if temps_hs[i].hour == heure and type(hs) == float])))[:5] for heure in temps_moyennes_par_heure})
+
+
+        temps_moyennes_par_heure = list(set([timme.hour for timme in temps_luminosite]))
+        temps_moyennes_par_heure.sort()
+        moyennes_par_heure_luminosite = collections.defaultdict(str)
+        moyennes_par_heure_luminosite.update({heure : str(float(np.mean([lumi for i, lumi in enumerate(luminosite) if temps_luminosite[i].hour == heure and type(lumi) == float])))[:5] for heure in temps_moyennes_par_heure})
+
+
+
+        d = {heure : {'humidite': moyennes_par_heure_humidite[heure],
+                      'pression': moyennes_par_heure_pression[heure],
+                      "temperature": moyennes_par_heure_temperature[heure],
+                      "luminosite": moyennes_par_heure_luminosite[heure],
+                      "humidite_sol": moyennes_par_heure_hs[heure]} for heure in temps_moyennes_par_heure}
+
         with open(os.path.join(DIRECTORY_JSON, nom_fichier_json), "wb") as f:
             myp = pickle.Pickler(f)
             myp.dump(d)
@@ -224,6 +250,10 @@ def get_data_jour_image(grandeur, annee, mois, jour):
         nom_image = nommer_jour(MOHJ, annee, mois, jour)
     elif grandeur == "pression":
         nom_image = nommer_jour(MOPJ, annee, mois, jour)
+    elif grandeur == "luminosite":
+        nom_image = nommer_jour(MOLJ, annee, mois, jour)
+    elif grandeur == "humidite_sol":
+        nom_image = nommer_jour(MOHSJ, annee, mois, jour)
     else:
         return None
     dossiers_images = os.listdir(DIRECTORY_IMAGES)
@@ -233,6 +263,13 @@ def get_data_jour_image(grandeur, annee, mois, jour):
         temps_humidites, humidites = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
         temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
         generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression)
+
+        temps_luminosite, luminosite = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["LU"])
+        generateur_graphique_meteo.creer_courbe_luminosite_jour(luminosite, temps_luminosite)
+
+        temps_hs, humidite_sol = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HS"])
+        generateur_graphique_meteo.creer_courbe_humidite_sol(humidite_sol, temps_hs)
+
     chemin_et_nom_fichier = os.path.join(DIRECTORY_IMAGES, nom_image)
     return send_file(chemin_et_nom_fichier, "image/png")
 
