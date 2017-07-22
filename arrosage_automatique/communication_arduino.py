@@ -93,12 +93,13 @@ class Decideur(threading.Thread):
                 self.dm.pour_faire_nouvelles_mesures(30)
                 print(self.dm.l_grandeurs_a_mesurer)
                 for code in self.dm.l_grandeurs_a_mesurer:
+                    print(code)
                     self.commu.parler(code)
                     self.dm.mettre_a_jour_demandes(code)
                     time.sleep(3)
                     recu = self.commu.ecouter()
-                    recu = recu.split("_")
                     print(recu)
+                    recu = recu.split("_")
                     if len(recu) == 2 and recu[0] in codes_capteurs:
                         code_capteur = recu[0]
                         valeur = recu[1].split("\r")[0]
@@ -132,7 +133,7 @@ class Decideur(threading.Thread):
                     temps_te, temperatures = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
                     temps_hu, humidites = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
                     temps_pression, pressions = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
-                    generateur_graphique_meteo.obtenir_courbe_global_jour(temps_te, temperatures, humidites, pressions, temps_pression)
+                    generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_te, temps_hu, temps_pression)
 
 
                     # Création ou mise à jour du fichier json pour l'API REST

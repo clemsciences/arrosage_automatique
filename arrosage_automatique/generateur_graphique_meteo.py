@@ -306,7 +306,7 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
 
 
 def obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression):
-    jour = temps[0]
+    jour = temps_temperatures[0]
     jour_semaine = jour.ctime()[:3]
 
     nom_im_humi = MOHJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"

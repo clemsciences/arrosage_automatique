@@ -11,7 +11,7 @@ else:
 #try:
 commu = ca.Communication_Arduino(PORT)
 
-commu.demander_si_bonne_reception()
+commu.demander_si_bonne_reception("beth")
 
 time.sleep(2)
 print commu.ecouter()
