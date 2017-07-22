@@ -306,10 +306,9 @@ def obtenir_courbe_humidite_annee(temps, humidites, annee):
 
 
 def obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_temperatures, temps_humidites, temps_pression):
-    jour = temps_temperatures[0]
-    jour_semaine = jour.ctime()[:3]
-
     if len(temps_humidites) > 0:
+        jour = temps_humidites[0]
+        jour_semaine = jour.ctime()[:3]
         nom_im_humi = MOHJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
         nom_moyennes_humidite = os.path.join(DIRECTORY_IMAGES, nom_im_humi)
         temps_moyennes_par_heure = list(set([timme.hour for timme in temps_humidites]))
@@ -328,6 +327,8 @@ def obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_tempera
         print("Il n'y a pas de données d'humidité de l'air aujourd'hui")
 
     if len(temps_temperatures) > 0:
+        jour = temps_temperatures[0]
+        jour_semaine = jour.ctime()[:3]
         nom_im_temp = MOTJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
         nom_moyennes_temperatures = os.path.join(DIRECTORY_IMAGES, nom_im_temp)
         #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
@@ -347,6 +348,8 @@ def obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_tempera
         print("Il n'y a pas de données de température aujourd'hui")
 
     if len(temps_pression) > 0:
+        jour = temps_pression[0]
+        jour_semaine = jour.ctime()[:3]
         nom_im_pres = MOPJ+str(jour.year)+"_"+str(jour.month)+"_"+str(jour.day)+".png"
         nom_moyennes_pressions = os.path.join(DIRECTORY_IMAGES, nom_im_pres)
         #nom_moyennes_temperatures = "moyennes_temperature_jour.png"
