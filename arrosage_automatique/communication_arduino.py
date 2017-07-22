@@ -103,9 +103,10 @@ class Decideur(threading.Thread):
                     if len(recu) == 2 and recu[0] in codes_capteurs:
                         code_capteur = recu[0]
                         valeur = recu[1].split("\r")[0]
-                        print(recu)
                         self.dm.mettre_a_jour_receptions(code)
                         self.recuperateur.enregistrer_mesure(valeur, d_code_table_capteurs[code_capteur])
+                    elif len(recu) == 0:
+                        print("rien reçu")
                     else:
                         with open(os.path.join("static", "json_files", "log.json"), "a") as f:
                             json.dump({repr(datetime.datetime.now()): "truc bizarre reçu "+"_".join(recu)}, f)
@@ -135,6 +136,11 @@ class Decideur(threading.Thread):
                     temps_pression, pressions = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
                     generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_te, temps_hu, temps_pression)
 
+                    temps_luminosite, luminosite = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["LU"])
+                    generateur_graphique_meteo.creer_courbe_luminosite_jour(luminosite, temps_luminosite)
+
+                    temps_hs, humidite_sol = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HS"])
+                    generateur_graphique_meteo.creer_courbe_humidite_sol(humidite_sol, temps_hs)
 
                     # Création ou mise à jour du fichier json pour l'API REST
                     temps_moyennes_par_heure = list(set([timme.hour for timme in temps_te]))
@@ -152,6 +158,17 @@ class Decideur(threading.Thread):
                     temps_moyennes_par_heure.sort()
                     moyennes_par_heure_pression = collections.defaultdict()
                     moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
+
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_hs]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_hs = collections.defaultdict(str)
+                    moyennes_par_heure_hs.update({heure : str(float(np.mean([hs for i, hs in enumerate(humidite_sol) if temps_hs[i].hour == heure and type(hs) == float])))[:5] for heure in temps_moyennes_par_heure})
+
+
+                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_luminosite]))
+                    temps_moyennes_par_heure.sort()
+                    moyennes_par_heure_luminosite = collections.defaultdict(str)
+                    moyennes_par_heure_luminosite.update({heure : str(float(np.mean([lumi for i, lumi in enumerate(luminosite) if temps_luminosite[i].hour == heure and type(lumi) == float])))[:5] for heure in temps_moyennes_par_heure})
 
                     d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
                     with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:

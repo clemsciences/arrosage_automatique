@@ -158,7 +158,9 @@ def get_global_jour(annee, mois, jour):
     nom_image_luminosite = nommer_jour(MOLJ, annee, mois, jour)
     dossiers_images = os.listdir(DIRECTORY_IMAGES)
 
-    if nom_image_humidite not in dossiers_images or nom_image_pression not in dossiers_images or nom_image_temperature not in dossiers_images:
+    if nom_image_humidite not in dossiers_images or nom_image_pression not in dossiers_images \
+            or nom_image_temperature not in dossiers_images or nom_image_hs in dossiers_images \
+            or  nom_image_luminosite in dossiers_images:
         temps_temperatures, temperatures = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
         temps_humidites, humidites = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
         temps_pression, pressions = recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
