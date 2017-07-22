@@ -121,7 +121,7 @@ void loop() {
           char string_temperature[10];
           Serial.print(temperature);
           getFloatToCharArray(temperature, string_temperature, prefix_temperature);
-          Serial.print(" Temperature here : ");
+          Serial.print("Temperature here : ");
           Serial.println(string_temperature);
           //vw_send((uint8_t *)announce_temperature, strlen(announce_temperature)); // On envoie le message 
           //vw_wait_tx();
@@ -159,13 +159,13 @@ void loop() {
         else if(strcmp(msg_received,ordre_donner_humidite_sol) == 0)
         {
           hygrometrie_sol = analogRead(hygrometreSolPin);
-          Serial.print("hygrometrie du sol = " );    // impression du titre
+          Serial.print("Hygrometrie du sol = " );    // impression du titre
           Serial.println(hygrometrie_sol);    // impression de la valeur mesurée
 
           
           char string_soil_humidity[10];
           getIntToCharArray(hygrometrie_sol, string_soil_humidity, prefix_hygrometrie_sol);
-          //Serial.print(" Soil Humidity here : ");
+          //Serial.print("Soil Humidity here : ");
           //Serial.println(string_soil_humidity);
           vw_send((uint8_t *)string_soil_humidity, strlen(string_soil_humidity));
           vw_wait_tx();
