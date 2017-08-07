@@ -21,6 +21,7 @@ public class DateObservation implements Serializable {
         update_string_values();
     }
 
+
     public DateObservation getPreviousDay()
     {
         DateObservation previous_day;

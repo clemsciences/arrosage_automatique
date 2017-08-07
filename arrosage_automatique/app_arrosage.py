@@ -12,7 +12,7 @@ import os
 
 from constantes import *
 
-__author__ = "__author__ = 'besnier'"
+__author__ = 'besnier'
 
 
 chemin_images = "/home/pi/arrosage_automatique/arrosage_automatique/static/images"

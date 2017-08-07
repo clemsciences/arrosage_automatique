@@ -35,6 +35,8 @@ public class CourbesActivity extends Activity{
     ImageView image_press_vue;
     ImageView image_temp_vue;
     ImageView image_humi_vue;
+    ImageView image_hs_vue;
+    ImageView image_luminosite_vue;
 
     Button bouton_precedent_courbes;
     Button bouton_suivant_courbes;
@@ -61,6 +63,8 @@ public class CourbesActivity extends Activity{
         image_press_vue = (ImageView) findViewById(R.id.imagePressionView);
         image_temp_vue = (ImageView) findViewById(R.id.imageTempeView);
         image_humi_vue = (ImageView) findViewById(R.id.imageHumiView);
+        image_hs_vue = (ImageView) findViewById(R.id.imageHumiSolView);
+        image_luminosite_vue = (ImageView) findViewById(R.id.imageLuminositeView);
 
         bouton_precedent_courbes = (Button) findViewById(R.id.button_precedent_courbe);
         bouton_suivant_courbes = (Button) findViewById(R.id.button_suivant_courbe);
@@ -78,7 +82,8 @@ public class CourbesActivity extends Activity{
                             final Bitmap im_tempe = ConnexionAPI.getTemperatureImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                             final Bitmap im_humi = ConnexionAPI.getHumiditeImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                             final Bitmap im_press = ConnexionAPI.getPressionImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
-
+                            final Bitmap im_hs = ConnexionAPI.getHumiditeSolImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
+                            final Bitmap im_luminosite = ConnexionAPI.getLuminositeImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                             runOnUiThread(new Runnable() {
                                               @Override
                                               public void run() {
@@ -86,6 +91,9 @@ public class CourbesActivity extends Activity{
                                                   image_press_vue.setImageBitmap(im_press);
                                                   image_temp_vue.setImageBitmap(im_tempe);
                                                   image_humi_vue.setImageBitmap(im_humi);
+                                                  image_hs_vue.setImageBitmap(im_hs);
+                                                  image_luminosite_vue.setImageBitmap(im_luminosite);
+
                                                   text_date.setText(date_selectionnee.toString());
                                               }
                                           }
@@ -112,6 +120,8 @@ public class CourbesActivity extends Activity{
                             final Bitmap im_tempe = ConnexionAPI.getTemperatureImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                             final Bitmap im_humi = ConnexionAPI.getHumiditeImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                             final Bitmap im_press = ConnexionAPI.getPressionImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
+                            final Bitmap im_hs = ConnexionAPI.getHumiditeSolImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
+                            final Bitmap im_luminosite = ConnexionAPI.getLuminositeImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
 
                             runOnUiThread(new Runnable() {
                                               @Override
@@ -120,6 +130,8 @@ public class CourbesActivity extends Activity{
                                                   image_press_vue.setImageBitmap(im_press);
                                                   image_temp_vue.setImageBitmap(im_tempe);
                                                   image_humi_vue.setImageBitmap(im_humi);
+                                                  image_hs_vue.setImageBitmap(im_hs);
+                                                  image_luminosite_vue.setImageBitmap(im_luminosite);
                                                   text_date.setText(date_selectionnee.toString());
 
                                               }
@@ -156,6 +168,8 @@ public class CourbesActivity extends Activity{
                     final Bitmap im_tempe = ConnexionAPI.getTemperatureImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                     final Bitmap im_humi = ConnexionAPI.getHumiditeImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
                     final Bitmap im_press = ConnexionAPI.getPressionImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
+                    final Bitmap im_hs = ConnexionAPI.getHumiditeSolImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
+                    final Bitmap im_luminosite = ConnexionAPI.getLuminositeImageDay(date_selectionnee.s_annee, date_selectionnee.s_mois, date_selectionnee.s_jour);
 
 
                     runOnUiThread(new Runnable() {
@@ -165,6 +179,8 @@ public class CourbesActivity extends Activity{
                                           image_press_vue.setImageBitmap(im_press);
                                           image_temp_vue.setImageBitmap(im_tempe);
                                           image_humi_vue.setImageBitmap(im_humi);
+                                          image_hs_vue.setImageBitmap(im_hs);
+                                          image_luminosite_vue.setImageBitmap(im_luminosite);
                                           text_date.setText(date_selectionnee.toString());
                                       }
                                   }

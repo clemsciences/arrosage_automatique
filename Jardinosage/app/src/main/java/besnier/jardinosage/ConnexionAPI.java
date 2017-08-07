@@ -86,7 +86,7 @@ public class ConnexionAPI {
         Log.d(TAG, "on va voir la connxion");
         final int responseCode = httpURLConnection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_OK) {
-            Log.d(TAG, "La connxion st bonn");
+            Log.d(TAG, "La connexion st bonn");
             InputStreamReader inputStreamReader = new InputStreamReader(
                     httpURLConnection.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(
@@ -117,6 +117,14 @@ public class ConnexionAPI {
     public static Bitmap getPressionImageDay(String year, String month, String day) throws IOException
     {
         return getImageDay(year, month, day, "pression");
+    }
+    public static Bitmap getHumiditeSolImageDay(String year, String month, String day) throws IOException
+    {
+        return getImageDay(year, month, day, "humidite_sol");
+    }
+    public static Bitmap getLuminositeImageDay(String year, String month, String day) throws IOException
+    {
+        return getImageDay(year, month, day, "luminosite");
     }
 
     public static Bitmap getImageDay(String year, String month, String day, String categorie)
