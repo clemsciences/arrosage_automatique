@@ -269,7 +269,9 @@ class Mesure:
         for i in range(len(self.l_grandeurs_codee)):
             intervalle_mesuree = (self.dates_dernieres_receptions[i] - self.dates_dernieres_demandes[i])
             intervalle_attente = (maintenant - self.dates_dernieres_receptions[i])
+            print(self.l_grandeurs_codee[i])
             print(intervalle_mesuree)
+            print(intervalle_attente)
             if intervalle_attente.seconds > intervalle_entre_mesures and not self.non_reception[i] and self.l_grandeurs_codee[i] not in self.l_grandeurs_a_mesurer:
                 self.l_grandeurs_a_mesurer.append(self.l_grandeurs_codee[i])
 
@@ -278,7 +280,6 @@ class Mesure:
 
             if - intervalle_mesuree.seconds > intervalle_entre_mesures*10:
                 self.non_reception[i] = True
-
 
     def log_etat_capteurs(self):
         try:

@@ -13,7 +13,7 @@ noms_tables_capteurs = ["TEMPERATURE_EXTERIEURE", "TEMPERATURE_INTRIEURE", "PRES
 d_code_table_capteurs = {code: table  for code, table in zip(codes_capteurs, noms_tables_capteurs)}
 
 
-l_code_arduino_sarrosage = ["a", "e"]
+l_code_arduino_arrosage = ["a", "e"]
 l_code_arrosage = ["PA", "PE"]
 
 noms_cartes_arduino = ["alef", "beth", "gimel", "dalet"]
