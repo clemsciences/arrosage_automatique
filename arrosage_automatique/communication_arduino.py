@@ -51,6 +51,7 @@ class Decideur(threading.Thread):
         self.commu = Communication_Arduino(lePort)
         self.recuperateur = RecuperateurDonnees()
         self.dm = Mesure(codes_arduino)
+        self.dm.initialiser_mesures()
         self.arro = Arrosage()
 
     def run(self):
@@ -90,7 +91,7 @@ class Decideur(threading.Thread):
             try:
                 # maintenant = time.time()
                 date_maintenant = datetime.datetime.now()
-                self.dm.initialiser_mesures()
+
                 print(self.dm.l_grandeurs_a_mesurer)
                 for code in self.dm.l_grandeurs_a_mesurer:
                     print(code)
