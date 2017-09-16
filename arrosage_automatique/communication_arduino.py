@@ -262,11 +262,12 @@ class Mesure:
         self.l_grandeurs_a_mesurer = []
 
     def initialiser_mesures(self):
-        self.l_grandeurs_a_mesurer = self.l_grandeurs_codee
+
+        self.l_grandeurs_a_mesurer = [i for i in self.l_grandeurs_codee]
 
     def pour_faire_nouvelles_mesures(self, intervalle_entre_mesures):
         maintenant = datetime.datetime.now()
-        print("self.l_grandeurs_codee", self.l_grandeurs_codee)
+        # print("self.l_grandeurs_codee", self.l_grandeurs_codee)
         for i in range(len(self.l_grandeurs_codee)):
             intervalle_mesuree = (self.dates_dernieres_receptions[i] - self.dates_dernieres_demandes[i])
             intervalle_attente = (maintenant - self.dates_dernieres_receptions[i])
