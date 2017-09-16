@@ -8,7 +8,7 @@
 // Connect SCL to I2C clock pin (A5 on UNO)
 // Connect SDA to I2C data pin (A4 on UNO)
 const int photometrePin = 0;
-const int hygrometreSolPin = 2;
+//const int hygrometreSolPin = 2;
 
 const uint8_t tranceiverPin = 8;
 const uint8_t receiverPin = 6;
@@ -78,19 +78,19 @@ void loop() {
       octet_lu = Serial.read();
       if(octet_lu == 116 ) //116 <=> t
       {
-        
+        int luminosity = analogRead(photometrePin);
+        Serial.println(luminosity);
+  
         Serial.println(octet_lu);
         temperature = htu.readTemperature();
         Serial.println(temperature);
         humidite_air = htu.readHumidity();
         Serial.println(humidite_air);
   
-        int luminosity = analogRead(photometrePin);
-        Serial.println(luminosity);
-  
-        hygrometrie_sol = analogRead(hygrometreSolPin);
-        Serial.print("hygrometrie du sol = " );    // impression du titre
-        Serial.println(hygrometrie_sol);
+        
+        //hygrometrie_sol = analogRead(hygrometreSolPin);
+        //Serial.print("hygrometrie du sol = " );    // impression du titre
+        //Serial.println(hygrometrie_sol);
       }
     }
   if (vw_have_message()) // Si on a un message dans le buffer
@@ -156,20 +156,20 @@ void loop() {
           vw_wait_tx();
         }
 
-        else if(strcmp(msg_received,ordre_donner_humidite_sol) == 0)
-        {
-          hygrometrie_sol = analogRead(hygrometreSolPin);
-          Serial.print("Hygrometrie du sol = " );    // impression du titre
-          Serial.println(hygrometrie_sol);    // impression de la valeur mesurée
-
-          
-          char string_soil_humidity[10];
-          getIntToCharArray(hygrometrie_sol, string_soil_humidity, prefix_hygrometrie_sol);
-          //Serial.print("Soil Humidity here : ");
-          //Serial.println(string_soil_humidity);
-          vw_send((uint8_t *)string_soil_humidity, strlen(string_soil_humidity));
-          vw_wait_tx();
-        }
+//        else if(strcmp(msg_received,ordre_donner_humidite_sol) == 0)
+//        {
+//          hygrometrie_sol = analogRead(hygrometreSolPin);
+//          Serial.print("Hygrometrie du sol = " );    // impression du titre
+//          Serial.println(hygrometrie_sol);    // impression de la valeur mesurée
+//
+//          
+//          char string_soil_humidity[10];
+//          getIntToCharArray(hygrometrie_sol, string_soil_humidity, prefix_hygrometrie_sol);
+//          //Serial.print("Soil Humidity here : ");
+//          //Serial.println(string_soil_humidity);
+//          vw_send((uint8_t *)string_soil_humidity, strlen(string_soil_humidity));
+//          vw_wait_tx();
+//        }
         /*
         else if(strcmp(msg_received,ordre_allumer_pompe) == 0)
         {

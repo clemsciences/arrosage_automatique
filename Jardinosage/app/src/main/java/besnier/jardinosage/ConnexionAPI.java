@@ -21,9 +21,9 @@ import java.util.ArrayList;
 
 public class ConnexionAPI {
 
-    private static final String URL = "http://arrobes.hopto.org/data/aujourdhui";
-    private static final String URL_date = "http://arrobes.hopto.org/data/{0}/{1}/{2}";
-    public static final String URL_Image = "http://arrobes.hopto.org/image/{0}/{1}/{2}/{3}";
+    private static final String URL = "http://arrobes.fr/data/aujourdhui";
+    private static final String URL_date = "http://arrobes.fr/data/{0}/{1}/{2}";
+    public static final String URL_Image = "http://arrobes.fr/image/{0}/{1}/{2}/{3}";
 
     static private ArrayList<DataMeteorologicae> data;
     private static final String TAG = MainActivity.class.getSimpleName();

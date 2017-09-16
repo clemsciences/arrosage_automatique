@@ -27,7 +27,7 @@ String prefix_hygrometrie_sol = "HS_";
 const char string_verification_connexion[] = "connexion_bet";
 const char string_message_recu[] = "message_recu";
 const char string_succes_connexion[] = "connexion_bet_ok";
-
+int octet_lu = 0;
 
 void setup() {
 
@@ -51,6 +51,16 @@ void loop() {
   //message par defaut
   //char msg_received[];
   //Partie réception
+  if(Serial.available() > 0)
+    {
+      octet_lu = Serial.read();
+      if(octet_lu == 116 ) //116 <=> t
+      {
+        hygrometrie_sol = analogRead(hygrometreSolPin);
+        Serial.print("hygrometrie du sol = " );    // impression du titre
+        Serial.println(hygrometrie_sol);
+      }
+    }
   
   if (vw_have_message()) // Si on a un message dans le buffer
     {
