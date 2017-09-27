@@ -18,12 +18,12 @@ const uint32_t TRHSTEP   = 10000UL; // période de mesure
 
 
 int luminosity;
-int hygrometrie_sol;
+//int hygrometrie_sol;
 float temperature;
 float humidite_air;
 
 String prefix_luminosity = "LU_";
-String prefix_hygrometrie_sol = "HS_";
+//String prefix_hygrometrie_sol = "HS_";
 String prefix_temperature = "TE_";
 String prefix_humidite_air = "HA_";
 Adafruit_HTU21DF htu = Adafruit_HTU21DF();
@@ -38,7 +38,7 @@ Adafruit_HTU21DF htu = Adafruit_HTU21DF();
 
 const char ordre_donner_temperature[] = "donner_temperature";
 const char ordre_donner_humidite_air[] = "donner_humidite_air";
-const char ordre_donner_humidite_sol[] = "donner_humidite_sol";
+//const char ordre_donner_humidite_sol[] = "donner_humidite_sol";
 const char ordre_donner_luminosite[] = "donner_luminosite";
 
 const char string_verification_connexion[] = "connexion_gimel";
