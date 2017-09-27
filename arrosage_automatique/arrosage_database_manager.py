@@ -865,4 +865,10 @@ class RecuperateurDonnees:
 
 if __name__ == "__main__":
     a = RecuperateurDonnees()
-    a.creer_table()
+    # a.creer_table()
+    #print(a.obtenir_dernier("TEMPERATURE_EXTERIEURE"))
+    for i in noms_tables_capteurs:
+        print(i, a.obtenir_dernier(i))
+    #print(a.obtenir_mesures_jour(2017, 9, 26,"TEMPERATURE_EXTERIEURE"))
+    #print(a.obtenir_mesures_jour(2017, 9, 26,"HUMIDITE_AIR_EXTERIEUR"))
+    #print(a.obtenir_mesures_jour(2017, 9, 26,"LUMINOSITE_EXTERIEUR"))
