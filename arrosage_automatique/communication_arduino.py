@@ -130,6 +130,8 @@ class Decideur(threading.Thread):
 
 
                 if date_maintenant.hour != heure_des_mesures or date_maintenant.hour % 15 == 0:
+                    os.system("scp mesures_et_arrosages.db blerepi@192.168.1.27:/var/www/html/BLOGS/blog_flask/mesures_et_arrosages.db")
+
                     # Toutes les heures, on modifie les images
                     heure_des_mesures = date_maintenant.hour
                     annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
