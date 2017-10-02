@@ -173,13 +173,11 @@ class Decideur(threading.Thread):
                     temps_moyennes_par_heure.sort()
                     moyennes_par_heure_luminosite = collections.defaultdict(str)
                     moyennes_par_heure_luminosite.update({heure : str(float(np.mean([lumi for i, lumi in enumerate(luminosite) if temps_luminosite[i].hour == heure and type(lumi) == float])))[:5] for heure in temps_moyennes_par_heure})
-
-                    d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
-                    with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
-                        myp = pickle.Pickler(f)
-                        myp.dump(d)
-
-
+                    try:
+                        d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
+                        with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
+                            myp = pickle.Pickler(f)
+                            myp.dump(d)
                 time.sleep(1)
             except SerialException:
                 print("impossible d'accéder au port")
