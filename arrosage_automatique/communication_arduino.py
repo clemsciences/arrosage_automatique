@@ -8,9 +8,6 @@ import json
 import re
 import threading
 import time
-from gestion_courriel.Gmail import *
-from gestion_courriel.extraire_xml import extraire_question, extraire_ordre
-from oauth2client.tools import argparser
 from serial import Serial, SerialException
 from arrosage_database_manager import RecuperateurDonnees
 import datetime
@@ -178,6 +175,9 @@ class Decideur(threading.Thread):
                         with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
                             myp = pickle.Pickler(f)
                             myp.dump(d)
+                    except:
+                        print("problème d'enregistrement")
+
                 time.sleep(1)
             except SerialException:
                 print("impossible d'accéder au port")
