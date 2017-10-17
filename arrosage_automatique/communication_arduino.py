@@ -38,10 +38,6 @@ def trouver_ports_libres():
     print(available)
 
 
-
-
-
-
 class Decideur(threading.Thread):
     def __init__(self, lePort):
         threading.Thread.__init__(self)
@@ -57,31 +53,6 @@ class Decideur(threading.Thread):
         :return:
         """
         print("on mesure aussi !")
-        date_maintenant = datetime.datetime.now()
-
-
-        heure_des_mesures = datetime.datetime.now().hour
-        # derniere_mise_a_jour = time.time()
-        # derniere_prise_mesure_exterieure = time.time()
-        # derniere_prise_mesure_interieure = time.time()
-        # temps_dernier_arrosage = 0
-        #
-        # en_train_d_arroser = False
-        # debut_reelle_arrosage = False
-
-        # compteur, temperature, humidite, date_heure = self.recuperateur.obtenir_derniere_mesure_meteo()
-        #temperature = derniere_condo_meteo.temperature
-        #humidite = derniere_condo_meteo.humidite_relative
-
-        # compteur, temperature_min, humidite_max, frequence_min, heure_min, heure_max, duree_arrosage_prevue = self.recuperateur.obtenir_conditions_arrosage() #ConditionArrosage.objects.get(id=max([i.id for i in ConditionArrosage.objects.all()]))
-        #print derniere_condo_arrosage
-        #temperature_min = derniere_condo_arrosage.temperature_min
-        #humidite_max = derniere_condo_arrosage.humidite_max
-        #frequence_min = derniere_condo_arrosage.frequence_min
-        #heure_min = derniere_condo_arrosage.heure_min
-        #heure_max = derniere_condo_arrosage.heure_max
-        #duree_arrosage_prevue = derniere_condo_arrosage.duree
-
         while True:
             #print 'on vérifie'
             print("début boucle")
@@ -123,60 +94,8 @@ class Decideur(threading.Thread):
                     self.commu.eteindre_arrosage()
                 time.sleep(3)
 
-
-
-
-                if date_maintenant.hour != heure_des_mesures or date_maintenant.hour % 15 == 0:
-                    os.system("scp mesures_et_arrosages.db pi@192.168.1.27:/var/www/html/BLOGS/blog_flask/mesures_et_arrosages.db")
-
-                    # Toutes les heures, on modifie les images
-                    heure_des_mesures = date_maintenant.hour
-                    annee, mois, jour = date_maintenant.year, date_maintenant.month, date_maintenant.day
-                    temps_te, temperatures = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["TE"])
-                    temps_hu, humidites = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HA"])
-                    temps_pression, pressions = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["PR"])
-                    generateur_graphique_meteo.obtenir_courbe_global_jour(temperatures, humidites, pressions, temps_te, temps_hu, temps_pression)
-
-                    temps_luminosite, luminosite = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["LU"])
-                    generateur_graphique_meteo.creer_courbe_luminosite_jour(luminosite, temps_luminosite)
-
-                    temps_hs, humidite_sol = self.recuperateur.obtenir_mesures_jour(annee, mois, jour, d_code_table_capteurs["HS"])
-                    generateur_graphique_meteo.creer_courbe_humidite_sol(humidite_sol, temps_hs)
-
-                    # Création ou mise à jour du fichier json pour l'API REST
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_te]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_temperature = collections.defaultdict(str)
-                    moyennes_par_heure_temperature.update({heure : str(float(np.mean([tempe for i, tempe in enumerate(temperatures) if temps_te[i].hour == heure and type(tempe) == float])))[:5] for heure in temps_moyennes_par_heure})
-
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_hu]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_humidite = collections.defaultdict(str)
-
-                    moyennes_par_heure_humidite.update({heure : str(float(np.mean([humi for i, humi in enumerate(humidites) if temps_hu[i].hour == heure and type(humi) == float])))[:5] for heure in temps_moyennes_par_heure})
-
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_pression]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_pression = collections.defaultdict()
-                    moyennes_par_heure_pression.update({heure: str(float(np.mean([pres for i, pres in enumerate(pressions) if temps_pression[i].hour == heure and type(pres) == float])))[:7] for heure in temps_moyennes_par_heure})
-
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_hs]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_hs = collections.defaultdict(str)
-                    moyennes_par_heure_hs.update({heure : str(float(np.mean([hs for i, hs in enumerate(humidite_sol) if temps_hs[i].hour == heure and type(hs) == float])))[:5] for heure in temps_moyennes_par_heure})
-
-
-                    temps_moyennes_par_heure = list(set([timme.hour for timme in temps_luminosite]))
-                    temps_moyennes_par_heure.sort()
-                    moyennes_par_heure_luminosite = collections.defaultdict(str)
-                    moyennes_par_heure_luminosite.update({heure : str(float(np.mean([lumi for i, lumi in enumerate(luminosite) if temps_luminosite[i].hour == heure and type(lumi) == float])))[:5] for heure in temps_moyennes_par_heure})
-                    try:
-                        d = {heure : {'humidite': moyennes_par_heure_humidite[heure], 'pression': moyennes_par_heure_pression[heure],"temperature": moyennes_par_heure_temperature[heure]} for heure in temps_moyennes_par_heure}
-                        with open(os.path.join(DIRECTORY_JSON, nommer_jour_json("data_jour_", str(annee), str(mois), str(jour))), "wb") as f:
-                            myp = pickle.Pickler(f)
-                            myp.dump(d)
-                    except:
-                        print("problème d'enregistrement")
+                if date_maintenant.minute % 15 == 0:
+                    os.system("scp /home/pi/arrosage_automatique/arrosage_automatique/mesures_et_arrosages.db pi@192.168.1.27:/var/www/html/BLOGS/blog_flask/mesures_et_arrosages.db")
 
                 time.sleep(1)
             except SerialException:
