@@ -1,4 +1,3 @@
-# arrosage_automatique
 # Système d'arrosage automatique chez moi
 Les composants présents sont :
 * le code Arduino pour gérer les capteurs météo et les transmissions radio
